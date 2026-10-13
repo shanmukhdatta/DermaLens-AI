@@ -1,37 +1,58 @@
-# Target repository structure and Phase 0 contents
+# Repository structure — implemented vs planned
+
+Status as of Phase 1 pull request #2. This is the **actual tracked engineering workspace** in the branch, not a promise that future features are active.
 
 ```text
 DermaLens-AI/
-  README.md                      # original master requirements, retained
-  .editorconfig .gitignore .env.example
-  pyproject.toml requirements-dev.txt
-  .github/workflows/phase0.yml
-  docs/
-    01_SYSTEM_ARCHITECTURE.md
-    02_COMPUTER_VISION_PIPELINE.md
-    03_MODEL_AND_RESEARCH.md
-    04_BACKEND_ARCHITECTURE.md
-    05_RAG_ASSISTANT.md
-    06_FEEDBACK_AND_CONTINUAL_LEARNING.md
-    07_MLOPS_AND_DEPLOYMENT.md
-    08_API_AND_DATA_FLOW.md
-    09_PRIVACY_AND_SAFETY.md
-    REPO_STRUCTURE.md PHASE_TRACKER.md
-    adr/README.md, 0001..0006 decisions
-  packages/contracts/openapi.v1.json
-  models/README.md
-  models/manifests/model-manifest.schema.json
-  scripts/validate_phase0.py
-  tests/test_phase0_contracts.py
-
-  # Phase 1+ directories, not yet created:
-  apps/api/  apps/web/
-  services/cv/{quality,face_detection,alignment,preprocessing,inference,uncertainty,explainability}/
-  services/rag/{ingestion,retrieval,embeddings,providers}/
-  services/learning/{feedback,curation,calibration,evaluation,experiments}/
-  packages/{security,telemetry,common}/
-  infra/{database,docker,deployment,monitoring}/
-  tests/{unit,integration,e2e,model_contract}/
+├── README.md
+├── pyproject.toml               # Python dependencies, Ruff, mypy, pytest
+├── uv.lock                      # resolved Python dependency graph
+├── requirements-dev.txt         # original Phase 0 standalone tooling
+├── .env.example, .gitignore, .editorconfig
+├── .github/workflows/
+│   ├── phase0.yml               # Phase 0 schema/document checks
+│   └── phase1.yml               # Python + web tests, lint, type and builds
+├── apps/
+│   ├── __init__.py
+│   ├── api/
+│   │   ├── __init__.py
+│   │   └── dermalens_api/
+│   │       ├── __init__.py
+│   │       ├── config.py       # DERMALENS_ typed fail-closed settings
+│   │       └── main.py         # health 200, readiness 503, no inference
+│   └── web/
+│       ├── package.json, package-lock.json
+│       ├── tsconfig.json, next.config.ts, next-env.d.ts
+│       ├── eslint.config.mjs, .env.example, .gitignore
+│       └── src/
+│           ├── app/layout.tsx, page.tsx, globals.css
+│           └── lib/platform-status.ts, platform-status.test.ts
+├── services/                    # ONLY domain protocols/types
+│   ├── cv/ports.py, runtime.py   # missing-model runtime throws error
+│   ├── rag/ports.py             # no live docs index or Grok provider
+│   └── learning/ports.py        # no live feedback storage
+├── packages/
+│   ├── common/errors.py
+│   ├── security/consent.py
+│   ├── telemetry/__init__.py
+│   └── contracts/openapi.v1.json, README.md
+├── models/README.md, manifests/model-manifest.schema.json
+├── scripts/
+│   ├── validate_phase0.py
+│   └── check_repository_hygiene.py
+├── tests/
+│   ├── test_phase0_contracts.py
+│   ├── test_api_foundation.py
+│   └── test_repository_hygiene.py
+└── docs/
+    ├── 01_SYSTEM_ARCHITECTURE.md ... 09_PRIVACY_AND_SAFETY.md
+    ├── PHASE_TRACKER.md, REPO_STRUCTURE.md
+    ├── PHASE0_VALIDATION.md, PHASE1_HANDOFF.md
+    ├── PHASE1_IMPLEMENTATION.md, PHASE1_VALIDATION.md
+    ├── PHASE2_HANDOFF.md
+    └── adr/
 ```
 
-Keep the API, CV and RAG as **separate Python modules** within one backend deployable; no independent service ports. Do not populate runtime modules with fake implementations during Phase 0. The root README's larger directory proposal remains aspirational. This document is the canonical directory rollout.
+**Not yet created/implemented:** `infra/database/`, `infra/docker/`, `infra/deployment/`, `infra/monitoring/`, additional `services/cv` image-quality/face/preprocessing/model inference modules, RAG indexing and provider adapters, offline learning/evaluation, and the dedicated integration/E2E test suites.
+
+No trained `.keras` model or sensitive images are committed. Phase 0's conceptual repository layout was a target; this file records what exists today.

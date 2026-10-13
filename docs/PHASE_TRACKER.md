@@ -5,7 +5,7 @@ Last updated: 2026-10-13. **Phase 0 was merged in PR #1; Phase 1 is being implem
 | Phase | Scope | Dependency | Deliverable / acceptance gate | Status |
 |---|---|---|---|---|
 | 0 | Architecture finalization & baseline | both README audits | Signed-off docs, contracts, ADRs, phase tracking, lint/testable CI; model state honestly documented | Complete — PR #1 merged, CI passed |
-| 1 | Repository engineering foundation | 0 | Python/Next.js workspace, lint/type/test harness, config loader, reproducible local commands, green CI | In review — pending final CI and PR |
+| 1 | Repository engineering foundation | 0 | Python/Next.js workspace, lint/type/test harness, config loader, reproducible local commands, green CI | In review — PR #2 CI green; merge and local Windows verification pending |
 | 2 | FastAPI backend skeleton | 1 | App startup, dependency injection, request IDs, typed errors, liveness/readiness, auth boundary tests | Not started |
 | 3 | Persistence and accounts | 2 | PostgreSQL, SQLAlchemy/Alembic, identity and owner guards, retention schema, migration and access tests | Not started |
 | 4 | CV image-processing gates | 2, 3 | Decode/quality/one-face/alignment/ROI; safe failure, reference fixture and parity tests (no real classifier required) | Not started |

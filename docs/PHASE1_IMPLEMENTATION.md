@@ -1,6 +1,6 @@
 # Phase 1 engineering foundation
 
-**Status:** implementation in review; CI evidence added only after successful runs.
+**Status:** code implemented and GitHub Actions green on commit `841bd5914a1ac4e828f3f0e93e04a250aed256da`; PR #2 remains under review. Local Windows/Antigravity validation has not been witnessed.
 **Inherited baseline:** Phase 0 PR #1 squash-merged to main at `4c1ff050dd8a0ea39ee83b667cbe0388d6899939`.
 **Scope:** real web/backend framework entry points and testable in-process ports; **no** trained model, clinical diagnosis, authentication, persistence, RAG provider, feedback collection or uploads.
 
