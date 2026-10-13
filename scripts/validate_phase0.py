@@ -10,7 +10,7 @@ from pathlib import Path
 from urllib.parse import unquote, urlparse
 
 from jsonschema import Draft202012Validator
-from openapi_spec_validator import validate_spec
+from openapi_spec_validator import validate
 
 ROOT = Path(__file__).resolve().parents[1]
 DOCS = ROOT / "docs"
@@ -99,7 +99,7 @@ def validate_all() -> list[str]:
         problems.append(f"Model manifest schema: {error}")
     try:
         api = json.loads(API.read_text(encoding="utf-8"))
-        validate_spec(api)
+        validate(api)
         assert api["info"]["version"] == "1.0.0"
         for endpoint in (
             "/api/v1/analyses", "/api/v1/analyses/{analysis_id}",
