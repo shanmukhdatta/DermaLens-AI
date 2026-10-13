@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+
 from jsonschema import Draft202012Validator
 
 from scripts.validate_phase0 import API, MODEL_SCHEMA, ROOT, validate_all
