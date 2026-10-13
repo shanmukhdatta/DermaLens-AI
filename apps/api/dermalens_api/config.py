@@ -1,19 +1,17 @@
-"""Typed, fail-closed configuration for Phase 1.
-
-No secret values are logged, and no optional image storage is available yet.
-"""
+"""Typed runtime settings; reject permissive and unsafe configurations at startup."""
 
 from __future__ import annotations
 
 from functools import lru_cache
 from typing import Literal
+from urllib.parse import urlsplit
 
 from pydantic import Field, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """Values can be configured via DERMALENS_ environment variables."""
+    """Only explicitly exposed DERMALENS_ keys control the API."""
 
     model_config = SettingsConfigDict(
         env_prefix="DERMALENS_",
@@ -33,23 +31,45 @@ class Settings(BaseSettings):
     @field_validator("public_web_origin")
     @classmethod
     def validate_origin(cls, value: str) -> str:
-        """Reject permissive wildcard origins before CORS is implemented."""
-        if value == "*" or not value.startswith(("http://", "https://")):
+        """Require one canonical origin; never accept credentials, wildcard or path."""
+        if not value or value != value.strip() or any(c.isspace() for c in value):
+            raise ValueError("public_web_origin must be a canonical origin")
+        try:
+            url = urlsplit(value)
+            port = url.port  # Force numeric port validation.
+        except ValueError as exc:
+            raise ValueError("public_web_origin has an invalid URL or port") from exc
+        if (
+            url.scheme not in {"http", "https"}
+            or not url.hostname
+            or url.username is not None
+            or url.password is not None
+            or url.path
+            or url.query
+            or url.fragment
+            or "*" in url.netloc
+            or not url.netloc
+        ):
             raise ValueError("public_web_origin must be an explicit http(s) origin")
-        if "@" in value or "/" in value.split("://", maxsplit=1)[-1]:
-            raise ValueError("public_web_origin must not include credentials or paths")
+        if port is not None and not 1 <= port <= 65535:
+            raise ValueError("public_web_origin has an invalid port")
+        if url.geturl() != value:
+            raise ValueError("public_web_origin must be canonical")
         return value
 
     @model_validator(mode="after")
     def reject_unimplemented_data_retention(self) -> Settings:
         if self.enable_image_storage or self.enable_research_image_opt_in:
             raise ValueError("image retention and research opt-in are not implemented")
-        if self.env == "production" and self.public_web_origin.startswith("http://"):
-            raise ValueError("production web origin must use HTTPS")
+        url = urlsplit(self.public_web_origin)
+        if self.env in {"staging", "production"} and url.scheme != "https":
+            raise ValueError("non-development web origin must use HTTPS")
+        if url.scheme == "http" and url.hostname not in {"localhost", "127.0.0.1", "::1"}:
+            raise ValueError("plaintext web origin is allowed only for local development")
         return self
 
 
 @lru_cache
 def get_settings() -> Settings:
-    """Production startup validates settings once; tests can inject their own."""
+    """Validated process configuration; tests use create_app(Settings(...))."""
     return Settings()
