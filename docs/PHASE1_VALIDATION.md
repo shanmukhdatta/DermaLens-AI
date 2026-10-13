@@ -21,6 +21,6 @@
 - Nonblocking build warnings: Starlette TestClient suggests `httpx2`; GitHub hosted action runtime reports Node.js deprecation for older checkout/setup action versions.
 - No file from `shanmukhdatta/Facial_Skin_Diesease` was modified.
 
-## Acceptance
+## Acceptance update (2026-10-13)
 
-**Engineering baseline verified by CI.** Leave Phase 1 tracker `In review` until PR #2 is merged and local Antigravity startup has been verified. Do not claim deployed or production-ready medical functionality. Phase 2 is not started.
+**PR #2 merged** to `main` at `a54592fa950298dbe3732fe47b16b0db192a6228`. Phase 1 engineering baseline was CI green before merge, and subsequent full `main` check [38440384031](https://github.com/shanmukhdatta/DermaLens-AI/actions/runs/38440384031) passed after enabling the `main` push trigger. External local Antigravity/Windows smoke is still unverified. The tracker records *Merged* rather than inventing a local pass; there is no clinical or production-ready claim. Phase 2 is not started.

@@ -33,11 +33,11 @@ def test_no_unimplemented_sensitive_routes_are_active(client: TestClient) -> Non
     for route in (
         "/api/v1/analyses",
         "/api/v1/copilot/query",
-        "/api/v1/models/current",
     ):
         assert client.get(route).status_code == 404
     assert client.post("/api/v1/analyses").status_code == 404
     assert client.post("/api/v1/copilot/query", json={"question": "hello"}).status_code == 404
+    assert client.get("/api/v1/models/current").status_code == 401
 
 
 def test_no_real_model_fallback() -> None:
