@@ -20,8 +20,8 @@ def get_identity_verifier(request: Request) -> IdentityVerifier:
 
 
 def require_verified_actor(
+    verifier: Annotated[IdentityVerifier, Depends(get_identity_verifier)],
     authorization: Annotated[str | None, Header(alias="Authorization")] = None,
-    verifier: Annotated[IdentityVerifier, Depends(get_identity_verifier)] = None,  # type: ignore[assignment]
 ) -> Principal:
     """Reject anonymous/malformed claims before consulting verified provider.
 

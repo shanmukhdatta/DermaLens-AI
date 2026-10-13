@@ -206,7 +206,9 @@ def test_safe_security_headers_are_on_all_responses(client: TestClient) -> None:
 
 
 def test_production_has_hsts() -> None:
-    application = create_app(Settings(env="production", public_web_origin="https://app.example.org"))
+    application = create_app(
+        Settings(env="production", public_web_origin="https://app.example.org")
+    )
     with TestClient(application) as test_client:
         response = test_client.get("/api/v1/health")
     assert response.headers["Strict-Transport-Security"].startswith("max-age=31536000")
