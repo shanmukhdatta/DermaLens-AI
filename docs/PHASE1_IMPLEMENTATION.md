@@ -16,7 +16,7 @@
 
 - Python uses `pyproject.toml` and a committed `uv.lock`, with `uv sync --frozen --all-groups`.
 - Frontend uses exact versions in `apps/web/package.json` and a committed `apps/web/package-lock.json`, with `npm ci`.
-- `.github/workflows/phase1-lock-bootstrap.yml` is a **temporary branch-scoped bootstrap**: it resolves and commits these two dependency lockfiles if necessary. Remove/disable this self-writing bootstrap after the initial locks have been committed and validated. No runtime build relies on `npm install` or an unlocked `uv sync`.
+- A temporary, branch-scoped CI bootstrap generated and committed the two lockfiles, then was **removed**. All ongoing workflows use committed lockfiles with `uv sync --frozen` and `npm ci`. To intentionally update dependencies, regenerate lockfiles on a controlled branch, review diffs, and commit them.
 - `.github/workflows/phase1.yml` runs backend lint, format, typecheck, Phase 0 contracts, unit tests, secret-file hygiene, frontend lint, test, Next production build and TypeScript checks. Both checkouts are isolated. The original `phase0.yml` remains dedicated to the Phase 0 contract tests.
 
 ## Local setup (Windows PowerShell / Antigravity)
