@@ -8,10 +8,16 @@ import subprocess
 from pathlib import PurePosixPath
 
 BLOCKED_DIRS = frozenset(
-    {"__pycache__", "node_modules", "uploads", "datasets", "data", "storage", "artifacts", "outputs"}
+    {
+        "__pycache__", "node_modules", "uploads", "datasets", "data",
+        "storage", "artifacts", "outputs",
+    }
 )
 BLOCKED_SUFFIXES = frozenset(
-    {".keras", ".h5", ".hdf5", ".pt", ".pth", ".pem", ".key", ".ckpt", ".onnx", ".tflite", ".safetensors"}
+    {
+        ".keras", ".h5", ".hdf5", ".pt", ".pth", ".pem",
+        ".key", ".ckpt", ".onnx", ".tflite", ".safetensors",
+    }
 )
 BLOCKED_NAMES = frozenset(
     {"id_rsa", "id_ed25519", ".env", ".env.local", ".env.production", ".env.test"}
