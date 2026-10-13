@@ -3,6 +3,12 @@
 > **Phase 0 implementation note (2026-10-13):** The agreed 14-phase execution roadmap (Phase 0–13) lives in [docs/PHASE_TRACKER.md](docs/PHASE_TRACKER.md); it supersedes the older conceptual phase list in Section 50 for execution order. For implementable contracts and decisions see [docs/01_SYSTEM_ARCHITECTURE.md](docs/01_SYSTEM_ARCHITECTURE.md), [docs/08_API_AND_DATA_FLOW.md](docs/08_API_AND_DATA_FLOW.md), [docs/03_MODEL_AND_RESEARCH.md](docs/03_MODEL_AND_RESEARCH.md) and [docs/adr/README.md](docs/adr/README.md). Phase 0 is architecture/docs only: **no clinical diagnostic validation, production classifier or deployed app** is claimed.
 
 
+## Development workspace — Phase 1
+
+The current branch contains a runnable **engineering foundation only**, not working facial-skin inference. Backend health returns `200 {"status":"ok"}`; readiness deliberately returns `503 {"status":"not_ready"}`. The frontend states that image analysis is disabled. No image, login, feedback, persistence or chatbot routes are operational.
+
+For Windows/Antigravity and CI commands see [Phase 1 implementation instructions](docs/PHASE1_IMPLEMENTATION.md). The next backend phase is scoped in [Phase 2 handoff](docs/PHASE2_HANDOFF.md). Source contracts and medical/privacy boundaries from Phase 0 remain authoritative.
+
 > **Status:** Architecture-first new repository  
 > **Purpose:** Build a production-style AI platform around previously trained facial skin-condition classifiers while keeping the original research repository unchanged.  
 > **Scope:** Computer vision inference, backend services, model serving, explainability, uncertainty handling, user feedback, controlled continual learning, documentation-grounded RAG assistant, observability, privacy, MLOps, and deployment.

@@ -1,3 +1,28 @@
+[project]
+name = "dermalens-ai-foundation"
+version = "0.1.0"
+description = "DermaLens AI modular monolith engineering foundation; no clinical inference"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+  "fastapi>=0.143.0,<0.144",
+  "uvicorn>=0.37.0,<1",
+  "pydantic-settings>=2.11.0,<3",
+  "numpy>=2.0,<3",
+]
+
+[dependency-groups]
+dev = [
+  "httpx>=0.28.1,<1",
+  "pytest>=8.4,<9",
+  "ruff>=0.17,<1",
+  "mypy>=1.18,<2",
+  "jsonschema>=4.22,<5",
+  "openapi-spec-validator>=0.7,<1",
+]
+
+[tool.uv]
+package = false
+
 [tool.ruff]
 line-length = 100
 target-version = "py311"
@@ -6,6 +31,12 @@ exclude = [".git", ".venv", ".next", "node_modules"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["apps", "services", "packages"]
+exclude = '(^|/)(node_modules|\.venv)/'
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

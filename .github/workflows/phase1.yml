@@ -1,0 +1,57 @@
+name: Phase 1 backend and frontend checks
+
+on:
+  pull_request:
+  push:
+    branches: [phase-1-engineering-foundation]
+
+permissions:
+  contents: read
+
+jobs:
+  python:
+    name: Backend / contracts
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.9.5'
+      - name: Install from locked graph
+        run: uv sync --python 3.11 --frozen --all-groups
+      - name: Lint Python
+        run: uv run --frozen ruff check .
+      - name: Check formatting
+        run: uv run --frozen ruff format --check apps packages services tests/test_api_foundation.py
+      - name: Type check
+        run: uv run --frozen mypy
+      - name: Validate Phase 0 docs and contracts
+        run: uv run --frozen python scripts/validate_phase0.py
+      - name: Unit and contract tests
+        run: uv run --frozen python -m pytest -q
+      - name: Repository hygiene
+        run: uv run --frozen python scripts/check_repository_hygiene.py
+
+  web:
+    name: Web build / typecheck / tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: apps/web/package-lock.json
+      - name: Install locked dependencies
+        run: npm ci --ignore-scripts --no-audit --no-fund
+      - name: Lint
+        run: npm run lint
+      - name: Unit tests
+        run: npm test
+      - name: Next.js production build
+        run: npm run build
+      - name: TypeScript check
+        run: npm run typecheck

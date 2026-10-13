@@ -1,11 +1,11 @@
 # Master execution tracker — authoritative Phase 0–13 roadmap
 
-Last updated: 2026-10-13. **Only Phase 0 is being implemented in this branch.** Do not confuse this plan with the older Phase 0–12 conceptual sequence in the root README. A phase is complete only with code/config committed, test evidence, documented limitations, and explicit handoff.
+Last updated: 2026-10-13. **Phase 0 was merged in PR #1; Phase 1 is being implemented on a separate branch.** Do not confuse this plan with the older Phase 0–12 conceptual sequence in the root README. A phase is complete only with code/config committed, test evidence, documented limitations, and explicit handoff.
 
 | Phase | Scope | Dependency | Deliverable / acceptance gate | Status |
 |---|---|---|---|---|
-| 0 | Architecture finalization & baseline | both README audits | Signed-off docs, contracts, ADRs, phase tracking, lint/testable CI; model state honestly documented | In review |
-| 1 | Repository engineering foundation | 0 | Python/Next.js workspace, lint/type/test harness, config loader, reproducible local commands, green CI | Not started |
+| 0 | Architecture finalization & baseline | both README audits | Signed-off docs, contracts, ADRs, phase tracking, lint/testable CI; model state honestly documented | Complete — PR #1 merged, CI passed |
+| 1 | Repository engineering foundation | 0 | Python/Next.js workspace, lint/type/test harness, config loader, reproducible local commands, green CI | In review — PR #2 CI green; merge and local Windows verification pending |
 | 2 | FastAPI backend skeleton | 1 | App startup, dependency injection, request IDs, typed errors, liveness/readiness, auth boundary tests | Not started |
 | 3 | Persistence and accounts | 2 | PostgreSQL, SQLAlchemy/Alembic, identity and owner guards, retention schema, migration and access tests | Not started |
 | 4 | CV image-processing gates | 2, 3 | Decode/quality/one-face/alignment/ROI; safe failure, reference fixture and parity tests (no real classifier required) | Not started |
@@ -25,4 +25,4 @@ Last updated: 2026-10-13. **Only Phase 0 is being implemented in this branch.** 
 2. Mark blocked phases `Blocked` with exact evidence and action. No completed claim without commit + passing checks.
 3. Use branch/PR per phase, re-audit changed architecture, update this tracker, and supply a reproducible handoff.
 4. Phase 9 model artifacts and Phase 10 real-world validation require user-provided private artifacts/data or approved external resources. Never pretend the Git repositories contain them.
-5. `Phase 0 = In review` until validation and PR checks pass and acceptance is confirmed. After acceptance, change to `Complete` with commit/PR evidence.
+5. Phase 0 is complete: merged PR #1, GitHub Actions verified. Phase 1 remains in review until CI and PR closure.
