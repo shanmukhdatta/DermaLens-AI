@@ -3,7 +3,7 @@ name: Phase 1 backend and frontend checks
 on:
   pull_request:
   push:
-    branches: [phase-1-engineering-foundation]
+    branches: [main, phase-1-engineering-foundation]
 
 permissions:
   contents: read
