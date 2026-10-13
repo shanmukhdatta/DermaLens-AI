@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+from starlette.exceptions import HTTPException
 
 from apps.api.dermalens_api.config import Settings, get_settings
 from apps.api.dermalens_api.middleware import RequestContextMiddleware
