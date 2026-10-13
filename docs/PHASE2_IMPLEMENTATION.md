@@ -1,6 +1,6 @@
 # Phase 2 — FastAPI backend skeleton
 
-**Branch:** `phase-2-fastapi-backend-skeleton`. **Status:** implemented; final CI and PR review documented in [validation](PHASE2_VALIDATION.md).
+**Branch:** `phase-2-fastapi-backend-skeleton`. **Status:** Phase 2 implementation CI green on SHA `a50bb010cd735103663824842060086edf6b971e`; PR #3 remains open. See [validation](PHASE2_VALIDATION.md).
 
 ## Scope delivered
 
