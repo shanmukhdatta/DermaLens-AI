@@ -1,4 +1,5 @@
 """Feedback contracts only; no storage or learning in Phase 1."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass

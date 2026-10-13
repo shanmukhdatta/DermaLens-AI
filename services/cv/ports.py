@@ -1,4 +1,5 @@
 """Stable interfaces; implementations arrive in Phases 4 and 9."""
+
 from __future__ import annotations
 
 from dataclasses import dataclass

@@ -1,4 +1,5 @@
 """Fail-closed model adapter used in the foundation, never mock predictions."""
+
 from __future__ import annotations
 
 import numpy as np

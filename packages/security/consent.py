@@ -1,4 +1,5 @@
 """Consent labels describe future service contracts, not active persistence."""
+
 from enum import StrEnum
 
 

@@ -1,4 +1,5 @@
 """Provider-neutral, citation-aware document assistant contracts."""
+
 from __future__ import annotations
 
 from collections.abc import Sequence

@@ -2,6 +2,7 @@
 
 Do not add analysis, storage, auth or chatbot routes until their respective phases.
 """
+
 from __future__ import annotations
 
 from fastapi import FastAPI, Request

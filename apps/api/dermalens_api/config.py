@@ -2,6 +2,7 @@
 
 No secret values are logged, and no optional image storage is available yet.
 """
+
 from __future__ import annotations
 
 from functools import lru_cache

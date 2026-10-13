@@ -1,4 +1,5 @@
 """Actual FastAPI smoke tests against a no-model application instance."""
+
 from __future__ import annotations
 
 import pytest
