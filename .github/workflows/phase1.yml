@@ -30,11 +30,7 @@ jobs:
       - name: Unit and contract tests
         run: uv run --frozen python -m pytest -q
       - name: Repository hygiene
-        run: |
-          if git ls-files | grep -E '(^|/)(\.env|__pycache__/|node_modules/|uploads/|data/)|\.(keras|h5|pem|key)$'; then
-            echo "Unacceptable tracked local data or secrets" >&2
-            exit 1
-          fi
+        run: uv run --frozen python scripts/check_repository_hygiene.py
 
   web:
     name: Web build / typecheck / tests
