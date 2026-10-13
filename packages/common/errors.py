@@ -34,7 +34,10 @@ PUBLIC_MESSAGES: dict[ErrorCode, str] = {
 
 def safe_error_payload(code: ErrorCode, request_id: str) -> dict[str, object]:
     """Fixed-message response with server-validated correlation identifier."""
-    return {"error": {"code": code.value, "message": PUBLIC_MESSAGES[code]}, "request_id": request_id}
+    return {
+        "error": {"code": code.value, "message": PUBLIC_MESSAGES[code]},
+        "request_id": request_id,
+    }
 
 
 @dataclass(eq=False)
@@ -49,7 +52,10 @@ class DomainError(Exception):
 
     def as_payload(self) -> dict[str, object]:
         """Legacy in-process representation; HTTP MUST use safe_error_payload."""
-        return {"error": {"code": self.code.value, "message": self.message}, "request_id": self.request_id}
+        return {
+            "error": {"code": self.code.value, "message": self.message},
+            "request_id": self.request_id,
+        }
 
 
 class ModelNotReady(DomainError):

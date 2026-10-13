@@ -7,7 +7,7 @@ from typing import Annotated
 from fastapi import Depends, Header, Request
 
 from apps.api.dermalens_api.readiness import ReadinessGates
-from packages.common.errors import DomainError, ErrorCode, PUBLIC_MESSAGES
+from packages.common.errors import PUBLIC_MESSAGES, DomainError, ErrorCode
 from packages.security.identity import IdentityVerifier, Principal
 
 

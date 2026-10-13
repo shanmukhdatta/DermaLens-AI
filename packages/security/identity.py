@@ -6,7 +6,7 @@ from dataclasses import dataclass
 from hmac import compare_digest
 from typing import Protocol
 
-from packages.common.errors import DomainError, ErrorCode, PUBLIC_MESSAGES
+from packages.common.errors import PUBLIC_MESSAGES, DomainError, ErrorCode
 
 
 @dataclass(frozen=True, slots=True)
