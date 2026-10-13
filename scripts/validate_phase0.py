@@ -33,6 +33,8 @@ EXPECTED = [
     )],
     DOCS / "PHASE_TRACKER.md",
     DOCS / "REPO_STRUCTURE.md",
+    DOCS / "PHASE0_VALIDATION.md",
+    DOCS / "PHASE1_HANDOFF.md",
     DOCS / "adr/README.md",
     *[DOCS / f"adr/{i:04d}-{name}.md" for i, name in enumerate(
         ("modular-monolith", "model-contract", "image-privacy",
