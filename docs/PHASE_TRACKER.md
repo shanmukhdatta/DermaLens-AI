@@ -1,13 +1,13 @@
 # Master execution tracker — authoritative Phase 0–13 roadmap
 
-Last updated: 2026-10-13 (Phase 2 branch). **Phase 0 was merged in PR #1; Phase 1 PR #2 was merged on 2026-10-13.** Do not confuse this plan with the older Phase 0–12 conceptual sequence in the root README. A phase is complete only with code/config committed, test evidence, documented limitations, and explicit handoff.
+Last updated: 2026-10-13 (Phase 3 kickoff). **Phase 0 was merged in PR #1; Phase 1 PR #2 was merged on 2026-10-13.** Do not confuse this plan with the older Phase 0–12 conceptual sequence in the root README. A phase is complete only with code/config committed, test evidence, documented limitations, and explicit handoff.
 
 | Phase | Scope | Dependency | Deliverable / acceptance gate | Status |
 |---|---|---|---|---|
 | 0 | Architecture finalization & baseline | both README audits | Signed-off docs, contracts, ADRs, phase tracking, lint/testable CI; model state honestly documented | Complete — PR #1 merged, CI passed |
 | 1 | Repository engineering foundation | 0 | Python/Next.js workspace, lint/type/test harness, config loader, reproducible local commands, green CI | Merged — PR #2, CI green; external Windows startup not yet verified |
-| 2 | FastAPI backend skeleton | 1 | App startup, dependency injection, request IDs, typed errors, liveness/readiness, auth boundary tests | In review — PR #3, Phase 0/1 CI green on implementation SHA; merge and external Windows test pending |
-| 3 | Persistence and accounts | 2 | PostgreSQL, SQLAlchemy/Alembic, identity and owner guards, retention schema, migration and access tests | Not started |
+| 2 | FastAPI backend skeleton | 1 | App startup, dependency injection, request IDs, typed errors, liveness/readiness, auth boundary tests | Merged — PR #3, merged main SHA `8a2b0ec95cc9b151989c0f02028d9f13d03b8625`, main CI green; independent Windows/Antigravity review reported pass |
+| 3 | Persistence and accounts | 2 | PostgreSQL, SQLAlchemy/Alembic, identity and owner guards, retention schema, migration and access tests | Started — branch `phase-3-persistence-and-accounts` created from merged Phase 2; implementation, tests and Phase 3 PR pending |
 | 4 | CV image-processing gates | 2, 3 | Decode/quality/one-face/alignment/ROI; safe failure, reference fixture and parity tests (no real classifier required) | Not started |
 | 5 | Next.js user experience | 2, 4 | Accessible upload/notice, progress/rejections, results/abstentions, no unsafe medical copy; browser tests | Not started |
 | 6 | History and feedback | 3, 5 | Consent-respecting history, erasure, moderated feedback states, ownership checks, integration tests | Not started |
@@ -26,3 +26,10 @@ Last updated: 2026-10-13 (Phase 2 branch). **Phase 0 was merged in PR #1; Phase 
 3. Use branch/PR per phase, re-audit changed architecture, update this tracker, and supply a reproducible handoff.
 4. Phase 9 model artifacts and Phase 10 real-world validation require user-provided private artifacts/data or approved external resources. Never pretend the Git repositories contain them.
 5. Phase 0 is complete: merged PR #1, GitHub Actions verified. Phase 1 PR #2 was merged as `a54592fa950298dbe3732fe47b16b0db192a6228` after green PR CI. Local Windows/Antigravity smoke and visual checks remain unverified; do not treat those as passed.
+
+### Phase 3 kickoff verification (2026-10-13)
+
+- PRs [#1](https://github.com/shanmukhdatta/DermaLens-AI/pull/1), [#2](https://github.com/shanmukhdatta/DermaLens-AI/pull/2), and [#3](https://github.com/shanmukhdatta/DermaLens-AI/pull/3) are merged into `main`.
+- PR #3 merged as `8a2b0ec95cc9b151989c0f02028d9f13d03b8625`. Post-merge `main` workflows [38449294144](https://github.com/shanmukhdatta/DermaLens-AI/actions/runs/38449294144) (architecture) and [38449294131](https://github.com/shanmukhdatta/DermaLens-AI/actions/runs/38449294131) (backend/frontend) succeeded.
+- User-supplied Antigravity independent Phase 2 review reports 47/47 backend tests passed, local live smoke checks and clean web checks; this was supplied evidence rather than a GitHub-hosted review approval.
+- Phase 3 code, tests, database migrations, live OIDC and PR remain pending. No Phase 4 work is authorized.
