@@ -1,0 +1,40 @@
+name: Phase 1 reproducible lockfile bootstrap
+
+# Scoped to this one project branch; the job commits only generated dependency locks.
+on:
+  push:
+    branches: [phase-1-engineering-foundation]
+
+permissions:
+  contents: write
+
+jobs:
+  lockfiles:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: '0.9.5'
+          enable-cache: false
+      - name: Generate Python lockfile
+        run: uv lock --python 3.11
+      - name: Generate frontend lockfile without lifecycle scripts
+        working-directory: apps/web
+        run: npm install --package-lock-only --ignore-scripts --no-audit --no-fund
+      - name: Commit dependency locks if changed
+        run: |
+          git add uv.lock apps/web/package-lock.json
+          if ! git diff --cached --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "build(phase1): lock Python and npm dependency graphs"
+            git push origin HEAD:refs/heads/phase-1-engineering-foundation
+          else
+            echo "Lockfiles already match manifests"
+          fi

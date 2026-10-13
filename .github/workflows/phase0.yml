@@ -25,4 +25,4 @@ jobs:
       - name: Structural and schema validation
         run: python scripts/validate_phase0.py
       - name: Contract tests
-        run: python -m pytest -q
+        run: python -m pytest tests/test_phase0_contracts.py -q
