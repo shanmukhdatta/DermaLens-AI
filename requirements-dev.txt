@@ -1,0 +1,5 @@
+# Phase 0 static/contracts toolchain; application dependencies come in Phase 1.
+pytest>=8.0,<9
+ruff>=0.8,<1
+jsonschema>=4.22,<5
+openapi-spec-validator>=0.7,<1

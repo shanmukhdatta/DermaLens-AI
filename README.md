@@ -1,5 +1,8 @@
 # DermaLens AI — Facial Skin Disease AI Platform
 
+> **Phase 0 implementation note (2026-10-13):** The agreed 14-phase execution roadmap (Phase 0–13) lives in [docs/PHASE_TRACKER.md](docs/PHASE_TRACKER.md); it supersedes the older conceptual phase list in Section 50 for execution order. For implementable contracts and decisions see [docs/01_SYSTEM_ARCHITECTURE.md](docs/01_SYSTEM_ARCHITECTURE.md), [docs/08_API_AND_DATA_FLOW.md](docs/08_API_AND_DATA_FLOW.md), [docs/03_MODEL_AND_RESEARCH.md](docs/03_MODEL_AND_RESEARCH.md) and [docs/adr/README.md](docs/adr/README.md). Phase 0 is architecture/docs only: **no clinical diagnostic validation, production classifier or deployed app** is claimed.
+
+
 > **Status:** Architecture-first new repository  
 > **Purpose:** Build a production-style AI platform around previously trained facial skin-condition classifiers while keeping the original research repository unchanged.  
 > **Scope:** Computer vision inference, backend services, model serving, explainability, uncertainty handling, user feedback, controlled continual learning, documentation-grounded RAG assistant, observability, privacy, MLOps, and deployment.
