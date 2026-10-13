@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/shanmukhdatta/DermaLens-AI/blob/main/models/manifests/model-manifest.schema.json",
+  "title": "DermaLens AI verified model manifest v1",
+  "description": "Schema for future verified model artifacts; no model is currently registered.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "model_id",
+    "version",
+    "status",
+    "source_repository",
+    "source_commit",
+    "framework",
+    "checkpoint",
+    "label_map",
+    "input",
+    "output",
+    "custom_objects",
+    "preprocessing_version"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "1"
+    },
+    "model_id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]+$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "status": {
+      "enum": [
+        "candidate",
+        "staging",
+        "approved",
+        "retired"
+      ]
+    },
+    "source_repository": {
+      "const": "https://github.com/shanmukhdatta/Facial_Skin_Diesease"
+    },
+    "source_commit": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{40}$"
+    },
+    "training_run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "license_review": {
+      "type": "string",
+      "minLength": 1
+    },
+    "framework": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "const": "tensorflow-keras"
+        },
+        "python_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "tensorflow_version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "keras_version": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "name",
+        "python_version",
+        "tensorflow_version",
+        "keras_version"
+      ]
+    },
+    "checkpoint": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "uri": {
+          "type": "string",
+          "minLength": 1
+        },
+        "filename": {
+          "type": "string",
+          "pattern": "\\.keras$"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      },
+      "required": [
+        "uri",
+        "filename",
+        "sha256"
+      ]
+    },
+    "label_map": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "uri": {
+          "type": "string",
+          "minLength": 1
+        },
+        "filename": {
+          "const": "label_map.json"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "count": {
+          "const": 6
+        },
+        "format": {
+          "const": "index-to-class-json"
+        }
+      },
+      "required": [
+        "uri",
+        "filename",
+        "sha256",
+        "count",
+        "format"
+      ]
+    },
+    "input": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "shape": {
+          "const": [
+            null,
+            224,
+            224,
+            3
+          ]
+        },
+        "color_space": {
+          "const": "RGB"
+        },
+        "dtype": {
+          "const": "float32"
+        },
+        "pixel_min": {
+          "const": 0
+        },
+        "pixel_max": {
+          "const": 255
+        },
+        "resize": {
+          "const": "PIL_BILINEAR"
+        },
+        "normalization": {
+          "const": "model_internal"
+        }
+      },
+      "required": [
+        "shape",
+        "color_space",
+        "dtype",
+        "pixel_min",
+        "pixel_max",
+        "resize",
+        "normalization"
+      ]
+    },
+    "output": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "kind": {
+          "const": "softmax_probabilities"
+        },
+        "shape": {
+          "const": [
+            null,
+            6
+          ]
+        },
+        "class_count": {
+          "const": 6
+        }
+      },
+      "required": [
+        "kind",
+        "shape",
+        "class_count"
+      ]
+    },
+    "custom_objects": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "enum": [
+          "ResNet50Preprocess",
+          "DenseNet121Preprocess",
+          "ViTPreprocess",
+          "ExtractCLSToken",
+          "FocalLoss"
+        ]
+      }
+    },
+    "preprocessing_version": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evaluation_record": {
+      "type": "string"
+    },
+    "approved_by": {
+      "type": "string"
+    }
+  }
+}

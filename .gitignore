@@ -1,0 +1,46 @@
+# Secrets and local configuration
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+credentials*.json
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+build/
+dist/
+*.egg-info/
+# JS
+node_modules/
+.next/
+coverage/
+# Large research artifacts / sensitive photos
+*.keras
+*.h5
+*.hdf5
+*.ckpt
+*.pt
+*.pth
+*.onnx
+*.tflite
+*.safetensors
+# Sensitive user photos belong ONLY in ignored data/ and uploads/;
+# public frontend design assets may be committed intentionally.
+data/
+datasets/
+uploads/
+storage/
+artifacts/
+outputs/
+# OS/editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
