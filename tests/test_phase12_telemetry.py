@@ -3,11 +3,14 @@ from __future__ import annotations
 
 import json
 
+import pytest
+
 from fastapi.testclient import TestClient
 
 from apps.api.dermalens_api.config import Settings
 from apps.api.dermalens_api.main import create_app
 from packages.telemetry.runtime import LATENCY_BUCKETS, RuntimeTelemetry
+from scripts.operational_smoke import _security_headers, _url
 
 
 def test_metrics_do_not_collect_unknown_urls_or_identifiers() -> None:
@@ -51,3 +54,22 @@ def test_telemetry_buckets_are_bounded_for_extreme_duration() -> None:
     assert snapshot["latency_buckets_ms"]["+Inf"] == 1
     assert snapshot["routes"][-1]["method"] in {"GET", "OTHER"}
     assert "SECRET" not in json.dumps(snapshot)
+
+
+def test_smoke_url_and_security_header_guards() -> None:
+    assert _url("http://127.0.0.1:8000", "/api/v1/health").endswith("/api/v1/health")
+    for base in (
+        "http://external.example.org", "https://person:password@example.org",
+        "https://example.org/private", "https://example.org?token=secret",
+    ):
+        with pytest.raises(ValueError):
+            _url(base, "/api/v1/health")
+    valid = {
+        "cache-control": "no-store",
+        "x-content-type-options": "nosniff",
+        "x-request-id": "00000000-0000-4000-8000-000000000001",
+    }
+    _security_headers(valid)
+    for missing in valid:
+        with pytest.raises(AssertionError):
+            _security_headers({key: value for key, value in valid.items() if key != missing})
