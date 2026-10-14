@@ -7,11 +7,13 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Request, Response
 from pydantic import BaseModel, ConfigDict, StrictBool
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from apps.api.dermalens_api.dependencies import require_verified_actor
 from packages.common.errors import PUBLIC_MESSAGES, DomainError, ErrorCode
 from packages.security.identity import Principal
+from services.persistence.models import FeedbackRecord
 from services.persistence.repository import (
     change_history_consent,
     erase_account,
@@ -81,8 +83,22 @@ def export_data(
 ) -> dict[str, object]:
     account = find_account(session, actor)
     items = owned_history(session, actor)
+    feedback = []
+    if account is not None and history_consent(session, account):
+        feedback = [
+            {
+                "id": item.id,
+                "analysis_id": item.analysis_id,
+                "choice": item.choice,
+                "review_status": item.review_status,
+            }
+            for item in session.scalars(
+                select(FeedbackRecord).where(FeedbackRecord.account_id == account.id)
+            )
+        ]
     return {
         "history_enabled": history_consent(session, account),
+        "feedback": feedback,
         "analyses": [
             {
                 "id": item.id,

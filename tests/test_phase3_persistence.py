@@ -73,6 +73,7 @@ def test_history_consent_is_owned_and_idempotent(tmp_path: Path) -> None:
         assert client.get("/api/v1/account/analyses", headers=auth("bob")).json() == {"items": []}
         assert client.get("/api/v1/account/export", headers=auth("alice")).json() == {
             "history_enabled": True,
+            "feedback": [],
             "analyses": [],
         }
         assert (

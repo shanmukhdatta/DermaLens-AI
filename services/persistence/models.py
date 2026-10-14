@@ -57,9 +57,12 @@ class AnalysisRecord(Base):
 
 
 class FeedbackRecord(Base):
-    """Future reviewed feedback only, strictly tied to an owned analysis."""
+    """Research feedback pending review; one submission per owned analysis."""
 
     __tablename__ = "feedback"
+    __table_args__ = (
+        UniqueConstraint("account_id", "analysis_id", name="uq_feedback_once_per_analysis"),
+    )
 
     id: Mapped[str] = mapped_column(String(36), primary_key=True, default=new_id)
     account_id: Mapped[str] = mapped_column(ForeignKey("accounts.id", ondelete="CASCADE"))

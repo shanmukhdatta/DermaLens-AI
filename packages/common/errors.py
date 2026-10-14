@@ -21,6 +21,7 @@ class ErrorCode(StrEnum):
     IMAGE_TOO_LARGE = "IMAGE_TOO_LARGE"
     IMAGE_CHECK_UNAVAILABLE = "IMAGE_CHECK_UNAVAILABLE"
     INTERNAL_ERROR = "INTERNAL_ERROR"
+    CONFLICT = "CONFLICT"
 
 
 PUBLIC_MESSAGES: dict[ErrorCode, str] = {
@@ -35,6 +36,7 @@ PUBLIC_MESSAGES: dict[ErrorCode, str] = {
     ErrorCode.IMAGE_TOO_LARGE: "The uploaded image is too large.",
     ErrorCode.IMAGE_CHECK_UNAVAILABLE: "Image suitability checks are not available.",
     ErrorCode.INTERNAL_ERROR: "An internal error occurred.",
+    ErrorCode.CONFLICT: "The stored record conflicts with this request.",
 }
 
 
