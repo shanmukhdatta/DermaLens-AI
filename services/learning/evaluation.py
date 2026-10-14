@@ -14,10 +14,20 @@ from services.cv.artifacts import EXPECTED_CATEGORIES
 SPLITS = {"train", "calibration", "test"}
 SOURCES = {"real", "synthetic", "fixture"}
 PROB_COLUMNS = tuple(f"prob_{i}" for i in range(6))
-REQUIRED = frozenset({
-    "example_id", "subject_id", "content_sha256", "split", "source",
-    "label", "model_version", "skin_tone_group", "device_group", *PROB_COLUMNS,
-})
+REQUIRED = frozenset(
+    {
+        "example_id",
+        "subject_id",
+        "content_sha256",
+        "split",
+        "source",
+        "label",
+        "model_version",
+        "skin_tone_group",
+        "device_group",
+        *PROB_COLUMNS,
+    }
+)
 
 
 def _normalize_label(label: str) -> str:
@@ -39,9 +49,10 @@ def read_table(path: Path) -> list[dict[str, str]]:
 
 def audit_rows(rows: list[dict[str, str]], ordered_labels: tuple[str, ...]) -> None:
     """Reject leakage, incompatible label maps, corrupt predictions and mixed versions."""
-    if len(ordered_labels) != 6 or {
-        _normalize_label(v) for v in ordered_labels
-    } != EXPECTED_CATEGORIES:
+    if (
+        len(ordered_labels) != 6
+        or {_normalize_label(v) for v in ordered_labels} != EXPECTED_CATEGORIES
+    ):
         raise ValueError("Exact six-category research mapping is required")
     if not rows or not any(row["split"] == "test" for row in rows):
         raise ValueError("At least one held-out test record is required")
@@ -59,8 +70,11 @@ def audit_rows(rows: list[dict[str, str]], ordered_labels: tuple[str, ...]) -> N
         sample_id = row["example_id"]
         subject = row["subject_id"]
         checksum = row["content_sha256"]
-        if not sample_id or not subject or len(checksum) != 64 or any(
-            ch not in "0123456789abcdef" for ch in checksum
+        if (
+            not sample_id
+            or not subject
+            or len(checksum) != 64
+            or any(ch not in "0123456789abcdef" for ch in checksum)
         ):
             raise ValueError("Invalid sample, subject group, or content hash")
         if sample_id in example_ids:
@@ -103,8 +117,10 @@ def _stats(rows: list[dict[str, str]], labels: tuple[str, ...]) -> dict[str, Any
         f1 = 2 * tp / (2 * tp + fp + fn) if 2 * tp + fp + fn else 0.0
         per_class_f1.append(f1)
         class_metrics[name] = {
-            "support": support, "precision": round(precision, 5),
-            "recall": round(recall, 5), "f1": round(f1, 5),
+            "support": support,
+            "precision": round(precision, 5),
+            "recall": round(recall, 5),
+            "f1": round(f1, 5),
         }
 
     confidence = prob.max(axis=1)
@@ -126,7 +142,8 @@ def _stats(rows: list[dict[str, str]], labels: tuple[str, ...]) -> dict[str, Any
         exploratory[str(threshold)] = {
             "coverage": round(covered / total, 5),
             "error_rate_if_selected": round(float(1 - correct[selected].mean()), 5)
-            if covered else None,
+            if covered
+            else None,
         }
     return {
         "n": total,
