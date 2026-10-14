@@ -39,7 +39,7 @@ class HaarFaceDetector:
     """Replaceable baseline detector, not a validated lesion/skin detector."""
 
     def __init__(self) -> None:
-        path = cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
+        path = getattr(cv2, "data").haarcascades + "haarcascade_frontalface_default.xml"
         self._cascade = cv2.CascadeClassifier(path)
         if self._cascade.empty():
             raise RuntimeError("Face detector artifact unavailable")
