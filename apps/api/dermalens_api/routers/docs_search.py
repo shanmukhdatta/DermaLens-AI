@@ -33,8 +33,11 @@ def search_documentation(
     return {
         "status": "matches" if results else "no_match",
         "matches": [
-            {"path": item.source.split("#", maxsplit=1)[0],
-             "section": item.heading[:140], "excerpt": item.content[:650]}
+            {
+                "path": item.source.split("#", maxsplit=1)[0],
+                "section": item.heading[:140],
+                "excerpt": item.content[:650],
+            }
             for item in results
         ],
         "notice": (
