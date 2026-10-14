@@ -19,6 +19,7 @@ class ErrorCode(StrEnum):
     INFERENCE_FAILED = "INFERENCE_FAILED"
     INVALID_IMAGE = "INVALID_IMAGE"
     IMAGE_TOO_LARGE = "IMAGE_TOO_LARGE"
+    RATE_LIMITED = "RATE_LIMITED"
     IMAGE_CHECK_UNAVAILABLE = "IMAGE_CHECK_UNAVAILABLE"
     INTERNAL_ERROR = "INTERNAL_ERROR"
     CONFLICT = "CONFLICT"
@@ -34,6 +35,7 @@ PUBLIC_MESSAGES: dict[ErrorCode, str] = {
     ErrorCode.INFERENCE_FAILED: "Inference is unavailable.",
     ErrorCode.INVALID_IMAGE: "The image could not be accepted.",
     ErrorCode.IMAGE_TOO_LARGE: "The uploaded image is too large.",
+    ErrorCode.RATE_LIMITED: "Too many requests. Please try again later.",
     ErrorCode.IMAGE_CHECK_UNAVAILABLE: "Image suitability checks are not available.",
     ErrorCode.INTERNAL_ERROR: "An internal error occurred.",
     ErrorCode.CONFLICT: "The stored record conflicts with this request.",
