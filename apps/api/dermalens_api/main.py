@@ -1,6 +1,8 @@
-"""Phase 2 FastAPI composition root. No persistence, CV, RAG or feedback routes."""
+"""Fail-closed research API composition root; opt-in feature boundaries."""
 
 from __future__ import annotations
+
+from pathlib import Path
 
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
@@ -46,6 +48,17 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         )
     if config.database_url:
         app.state.db_engine, app.state.db_session_factory = build_database(config.database_url)
+    if config.enable_rag_assistant:
+        from services.rag.grok import GrokResponseProvider
+        from services.rag.index import DocumentationIndex
+
+        assert config.grok_api_key is not None
+        app.state.docs_index = DocumentationIndex.from_repository(
+            Path(__file__).resolve().parents[3]
+        )
+        app.state.docs_provider = GrokResponseProvider(
+            config.grok_api_key.get_secret_value(), config.grok_model
+        )
 
     @app.exception_handler(DomainError)
     async def on_domain_error(request: Request, error: DomainError) -> JSONResponse:
@@ -83,6 +96,10 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(account.router, prefix="/api/v1")
     app.include_router(images.router, prefix="/api/v1")
     app.include_router(feedback.router, prefix="/api/v1")
+    if config.enable_rag_assistant:
+        from apps.api.dermalens_api.routers import copilot
+
+        app.include_router(copilot.router, prefix="/api/v1")
 
     # CORS only allows a validated origin; bearer header is NOT authentication.
     app.add_middleware(

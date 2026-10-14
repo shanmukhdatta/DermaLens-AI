@@ -1,0 +1,2 @@
+# Phase 7 optional documentation-only Grok adapter, not image analysis.
+httpx>=0.28,<1

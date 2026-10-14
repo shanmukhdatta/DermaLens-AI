@@ -6,7 +6,7 @@ from functools import lru_cache
 from typing import Literal
 from urllib.parse import urlsplit
 
-from pydantic import Field, field_validator, model_validator
+from pydantic import Field, SecretStr, field_validator, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -28,6 +28,9 @@ class Settings(BaseSettings):
     enable_image_storage: bool = False
     enable_research_image_opt_in: bool = False
     enable_image_quality_checks: bool = False
+    enable_rag_assistant: bool = False
+    grok_api_key: SecretStr | None = None
+    grok_model: str = "grok-4.7"
     database_url: str | None = None
     oidc_issuer: str | None = None
     oidc_audience: str | None = None
@@ -66,6 +69,10 @@ class Settings(BaseSettings):
     def reject_unimplemented_data_retention(self) -> Settings:
         if self.enable_image_storage or self.enable_research_image_opt_in:
             raise ValueError("image retention and research opt-in are not implemented")
+        if self.enable_rag_assistant and (
+            self.grok_api_key is None or not self.grok_api_key.get_secret_value()
+        ):
+            raise ValueError("RAG requires a server-side Grok API key")
         credentials = (self.oidc_issuer, self.oidc_audience, self.oidc_jwks_url)
         if any(value is not None for value in credentials) and not all(credentials):
             raise ValueError("OIDC issuer, audience and JWKS URL must be set together")

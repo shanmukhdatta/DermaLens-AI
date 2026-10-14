@@ -23,6 +23,8 @@ jobs:
         run: uv pip install --python .venv/bin/python -r requirements-persistence.txt
       - name: Install image processing extension
         run: uv pip install --python .venv/bin/python -r requirements-cv.txt
+      - name: Install RAG provider extension
+        run: uv pip install --python .venv/bin/python -r requirements-rag.txt
       - name: Lint Python
         run: uv run --frozen --no-sync ruff check .
       - name: Check formatting
