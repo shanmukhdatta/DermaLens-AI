@@ -2,6 +2,7 @@
 
 This validates structural contracts, not live inference or runtime services.
 """
+
 from __future__ import annotations
 
 import json
@@ -18,28 +19,42 @@ API = ROOT / "packages/contracts/openapi.v1.json"
 MODEL_SCHEMA = ROOT / "models/manifests/model-manifest.schema.json"
 
 EXPECTED = [
-    *[DOCS / f"{i:02d}_{name}.md" for i, name in enumerate(
-        (
-            "SYSTEM_ARCHITECTURE",
-            "COMPUTER_VISION_PIPELINE",
-            "MODEL_AND_RESEARCH",
-            "BACKEND_ARCHITECTURE",
-            "RAG_ASSISTANT",
-            "FEEDBACK_AND_CONTINUAL_LEARNING",
-            "MLOPS_AND_DEPLOYMENT",
-            "API_AND_DATA_FLOW",
-            "PRIVACY_AND_SAFETY",
-        ), start=1
-    )],
+    *[
+        DOCS / f"{i:02d}_{name}.md"
+        for i, name in enumerate(
+            (
+                "SYSTEM_ARCHITECTURE",
+                "COMPUTER_VISION_PIPELINE",
+                "MODEL_AND_RESEARCH",
+                "BACKEND_ARCHITECTURE",
+                "RAG_ASSISTANT",
+                "FEEDBACK_AND_CONTINUAL_LEARNING",
+                "MLOPS_AND_DEPLOYMENT",
+                "API_AND_DATA_FLOW",
+                "PRIVACY_AND_SAFETY",
+            ),
+            start=1,
+        )
+    ],
     DOCS / "PHASE_TRACKER.md",
     DOCS / "REPO_STRUCTURE.md",
     DOCS / "PHASE0_VALIDATION.md",
     DOCS / "PHASE1_HANDOFF.md",
     DOCS / "adr/README.md",
-    *[DOCS / f"adr/{i:04d}-{name}.md" for i, name in enumerate(
-        ("modular-monolith", "model-contract", "image-privacy",
-         "docs-only-rag", "feedback-promotion", "stack"), start=1
-    )],
+    *[
+        DOCS / f"adr/{i:04d}-{name}.md"
+        for i, name in enumerate(
+            (
+                "modular-monolith",
+                "model-contract",
+                "image-privacy",
+                "docs-only-rag",
+                "feedback-promotion",
+                "stack",
+            ),
+            start=1,
+        )
+    ],
     ROOT / "models/README.md",
     API,
     MODEL_SCHEMA,
@@ -94,9 +109,7 @@ def validate_all() -> list[str]:
         assert schema["properties"]["input"]["properties"]["normalization"]["const"] == (
             "model_internal"
         )
-        assert schema["properties"]["input"]["properties"]["shape"]["const"] == [
-            None, 224, 224, 3
-        ]
+        assert schema["properties"]["input"]["properties"]["shape"]["const"] == [None, 224, 224, 3]
     except (ValueError, KeyError, AssertionError, TypeError) as error:
         problems.append(f"Model manifest schema: {error}")
     try:
@@ -104,9 +117,13 @@ def validate_all() -> list[str]:
         validate(api)
         assert api["info"]["version"] == "1.0.0"
         for endpoint in (
-            "/api/v1/analyses", "/api/v1/analyses/{analysis_id}",
-            "/api/v1/analyses/{analysis_id}/feedback", "/api/v1/copilot/query",
-            "/api/v1/models/current", "/api/v1/health", "/api/v1/readiness",
+            "/api/v1/analyses",
+            "/api/v1/analyses/{analysis_id}",
+            "/api/v1/analyses/{analysis_id}/feedback",
+            "/api/v1/copilot/query",
+            "/api/v1/models/current",
+            "/api/v1/health",
+            "/api/v1/readiness",
         ):
             assert endpoint in api["paths"], endpoint
     except (ValueError, KeyError, AssertionError, TypeError) as error:

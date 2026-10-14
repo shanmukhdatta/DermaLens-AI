@@ -11,10 +11,12 @@ from starlette.exceptions import HTTPException
 from apps.api.dermalens_api.config import Settings, get_settings
 from apps.api.dermalens_api.middleware import RequestContextMiddleware
 from apps.api.dermalens_api.readiness import ReadinessGates
-from apps.api.dermalens_api.routers import models, operations
+from apps.api.dermalens_api.routers import account, models, operations
 from packages.common.errors import DomainError, ErrorCode, safe_error_payload
 from packages.security.identity import RejectingIdentityVerifier
+from packages.security.oidc import OidcJwtVerifier
 from services.cv.runtime import UnavailableModelRuntime
+from services.persistence.runtime import build_database
 
 
 def _request_id(request: Request) -> str:
@@ -37,6 +39,13 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.model_runtime = UnavailableModelRuntime()
     app.state.readiness_gates = ReadinessGates(model_runtime=app.state.model_runtime)
     app.state.identity_verifier = RejectingIdentityVerifier()
+    app.state.db_session_factory = None
+    if config.oidc_issuer and config.oidc_audience and config.oidc_jwks_url:
+        app.state.identity_verifier = OidcJwtVerifier(
+            config.oidc_issuer, config.oidc_audience, config.oidc_jwks_url
+        )
+    if config.database_url:
+        app.state.db_engine, app.state.db_session_factory = build_database(config.database_url)
 
     @app.exception_handler(DomainError)
     async def on_domain_error(request: Request, error: DomainError) -> JSONResponse:
@@ -71,6 +80,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     app.include_router(operations.router, prefix="/api/v1")
     app.include_router(models.router, prefix="/api/v1")
+    app.include_router(account.router, prefix="/api/v1")
 
     # CORS only allows a validated origin; bearer header is NOT authentication.
     app.add_middleware(

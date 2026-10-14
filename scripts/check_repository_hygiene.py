@@ -2,6 +2,7 @@
 
 The intentionally public .env.example templates remain allowed.
 """
+
 from __future__ import annotations
 
 import subprocess
@@ -9,14 +10,29 @@ from pathlib import PurePosixPath
 
 BLOCKED_DIRS = frozenset(
     {
-        "__pycache__", "node_modules", "uploads", "datasets", "data",
-        "storage", "artifacts", "outputs",
+        "__pycache__",
+        "node_modules",
+        "uploads",
+        "datasets",
+        "data",
+        "storage",
+        "artifacts",
+        "outputs",
     }
 )
 BLOCKED_SUFFIXES = frozenset(
     {
-        ".keras", ".h5", ".hdf5", ".pt", ".pth", ".pem",
-        ".key", ".ckpt", ".onnx", ".tflite", ".safetensors",
+        ".keras",
+        ".h5",
+        ".hdf5",
+        ".pt",
+        ".pth",
+        ".pem",
+        ".key",
+        ".ckpt",
+        ".onnx",
+        ".tflite",
+        ".safetensors",
     }
 )
 BLOCKED_NAMES = frozenset(
@@ -41,9 +57,7 @@ def main() -> int:
     files = subprocess.run(
         ["git", "ls-files", "-z"], capture_output=True, check=True
     ).stdout.decode("utf-8")
-    blocked = [
-        path for path in files.split(chr(0)) if path and forbidden_tracked_path(path)
-    ]
+    blocked = [path for path in files.split(chr(0)) if path and forbidden_tracked_path(path)]
     if blocked:
         print("FAIL: committed sensitive paths:", *blocked, sep="\n  ")
         return 1

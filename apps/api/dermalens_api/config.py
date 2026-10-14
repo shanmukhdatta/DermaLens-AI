@@ -27,6 +27,10 @@ class Settings(BaseSettings):
     public_web_origin: str = "http://localhost:3000"
     enable_image_storage: bool = False
     enable_research_image_opt_in: bool = False
+    database_url: str | None = None
+    oidc_issuer: str | None = None
+    oidc_audience: str | None = None
+    oidc_jwks_url: str | None = None
 
     @field_validator("public_web_origin")
     @classmethod
@@ -61,6 +65,16 @@ class Settings(BaseSettings):
     def reject_unimplemented_data_retention(self) -> Settings:
         if self.enable_image_storage or self.enable_research_image_opt_in:
             raise ValueError("image retention and research opt-in are not implemented")
+        credentials = (self.oidc_issuer, self.oidc_audience, self.oidc_jwks_url)
+        if any(value is not None for value in credentials) and not all(credentials):
+            raise ValueError("OIDC issuer, audience and JWKS URL must be set together")
+        if self.database_url is not None:
+            if not self.database_url.startswith(("postgresql+psycopg://", "sqlite+pysqlite://")):
+                raise ValueError("database_url must use PostgreSQL or test SQLite")
+            if self.env in {"staging", "production"} and not self.database_url.startswith(
+                "postgresql+psycopg://"
+            ):
+                raise ValueError("staging/production persistence requires PostgreSQL")
         url = urlsplit(self.public_web_origin)
         if self.env in {"staging", "production"} and url.scheme != "https":
             raise ValueError("non-development web origin must use HTTPS")
