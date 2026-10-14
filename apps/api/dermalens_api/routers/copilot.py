@@ -51,13 +51,19 @@ async def ask_project_docs(
     question = payload.question.strip()
     if PERSONAL_MEDICAL.search(question):
         return {
-            "answer": "This assistant only discusses DermaLens software, not personal skin concerns. Please speak with a qualified healthcare professional for medical questions.",
+            "answer": (
+                "This assistant only discusses DermaLens software, not personal skin concerns. "
+                "Please speak with a qualified healthcare professional for medical questions."
+            ),
             "sources": [],
         }
     matches = index.search(question)
     if not matches:
         return {
-            "answer": "I could not find relevant information in the approved project documentation.",
+            "answer": (
+                "I could not find relevant information in the approved "
+                "project documentation."
+            ),
             "sources": [],
         }
     try:
