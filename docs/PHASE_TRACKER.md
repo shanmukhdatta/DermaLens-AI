@@ -14,9 +14,9 @@ Last updated: 2026-10-14 (Phase 3 implementation branch). **Phases 0–2 were me
 | 7 | Documentation RAG | 2, docs | Curated markdown ingestion, embedding + pgvector, Grok adapter, citations, refusal, secret isolation | In implementation: lexical retrieval and real Grok API adapter; embeddings/pgvector, production rate limiting and public availability pending |
 | 8 | Infrastructure & CI/CD foundation | 2, 3, 5, 7 | Reproducible Docker, staging configuration, secrets handling, migration/smoke CI, no public release | In implementation — local Compose, Docker images and migration guide; live image startup and production staging pending |
 | 9 | Existing model integration | 1, 4, 8, private artifact | Verified .keras + exact label map and SHA256, compatible Keras custom objects, parity inference, no mocks | Adapter in implementation; actual checkpoint and parity test remain blocked until private artifact received |
-| 10 | Real-world evaluation and domain-shift audit | 9, approved evaluation data | Defined real-data split, subgroup/failure metrics, reliability benchmark; no unsupported performance claims | Not started |
-| 11 | Calibration, abstention, OOD and XAI | 9, 10 | Held-out threshold evaluation, safe abstention policy, Grad-CAM supported only, audited user interpretation | Not started |
-| 12 | Integration hardening, deployment & monitoring | 5–11 | Unit/integration/E2E/security tests, deployable staging, alerting, rollback, privacy/legal/release gates | Not started |
+| 10 | Real-world evaluation and domain-shift audit | 9, approved evaluation data | Defined real-data split, subgroup/failure metrics, reliability benchmark; no unsupported performance claims | Draft PR #11: offline evaluator ready for review; genuine clinical evidence blocked |
+| 11 | Calibration, abstention, OOD and XAI | 9, 10 | Held-out threshold evaluation, safe abstention policy, Grad-CAM supported only, audited user interpretation | Draft PR #14: experimental offline calibration/Grad-CAM helper; real evaluation blocked |
+| 12 | Integration hardening, deployment & monitoring | 5–11 | Unit/integration/E2E/security tests, deployable staging, alerting, rollback, privacy/legal/release gates | Staging smoke/telemetry implementation branch; real deployment and release verification blocked |
 | 13 | Controlled offline improvement | 6, 10–12 and validated feedback | Curated data, approved calibration/learning experiments, regression gate, manual promotion; optional RL research nonblocking | Not started |
 
 ### Gate policy

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+from time import perf_counter
 from uuid import UUID, uuid4
 
 from fastapi import Request
@@ -12,6 +13,7 @@ from starlette.middleware.base import BaseHTTPMiddleware, RequestResponseEndpoin
 from starlette.responses import Response
 
 from packages.common.errors import ErrorCode, safe_error_payload
+from packages.telemetry.metrics import RouteMetrics
 
 logger = logging.getLogger("dermalens.api")
 
@@ -30,6 +32,7 @@ def request_identifier(header: str | None) -> str:
 
 class RequestContextMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
+        started_at = perf_counter()
         request_id = request_identifier(request.headers.get("x-request-id"))
         request.state.request_id = request_id
         try:
@@ -53,6 +56,10 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
             response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         route = request.scope.get("route")
         pattern = getattr(route, "path", "<unmatched>")
+        duration_ms = round((perf_counter() - started_at) * 1000.0, 3)
+        metrics = getattr(request.app.state, "route_metrics", None)
+        if isinstance(metrics, RouteMetrics):
+            metrics.observe(request.method, pattern, response.status_code, duration_ms)
         logger.info(
             json.dumps(
                 {
@@ -61,6 +68,7 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
                     "method": request.method,
                     "route": pattern,
                     "status": response.status_code,
+                    "duration_ms": duration_ms,
                 }
             )
         )
