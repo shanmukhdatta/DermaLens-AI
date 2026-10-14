@@ -1,4 +1,5 @@
 """No-storage JPEG/PNG/WebP quality endpoint; never returns a medical prediction."""
+
 from __future__ import annotations
 
 from fastapi import APIRouter, Request
@@ -22,19 +23,29 @@ async def check_quality(request: Request) -> dict[str, object]:
         raise DomainError(ErrorCode.INVALID_IMAGE, PUBLIC_MESSAGES[ErrorCode.INVALID_IMAGE], 415)
     length = request.headers.get("content-length", "")
     if length.isascii() and length.isdecimal() and int(length) > MAX_IMAGE_BYTES:
-        raise DomainError(ErrorCode.IMAGE_TOO_LARGE, PUBLIC_MESSAGES[ErrorCode.IMAGE_TOO_LARGE], 413)
+        raise DomainError(
+            ErrorCode.IMAGE_TOO_LARGE, PUBLIC_MESSAGES[ErrorCode.IMAGE_TOO_LARGE], 413
+        )
     payload = bytearray()
     async for part in request.stream():
         if len(payload) + len(part) > MAX_IMAGE_BYTES:
-            raise DomainError(ErrorCode.IMAGE_TOO_LARGE, PUBLIC_MESSAGES[ErrorCode.IMAGE_TOO_LARGE], 413)
+            raise DomainError(
+                ErrorCode.IMAGE_TOO_LARGE, PUBLIC_MESSAGES[ErrorCode.IMAGE_TOO_LARGE], 413
+            )
         payload.extend(part)
     try:
         report = inspect_image(bytes(payload))
     except InvalidImage as exc:
         del exc
-        raise DomainError(ErrorCode.INVALID_IMAGE, PUBLIC_MESSAGES[ErrorCode.INVALID_IMAGE], 422) from None
+        raise DomainError(
+            ErrorCode.INVALID_IMAGE, PUBLIC_MESSAGES[ErrorCode.INVALID_IMAGE], 422
+        ) from None
     except RuntimeError:
-        raise DomainError(ErrorCode.IMAGE_CHECK_UNAVAILABLE, PUBLIC_MESSAGES[ErrorCode.IMAGE_CHECK_UNAVAILABLE], 503) from None
+        raise DomainError(
+            ErrorCode.IMAGE_CHECK_UNAVAILABLE,
+            PUBLIC_MESSAGES[ErrorCode.IMAGE_CHECK_UNAVAILABLE],
+            503,
+        ) from None
     return {
         **report.public_payload(),
         "medical_analysis_available": False,

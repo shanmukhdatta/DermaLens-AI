@@ -1,4 +1,5 @@
 """Ephemeral image quality signals and single-face gate; never diagnostic inference."""
+
 from __future__ import annotations
 
 import io
@@ -51,8 +52,7 @@ class HaarFaceDetector:
         gray = cv2.cvtColor(smaller, cv2.COLOR_RGB2GRAY)
         boxes = self._cascade.detectMultiScale(gray, scaleFactor=1.1, minNeighbors=5)
         return [
-            (int(x / scale), int(y / scale), int(w / scale), int(h / scale))
-            for x, y, w, h in boxes
+            (int(x / scale), int(y / scale), int(w / scale), int(h / scale)) for x, y, w, h in boxes
         ]
 
 
@@ -75,7 +75,12 @@ def decode_image(payload: bytes) -> np.ndarray:
                 rgb = normalized.convert("RGB")
                 result = np.asarray(rgb, dtype=np.uint8).copy()
         return result
-    except (OSError, UnidentifiedImageError, Image.DecompressionBombError, Image.DecompressionBombWarning) as exc:
+    except (
+        OSError,
+        UnidentifiedImageError,
+        Image.DecompressionBombError,
+        Image.DecompressionBombWarning,
+    ) as exc:
         raise InvalidImage("IMAGE_DECODE_FAILED") from exc
 
 
