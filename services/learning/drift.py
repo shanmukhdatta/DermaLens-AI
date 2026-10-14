@@ -34,7 +34,8 @@ class PopulationSummary:
                 raise ValueError(f"Invalid research summary field: {key}")
         values = doc.get("class_counts")
         if (
-            not isinstance(values, list) or len(values) != EXPECTED_COUNT
+            not isinstance(values, list)
+            or len(values) != EXPECTED_COUNT
             or any(type(v) is not int or v < 0 for v in values)
         ):
             raise ValueError("Expected six nonnegative integer class-count aggregates")
@@ -45,8 +46,11 @@ class PopulationSummary:
         if type(rejected) is not int or rejected < 0:
             raise ValueError("Invalid aggregate image-quality rejection count")
         return cls(
-            doc["cohort_id"], doc["model_version"], total,
-            tuple(values), rejected,
+            doc["cohort_id"],
+            doc["model_version"],
+            total,
+            tuple(values),
+            rejected,
         )
 
 
@@ -74,9 +78,7 @@ def compare_populations(
 
     def divergence(values: list[float]) -> float:
         return sum(
-            p * math.log(p / m, 2)
-            for p, m in zip(values, midpoint, strict=True)
-            if p > 0 and m > 0
+            p * math.log(p / m, 2) for p, m in zip(values, midpoint, strict=True) if p > 0 and m > 0
         )
 
     js_distance = math.sqrt(max(0.0, (divergence(a) + divergence(b)) / 2))
