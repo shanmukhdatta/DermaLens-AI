@@ -1,4 +1,5 @@
 """Verified Keras research model adapter; never silently substitute fake inference."""
+
 from __future__ import annotations
 
 from importlib import import_module
@@ -37,8 +38,9 @@ def custom_objects_for(tf: Any) -> dict[str, Any]:
 
     @tf.keras.saving.register_keras_serializable(package="custom_losses")
     class FocalLoss(tf.keras.losses.Loss):  # type: ignore[misc]
-        def __init__(self, gamma: float = 2.0, alpha: float = 0.25,
-                     name: str = "focal_loss", **kwargs: Any) -> None:
+        def __init__(
+            self, gamma: float = 2.0, alpha: float = 0.25, name: str = "focal_loss", **kwargs: Any
+        ) -> None:
             super().__init__(name=name, **kwargs)
             self.gamma = float(gamma)
             self.alpha = float(alpha)
@@ -64,9 +66,7 @@ def custom_objects_for(tf: Any) -> dict[str, Any]:
 
 
 class VerifiedKerasModel:
-    def __init__(
-        self, manifest_path: Path, checkpoint_path: Path, label_map_path: Path
-    ) -> None:
+    def __init__(self, manifest_path: Path, checkpoint_path: Path, label_map_path: Path) -> None:
         artifacts = verify_artifacts(manifest_path, checkpoint_path, label_map_path)
         # Lazy TF import: normal API remains available with no checkpoint or GPU.
         tf = import_module("tensorflow")
@@ -87,20 +87,27 @@ class VerifiedKerasModel:
         return True
 
     def predict(self, rgb_float32_batch: NDArray[np.float32]) -> RawPrediction:
-        if (not isinstance(rgb_float32_batch, np.ndarray)
+        if (
+            not isinstance(rgb_float32_batch, np.ndarray)
             or rgb_float32_batch.shape != (1, 224, 224, 3)
             or rgb_float32_batch.dtype != np.float32
             or not np.isfinite(rgb_float32_batch).all()
             or rgb_float32_batch.min() < 0
-            or rgb_float32_batch.max() > 255):
+            or rgb_float32_batch.max() > 255
+        ):
             raise ValueError("Incompatible model input batch")
         values = np.asarray(self.model.predict(rgb_float32_batch, verbose=0), dtype=float)
-        if (values.shape != (1, 6) or not np.isfinite(values).all()
-            or np.any(values < 0) or np.any(values > 1)
-            or not np.isclose(np.sum(values), 1.0, rtol=1e-3, atol=1e-3)):
+        if (
+            values.shape != (1, 6)
+            or not np.isfinite(values).all()
+            or np.any(values < 0)
+            or np.any(values > 1)
+            or not np.isclose(np.sum(values), 1.0, rtol=1e-3, atol=1e-3)
+        ):
             raise ValueError("Classifier produced an invalid probability distribution")
         return RawPrediction(
-            model_id=self.artifacts.model_id, model_version=self.artifacts.version,
+            model_id=self.artifacts.model_id,
+            model_version=self.artifacts.version,
             ordered_labels=self.artifacts.ordered_labels,
             probabilities=tuple(float(v) for v in values[0]),
         )

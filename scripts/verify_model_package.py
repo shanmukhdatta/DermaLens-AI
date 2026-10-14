@@ -1,4 +1,5 @@
 """Offline integrity tool, never downloads a checkpoint or claims clinical validity."""
+
 from __future__ import annotations
 
 import argparse

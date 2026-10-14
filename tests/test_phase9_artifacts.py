@@ -1,4 +1,5 @@
 """Artifact SHA and exact preprocessing checks with explicitly non-model fixture bytes."""
+
 from __future__ import annotations
 
 import hashlib
@@ -16,27 +17,62 @@ def make_artifact_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
     checkpoint = tmp_path / "fictional-test-only.keras"
     checkpoint.write_bytes(b"this is not a trained model")
     labels = tmp_path / "label_map.json"
-    labels.write_text(json.dumps({
-        "0": "Acne", "1": "Fungal_Infection", "2": "Hyperpigmentation",
-        "3": "Normal_Skin", "4": "Skin_Cancer", "5": "Vitiligo",
-    }))
+    labels.write_text(
+        json.dumps(
+            {
+                "0": "Acne",
+                "1": "Fungal_Infection",
+                "2": "Hyperpigmentation",
+                "3": "Normal_Skin",
+                "4": "Skin_Cancer",
+                "5": "Vitiligo",
+            }
+        )
+    )
     digest = lambda file: hashlib.sha256(file.read_bytes()).hexdigest()
     manifest = tmp_path / "manifest.json"
-    manifest.write_text(json.dumps({
-        "schema_version": "1",
-        "source_repository": "https://github.com/shanmukhdatta/Facial_Skin_Diesease",
-        "model_id": "test-fixture", "version": "0.0.1", "status": "candidate",
-        "source_commit": "a" * 40,
-        "framework": {"name": "tensorflow-keras", "python_version": "3.11",
-                      "tensorflow_version": "test", "keras_version": "test"},
-        "preprocessing_version": "test-fixture",
-        "checkpoint": {"uri": "private://fixture", "filename": checkpoint.name, "sha256": digest(checkpoint)},
-        "label_map": {"uri": "private://fixture", "filename": labels.name, "sha256": digest(labels), "count": 6, "format": "index-to-class-json"},
-        "input": {"shape": [None, 224, 224, 3], "color_space": "RGB", "dtype": "float32",
-                  "pixel_min": 0, "pixel_max": 255, "resize": "PIL_BILINEAR", "normalization": "model_internal"},
-        "output": {"shape": [None, 6], "class_count": 6, "kind": "softmax_probabilities"},
-        "custom_objects": [],
-    }))
+    manifest.write_text(
+        json.dumps(
+            {
+                "schema_version": "1",
+                "source_repository": "https://github.com/shanmukhdatta/Facial_Skin_Diesease",
+                "model_id": "test-fixture",
+                "version": "0.0.1",
+                "status": "candidate",
+                "source_commit": "a" * 40,
+                "framework": {
+                    "name": "tensorflow-keras",
+                    "python_version": "3.11",
+                    "tensorflow_version": "test",
+                    "keras_version": "test",
+                },
+                "preprocessing_version": "test-fixture",
+                "checkpoint": {
+                    "uri": "private://fixture",
+                    "filename": checkpoint.name,
+                    "sha256": digest(checkpoint),
+                },
+                "label_map": {
+                    "uri": "private://fixture",
+                    "filename": labels.name,
+                    "sha256": digest(labels),
+                    "count": 6,
+                    "format": "index-to-class-json",
+                },
+                "input": {
+                    "shape": [None, 224, 224, 3],
+                    "color_space": "RGB",
+                    "dtype": "float32",
+                    "pixel_min": 0,
+                    "pixel_max": 255,
+                    "resize": "PIL_BILINEAR",
+                    "normalization": "model_internal",
+                },
+                "output": {"shape": [None, 6], "class_count": 6, "kind": "softmax_probabilities"},
+                "custom_objects": [],
+            }
+        )
+    )
     return manifest, checkpoint, labels
 
 
