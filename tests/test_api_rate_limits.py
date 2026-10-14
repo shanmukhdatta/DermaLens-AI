@@ -18,7 +18,7 @@ def test_buckets_are_independent_and_reset_at_window_boundary() -> None:
     assert limiter.allow("a.b.c.d", "docs", limit=1, now=103)
     assert not limiter.allow("a.b.c.d", "docs", limit=1, now=104)
     assert limiter.allow("a.b.c.d", "image", limit=2, now=160)
-    assert "a.b.c.d" not in json.dumps(limiter._counts)
+    assert "a.b.c.d" not in repr(limiter._counts)
 
 
 def test_resource_budgets_fail_closed_if_memory_is_full() -> None:
