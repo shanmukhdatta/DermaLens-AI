@@ -27,6 +27,7 @@ class Settings(BaseSettings):
     public_web_origin: str = "http://localhost:3000"
     enable_image_storage: bool = False
     enable_research_image_opt_in: bool = False
+    enable_image_quality_checks: bool = False
     database_url: str | None = None
     oidc_issuer: str | None = None
     oidc_audience: str | None = None

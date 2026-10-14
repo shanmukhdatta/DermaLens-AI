@@ -1,0 +1,3 @@
+# Phase 4 inference-independent preprocessing and face quality baseline
+Pillow>=11,<13
+opencv-python-headless>=4.10,<5
