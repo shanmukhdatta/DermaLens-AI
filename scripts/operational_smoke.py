@@ -90,6 +90,9 @@ def run(api_origin: str, web_origin: str) -> None:
     code, body, _ = _request(web_origin, "/assistant")
     if code != 200 or b"Search project documentation" not in body:
         raise AssertionError("Web server must provide the documentation explorer page")
+    code, body, _ = _request(web_origin, "/research")
+    if code != 200 or b"Examine independent test results" not in body:
+        raise AssertionError("Web server must serve the local research report viewer")
     code, body, _ = _request(web_origin, "/")
     if code != 200 or b"DermaLens" not in body:
         raise AssertionError("Web server must serve the DermaLens landing page")

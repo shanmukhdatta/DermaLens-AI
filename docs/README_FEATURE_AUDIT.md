@@ -19,7 +19,7 @@ Audited 2026-10-14 against root README sections 1–57, current source and merge
 | Database, privacy and history (19–21) | services/persistence, Alembic, accounts APIs | Backend implementation with tests; UI sign-in/history unavailable until real identity provider configured; image storage disabled |
 | Feedback and offline learning (22–25, 39) | services/learning | Owner-scoped feedback and offline curation/regression gate; actual user loop needs analyzed cases, confirmed consent and credentials |
 | Documentation RAG (26–28, 40) | services/rag/index.py, grok.py, public docs/search and web assistant | Protected Grok adapter + operational public lexical citations; semantic vector embedding/pgvector and real provider testing pending |
-| Frontend experience (37, 51) | apps/web/src/app | Quality screen and information pages, docs explorer; medical results/XAI/history/live feedback awaiting model and login |
+| Frontend experience (37, 51) | apps/web/src/app | Quality screen, documentation explorer and browser-local aggregate research viewer; medical results/XAI/history/live feedback awaiting model and login |
 | Model registry and controlled promotion (12, 14, 23, 29–30) | model manifest, scripts/review_candidate*.py | Manifest and offline human-review gates; no live registry/release authorization |
 | Telemetry, traces, drift (31–32) | middleware, packages/telemetry/runtime.py | Aggregated in-process metrics; durable monitoring, drift alerts, traces and dashboards pending |
 | CI, Docker, staging (35, 44, 47–49) | GitHub Actions, Dockerfiles, compose.yaml | CI and disposable Compose smoke implemented; real cloud staging/browser E2E, TLS, scanning and rollback pending |
