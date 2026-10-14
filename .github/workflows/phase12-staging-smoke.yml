@@ -1,0 +1,26 @@
+name: Phase 12 Docker staging integration smoke
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  staging-smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      DERMALENS_POSTGRES_PASSWORD: ci-synthetic-only-postgres-password
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and start local research stack
+        run: docker compose -f compose.yaml up --build -d --wait --wait-timeout 240
+      - name: Apply real migrations in running API container
+        run: docker compose -f compose.yaml exec -T api /opt/dermalens/.venv/bin/alembic upgrade head
+      - name: Verify liveness, fail-closed readiness and web output
+        run: python3 -m scripts.operational_smoke
+      - name: Destroy disposable staging services and data
+        if: always()
+        run: docker compose -f compose.yaml down --volumes --remove-orphans

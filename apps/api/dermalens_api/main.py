@@ -17,6 +17,7 @@ from apps.api.dermalens_api.routers import account, feedback, images, models, op
 from packages.common.errors import DomainError, ErrorCode, safe_error_payload
 from packages.security.identity import RejectingIdentityVerifier
 from packages.security.oidc import OidcJwtVerifier
+from packages.telemetry.runtime import RuntimeTelemetry
 from services.cv.runtime import UnavailableModelRuntime
 from services.persistence.runtime import build_database
 
@@ -100,6 +101,11 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         from apps.api.dermalens_api.routers import copilot
 
         app.include_router(copilot.router, prefix="/api/v1")
+
+    # Metric label allowlist is fixed at app construction, never derived from request paths.
+    app.state.telemetry = RuntimeTelemetry(
+        frozenset(route.path for route in app.routes if hasattr(route, "path"))
+    )
 
     # CORS only allows a validated origin; bearer header is NOT authentication.
     app.add_middleware(

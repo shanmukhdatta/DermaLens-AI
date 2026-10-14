@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import time
 from uuid import UUID, uuid4
 
 from fastapi import Request
@@ -30,6 +31,7 @@ def request_identifier(header: str | None) -> str:
 
 class RequestContextMiddleware(BaseHTTPMiddleware):
     async def dispatch(self, request: Request, call_next: RequestResponseEndpoint) -> Response:
+        started = time.perf_counter()
         request_id = request_identifier(request.headers.get("x-request-id"))
         request.state.request_id = request_id
         try:
@@ -53,6 +55,9 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
             response.headers["Strict-Transport-Security"] = "max-age=31536000; includeSubDomains"
         route = request.scope.get("route")
         pattern = getattr(route, "path", "<unmatched>")
+        request.app.state.telemetry.observe(
+            request.method, pattern, response.status_code, time.perf_counter() - started
+        )
         logger.info(
             json.dumps(
                 {
