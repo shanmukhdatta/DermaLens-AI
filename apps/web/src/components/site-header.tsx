@@ -13,6 +13,7 @@ export function SiteHeader() {
           <Link href="/how-it-works">How it works</Link>
           <Link href="/privacy">Privacy</Link>
           <Link href="/assistant">Assistant</Link>
+          <Link href="/research">Research</Link>
         </nav>
         <Link className="button button-small button-outline" href="/check">Get started <span aria-hidden>↗</span></Link>
       </div>
