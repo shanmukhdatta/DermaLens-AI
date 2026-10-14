@@ -76,6 +76,20 @@ def run(api_origin: str, web_origin: str) -> None:
         _security_headers(headers)
         if code != 404 or b"NOT_FOUND" not in body:
             raise AssertionError("Unconfigured or unvalidated research feature is exposed")
+    code, body, headers = _request(
+        api_origin, "/api/v1/docs/search?q=model%20preprocessing"
+    )
+    _security_headers(headers)
+    if code != 200:
+        raise AssertionError("Local public documentation search is unavailable")
+    lookup = json.loads(body)
+    if lookup.get("status") != "matches" or not lookup.get("matches"):
+        raise AssertionError("Documentation search yielded no cited project excerpts")
+    if "medical_analysis_available" in lookup:
+        raise AssertionError("Documentation lookup must never issue medical analysis")
+    code, body, _ = _request(web_origin, "/assistant")
+    if code != 200 or b"Search project documentation" not in body:
+        raise AssertionError("Web server must provide the documentation explorer page")
     code, body, _ = _request(web_origin, "/")
     if code != 200 or b"DermaLens" not in body:
         raise AssertionError("Web server must serve the DermaLens landing page")
