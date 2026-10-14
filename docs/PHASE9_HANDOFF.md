@@ -1,0 +1,3 @@
+# Phase 9: Verified research checkpoint integration
+
+Obtain the real `.keras` checkpoint and correct `label_map.json` from the user's protected Kaggle artifacts; compare SHA256, custom Keras objects and inference outputs with the original research `DiseasePredictor` on a permitted golden fixture. Fail closed when any artifact, model version, label map or preprocessing contract is missing. Never silently normalize pixel inputs a second time. Do not turn on public skin cancer predictions without independent clinical evaluation; uncertain or unvalidated outputs must abstain. Include CPU startup and sample image smoke tests (Antigravity/Kaggle) and document memory/latency. Research repo must remain untouched.
