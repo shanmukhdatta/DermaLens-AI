@@ -5,7 +5,6 @@ No headers, paths with user input, upload bytes, identity or image content are s
 """
 from __future__ import annotations
 
-import time
 from collections import Counter
 from threading import Lock
 from typing import Any
@@ -29,7 +28,8 @@ class RuntimeTelemetry:
     ) -> None:
         """Never accept a raw URL/path as a label; only registered route templates."""
         route = route_template if route_template in self._allowed_routes else "<unmatched>"
-        safe_method = method if method in {"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"} else "OTHER"
+        safe_methods = {"GET", "HEAD", "POST", "PUT", "DELETE", "OPTIONS"}
+        safe_method = method if method in safe_methods else "OTHER"
         group = f"{status // 100}xx" if 100 <= status < 600 else "other"
         ms = max(0.0, duration_seconds) * 1000.0
         bucket = next((str(limit) for limit in LATENCY_BUCKETS if ms <= limit), "+Inf")
