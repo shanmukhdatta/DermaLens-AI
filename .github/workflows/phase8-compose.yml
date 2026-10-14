@@ -1,0 +1,24 @@
+name: Phase 8 local container configuration
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  compose-config:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate local Compose configuration without secrets
+        env:
+          DERMALENS_POSTGRES_PASSWORD: ci-synthetic-password-only
+        run: docker compose -f compose.yaml config -q
+      - name: Ensure container build context excludes credentials and checkpoints
+        run: |
+          grep -Fx '.env' .dockerignore
+          grep -Fx '**/*.keras' .dockerignore
+          grep -Fx '**/data/' .dockerignore

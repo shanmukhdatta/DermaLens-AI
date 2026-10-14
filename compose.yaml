@@ -1,0 +1,63 @@
+# Local development / internal research staging only. Not a publicly exposed medical system.
+name: dermalens-local
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: dermalens
+      POSTGRES_PASSWORD: "${DERMALENS_POSTGRES_PASSWORD:?Set DERMALENS_POSTGRES_PASSWORD in private .env}"
+      POSTGRES_DB: dermalens
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - dermalens_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U dermalens -d dermalens"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: unless-stopped
+  api:
+    build:
+      context: .
+      dockerfile: infra/docker/api.Dockerfile
+    environment:
+      DERMALENS_ENV: development
+      DERMALENS_PUBLIC_WEB_ORIGIN: http://localhost:3000
+      DERMALENS_DATABASE_URL: "postgresql+psycopg://dermalens:${DERMALENS_POSTGRES_PASSWORD}@db:5432/dermalens"
+      DERMALENS_ENABLE_IMAGE_QUALITY_CHECKS: "true"
+      DERMALENS_ENABLE_RAG_ASSISTANT: "false"
+      DERMALENS_ENABLE_IMAGE_STORAGE: "false"
+      DERMALENS_ENABLE_RESEARCH_IMAGE_OPT_IN: "false"
+    ports:
+      - "127.0.0.1:8000:8000"
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/v1/health', timeout=3)"]
+      interval: 10s
+      timeout: 4s
+      retries: 12
+    restart: unless-stopped
+  web:
+    build:
+      context: .
+      dockerfile: infra/docker/web.Dockerfile
+      args:
+        NEXT_PUBLIC_API_BASE_URL: http://127.0.0.1:8000
+    ports:
+      - "127.0.0.1:3000:3000"
+    depends_on:
+      api:
+        condition: service_healthy
+    restart: unless-stopped
+volumes:
+  dermalens_pgdata:
