@@ -63,9 +63,7 @@ def compare_candidate(
         "auto_deployed": False,
         "automatic_promotion_permitted": False,
         "same_held_out_cohort_sha256": cohort_sha,
-        "held_out_subject_groups": len(
-            {item["subject_id"] for item in old_test.values()}
-        ),
+        "held_out_subject_groups": len({item["subject_id"] for item in old_test.values()}),
         "baseline_model_version": baseline[0]["model_version"],
         "candidate_model_version": candidate[0]["model_version"],
         "baseline": {
