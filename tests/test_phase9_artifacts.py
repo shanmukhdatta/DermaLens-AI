@@ -29,7 +29,8 @@ def make_artifact_fixture(tmp_path: Path) -> tuple[Path, Path, Path]:
             }
         )
     )
-    digest = lambda file: hashlib.sha256(file.read_bytes()).hexdigest()
+    def digest(file: Path) -> str:
+        return hashlib.sha256(file.read_bytes()).hexdigest()
     manifest = tmp_path / "manifest.json"
     manifest.write_text(
         json.dumps(
