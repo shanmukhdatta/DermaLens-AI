@@ -1,4 +1,5 @@
 """Allowlisted project-document retrieval; no user data, source code or model artifacts."""
+
 from __future__ import annotations
 
 import math
@@ -20,15 +21,32 @@ ALLOWED_DOCS = (
     "docs/09_PRIVACY_AND_SAFETY.md",
 )
 STOP_WORDS = frozenset(
-    {"the", "and", "for", "that", "this", "with", "how", "what", "why",
-     "where", "from", "which", "does", "are", "can", "our", "their", "into"}
+    {
+        "the",
+        "and",
+        "for",
+        "that",
+        "this",
+        "with",
+        "how",
+        "what",
+        "why",
+        "where",
+        "from",
+        "which",
+        "does",
+        "are",
+        "can",
+        "our",
+        "their",
+        "into",
+    }
 )
 
 
 def terms(text: str) -> Counter[str]:
     return Counter(
-        word for word in re.findall(r"[a-z0-9_]{3,}", text.lower())
-        if word not in STOP_WORDS
+        word for word in re.findall(r"[a-z0-9_]{3,}", text.lower()) if word not in STOP_WORDS
     )
 
 
@@ -68,13 +86,17 @@ class DocumentationIndex:
                 raise ValueError("Documentation exceeds ingestion limit")
             heading = "Introduction"
             lines: list[str] = []
+
             def flush() -> None:
                 block = "\n".join(lines).strip()
                 if block:
                     for start in range(0, len(block), 1100):
-                        excerpt = block[start:start + 1100].strip()
+                        excerpt = block[start : start + 1100].strip()
                         if excerpt:
-                            chunks.append(DocChunk(relative + "#" + slug(heading), heading, excerpt))
+                            chunks.append(
+                                DocChunk(relative + "#" + slug(heading), heading, excerpt)
+                            )
+
             for line in text.splitlines():
                 if line.startswith(("# ", "## ", "### ")):
                     flush()
@@ -95,10 +117,13 @@ class DocumentationIndex:
             score = 0.0
             for word in query:
                 if word in counter:
-                    idf = math.log(1 + (count - self.document_frequency[word] + 0.5) /
-                                   (self.document_frequency[word] + 0.5))
+                    idf = math.log(
+                        1
+                        + (count - self.document_frequency[word] + 0.5)
+                        / (self.document_frequency[word] + 0.5)
+                    )
                     score += idf * min(counter[word], 4)
             if score > 0:
                 ranked.append((score, i))
         ranked.sort(key=lambda entry: (-entry[0], entry[1]))
-        return [self.chunks[index] for _, index in ranked[:max(0, min(limit, 5))]]
+        return [self.chunks[index] for _, index in ranked[: max(0, min(limit, 5))]]

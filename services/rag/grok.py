@@ -1,4 +1,5 @@
 """Stateless, secret-injected xAI Responses API adapter; no patient images or chat storage."""
+
 from __future__ import annotations
 
 import httpx
@@ -29,8 +30,7 @@ class GrokResponseProvider:
 
     async def generate(self, question: str, excerpts: list[DocChunk]) -> str:
         context = "\n\n".join(
-            f"SOURCE {i + 1}: {chunk.source}\n{chunk.content}"
-            for i, chunk in enumerate(excerpts)
+            f"SOURCE {i + 1}: {chunk.source}\n{chunk.content}" for i, chunk in enumerate(excerpts)
         )
         payload = {
             "model": self._model,
@@ -38,16 +38,20 @@ class GrokResponseProvider:
             "tools": [],
             "input": [
                 {"role": "system", "content": SYSTEM_RULES},
-                {"role": "user", "content": "PROJECT DOCUMENTATION:\n" + context +
-                 "\n\nQUESTION:\n" + question},
+                {
+                    "role": "user",
+                    "content": "PROJECT DOCUMENTATION:\n" + context + "\n\nQUESTION:\n" + question,
+                },
             ],
         }
         try:
             async with httpx.AsyncClient(timeout=25, follow_redirects=False) as client:
                 response = await client.post(
                     XAI_RESPONSES_URL,
-                    headers={"Authorization": "Bearer " + self._api_key,
-                             "Content-Type": "application/json"},
+                    headers={
+                        "Authorization": "Bearer " + self._api_key,
+                        "Content-Type": "application/json",
+                    },
                     json=payload,
                 )
                 response.raise_for_status()

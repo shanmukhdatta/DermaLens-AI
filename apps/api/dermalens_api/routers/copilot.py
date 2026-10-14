@@ -1,4 +1,5 @@
 """Authenticated docs-only chatbot; no medical advice or diagnosis endpoints."""
+
 from __future__ import annotations
 
 import re
@@ -10,14 +11,15 @@ from pydantic import BaseModel, ConfigDict, Field
 from apps.api.dermalens_api.dependencies import require_verified_actor
 from packages.common.errors import PUBLIC_MESSAGES, DomainError, ErrorCode
 from packages.security.identity import Principal
-from services.rag.grok import GrokProviderError, GrokResponseProvider
+from services.rag.grok import GrokProviderError
 from services.rag.index import DocChunk, DocumentationIndex
 
 router = APIRouter(prefix="/copilot", tags=["Documentation assistant"])
 
 PERSONAL_MEDICAL = re.compile(
     r"\b(my skin|my face|i have a rash|what medicine|how to cure|treat my|diagnose me|"
-    r"what disease do i have|which cream should i use)\b", re.IGNORECASE
+    r"what disease do i have|which cream should i use)\b",
+    re.IGNORECASE,
 )
 
 
@@ -54,11 +56,16 @@ async def ask_project_docs(
         }
     matches = index.search(question)
     if not matches:
-        return {"answer": "I could not find relevant information in the approved project documentation.", "sources": []}
+        return {
+            "answer": "I could not find relevant information in the approved project documentation.",
+            "sources": [],
+        }
     try:
         answer = await provider.generate(question, matches)
     except GrokProviderError as exc:
-        raise DomainError(ErrorCode.RAG_UNAVAILABLE, PUBLIC_MESSAGES[ErrorCode.RAG_UNAVAILABLE], 503) from exc
+        raise DomainError(
+            ErrorCode.RAG_UNAVAILABLE, PUBLIC_MESSAGES[ErrorCode.RAG_UNAVAILABLE], 503
+        ) from exc
     return {
         "answer": answer,
         "sources": [{"path": item.source, "heading": item.heading} for item in matches],
