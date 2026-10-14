@@ -61,8 +61,7 @@ async def ask_project_docs(
     if not matches:
         return {
             "answer": (
-                "I could not find relevant information in the approved "
-                "project documentation."
+                "I could not find relevant information in the approved project documentation."
             ),
             "sources": [],
         }
