@@ -1,4 +1,4 @@
-"""OIDC JWT verifier: cryptographic signature and claims validation, no trust in JWT payload alone."""
+"""Verify OIDC JWT signatures and claims. Never trust an unsigned JWT payload."""
 
 from __future__ import annotations
 
