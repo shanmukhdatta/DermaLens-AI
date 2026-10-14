@@ -3,6 +3,7 @@
 No FastAPI endpoint imports this module. The original research full-frame RGB
 preprocessing is preserved rather than feeding arbitrary face crops to the model.
 """
+
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
@@ -51,7 +52,12 @@ def analyze_offline(
     """
     if not runtime.ready:
         return ResearchOutcome(
-            "unavailable", "MODEL_NOT_READY", None, None, PIPELINE_VERSION, None,
+            "unavailable",
+            "MODEL_NOT_READY",
+            None,
+            None,
+            PIPELINE_VERSION,
+            None,
             {"status": "abstained", "reason": "MODEL_NOT_READY", "medical_diagnosis": False},
             None,
         )
@@ -59,13 +65,22 @@ def analyze_offline(
         report: QualityReport = inspect_image(image_bytes, detector=detector)
     except InvalidImage:
         return ResearchOutcome(
-            "rejected", "INVALID_IMAGE", None, None, PIPELINE_VERSION, None,
+            "rejected",
+            "INVALID_IMAGE",
+            None,
+            None,
+            PIPELINE_VERSION,
+            None,
             {"status": "abstained", "reason": "INVALID_IMAGE", "medical_diagnosis": False},
             None,
         )
     if not report.accepted:
         return ResearchOutcome(
-            "rejected", report.reasons[0], None, None, PIPELINE_VERSION,
+            "rejected",
+            report.reasons[0],
+            None,
+            None,
+            PIPELINE_VERSION,
             report.public_payload(),
             {"status": "abstained", "reason": "IMAGE_QUALITY_GATE", "medical_diagnosis": False},
             None,
@@ -85,12 +100,18 @@ def analyze_offline(
     if not valid:
         raise ValueError("Research runtime violated the declared six-class output contract")
     decision = abstaining_decision(
-        prediction.probabilities, prediction.model_version, calibration,
+        prediction.probabilities,
+        prediction.model_version,
+        calibration,
         offline_research_mode=False,
     )
     return ResearchOutcome(
-        "abstained", "POLICY_NOT_VALIDATED", prediction.model_id,
-        prediction.model_version, PIPELINE_VERSION, report.public_payload(),
+        "abstained",
+        "POLICY_NOT_VALIDATED",
+        prediction.model_id,
+        prediction.model_version,
+        PIPELINE_VERSION,
+        report.public_payload(),
         decision,
         prediction.probabilities if include_private_research_scores else None,
     )
