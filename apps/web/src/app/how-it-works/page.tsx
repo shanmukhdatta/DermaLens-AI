@@ -16,7 +16,7 @@ export default function HowItWorksPage() {
       <div className="card-grid two">
         {modules.map(([index, name, description]) => <article className="feature-card" key={index}><span className="step-number">{index}</span><h2>{name}</h2><p>{description}</p></article>)}
       </div>
-      <section className="callout-section"><h2>Why we don't show skin diagnoses yet</h2><p>The research models were trained using synthetic and real image data. Clinical reliability, real-camera generalization and class-specific failure rates still require independent validation. Even a high model score does not guarantee a diagnosis.</p><Link className="button button-primary" href="/check">Try image checks →</Link></section>
+      <section className="callout-section"><h2>Why we don&apos;t show skin diagnoses yet</h2><p>The research models were trained using synthetic and real image data. Clinical reliability, real-camera generalization and class-specific failure rates still require independent validation. Even a high model score does not guarantee a diagnosis.</p><Link className="button button-primary" href="/check">Try image checks →</Link></section>
     </main>
   );
 }

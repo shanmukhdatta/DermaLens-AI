@@ -23,6 +23,8 @@ export default function CheckPage() {
     setReport(null);
     setError(null);
     setFile(null);
+    setPreview(null);
+    setWorking(false);
     setConsent(false);
     if (!selected) return;
     const validation = validateImageFile(selected);
