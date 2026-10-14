@@ -1,0 +1,3 @@
+# Phase 4 handoff: image-processing quality gates
+
+Start only after Phase 3 CI, review and merge. Read CV contract and original research predictor. Implement bounded image byte decoding, EXIF handling, pixel-bomb protection, blur/exposure/pose/size/face gates, exactly-one-face policy and tests. Compare full-image vs cropped-image transformations on a reference fixture; avoid assuming ROI changes improve a model trained on the original full frame. Keep the real model unavailable by default and do not pretend quality acceptance predicts skin conditions. File bytes remain ephemeral; no image persistence without a separate consent/policy review. Include Windows Antigravity smoke commands, code coverage and performance checks.

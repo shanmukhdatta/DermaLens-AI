@@ -1,0 +1,5 @@
+# Phase 3 optional runtime dependencies. Install alongside the locked foundation.
+SQLAlchemy>=2.0.40,<2.1
+alembic>=1.16,<2
+PyJWT[crypto]>=2.10,<3
+psycopg[binary]>=3.2,<4

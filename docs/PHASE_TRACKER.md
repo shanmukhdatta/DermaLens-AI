@@ -1,13 +1,13 @@
 # Master execution tracker — authoritative Phase 0–13 roadmap
 
-Last updated: 2026-10-13 (Phase 2 branch). **Phase 0 was merged in PR #1; Phase 1 PR #2 was merged on 2026-10-13.** Do not confuse this plan with the older Phase 0–12 conceptual sequence in the root README. A phase is complete only with code/config committed, test evidence, documented limitations, and explicit handoff.
+Last updated: 2026-10-14 (Phase 3 implementation branch). **Phases 0–2 were merged in PRs #1–#3.** Do not confuse this plan with the older Phase 0–12 conceptual sequence in the root README. A phase is complete only with code/config committed, test evidence, documented limitations, and explicit handoff.
 
 | Phase | Scope | Dependency | Deliverable / acceptance gate | Status |
 |---|---|---|---|---|
 | 0 | Architecture finalization & baseline | both README audits | Signed-off docs, contracts, ADRs, phase tracking, lint/testable CI; model state honestly documented | Complete — PR #1 merged, CI passed |
 | 1 | Repository engineering foundation | 0 | Python/Next.js workspace, lint/type/test harness, config loader, reproducible local commands, green CI | Merged — PR #2, CI green; external Windows startup not yet verified |
-| 2 | FastAPI backend skeleton | 1 | App startup, dependency injection, request IDs, typed errors, liveness/readiness, auth boundary tests | In review — PR #3, Phase 0/1 CI green on implementation SHA; merge and external Windows test pending |
-| 3 | Persistence and accounts | 2 | PostgreSQL, SQLAlchemy/Alembic, identity and owner guards, retention schema, migration and access tests | Not started |
+| 2 | FastAPI backend skeleton | 1 | App startup, dependency injection, request IDs, typed errors, liveness/readiness, auth boundary tests | Merged — PR #3 |
+| 3 | Persistence and accounts | 2 | PostgreSQL, SQLAlchemy/Alembic, identity and owner guards, retention schema, migration and access tests | In implementation — branch phase-3-persistence-identity-20261014, CI and review pending |
 | 4 | CV image-processing gates | 2, 3 | Decode/quality/one-face/alignment/ROI; safe failure, reference fixture and parity tests (no real classifier required) | Not started |
 | 5 | Next.js user experience | 2, 4 | Accessible upload/notice, progress/rejections, results/abstentions, no unsafe medical copy; browser tests | Not started |
 | 6 | History and feedback | 3, 5 | Consent-respecting history, erasure, moderated feedback states, ownership checks, integration tests | Not started |
