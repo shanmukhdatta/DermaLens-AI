@@ -1,12 +1,7 @@
-export type PlatformStatus = Readonly<{
-  ready: false;
-  title: string;
-  description: string;
-}>;
+export type PlatformStatus = Readonly<{ ready: false; title: string; description: string }>;
 
 export const platformStatus: PlatformStatus = Object.freeze({
   ready: false,
   title: "Model analysis unavailable",
-  description:
-    "This release contains the frontend and API engineering foundation only. Image upload, prediction and chatbot features are not enabled.",
+  description: "Skin prediction and diagnostic capabilities are not enabled. An independent image suitability check is available only when the API operator enables it.",
 });

@@ -9,7 +9,7 @@ Last updated: 2026-10-14 (Phase 3 implementation branch). **Phases 0–2 were me
 | 2 | FastAPI backend skeleton | 1 | App startup, dependency injection, request IDs, typed errors, liveness/readiness, auth boundary tests | Merged — PR #3 |
 | 3 | Persistence and accounts | 2 | PostgreSQL, SQLAlchemy/Alembic, identity and owner guards, retention schema, migration and access tests | In implementation — branch phase-3-persistence-identity-20261014, CI and review pending |
 | 4 | CV image-processing gates | 2, 3 | Decode/quality/one-face/alignment/ROI; safe failure, reference fixture and parity tests (no real classifier required) | In implementation: bounded image decode and replaceable face detector; alignment/ROI parity pending |
-| 5 | Next.js user experience | 2, 4 | Accessible upload/notice, progress/rejections, results/abstentions, no unsafe medical copy; browser tests | Not started |
+| 5 | Next.js user experience | 2, 4 | Accessible upload/notice, progress/rejections, results/abstentions, no unsafe medical copy; browser tests | In implementation — mobile-first image suitability flow and informational pages; human browser review pending |
 | 6 | History and feedback | 3, 5 | Consent-respecting history, erasure, moderated feedback states, ownership checks, integration tests | Not started |
 | 7 | Documentation RAG | 2, docs | Curated markdown ingestion, embedding + pgvector, Grok adapter, citations, refusal, secret isolation | Not started |
 | 8 | Infrastructure & CI/CD foundation | 2, 3, 5, 7 | Reproducible Docker, staging configuration, secrets handling, migration/smoke CI, no public release | Not started |
