@@ -3,6 +3,7 @@
 This is a lightweight developer/staging baseline, not a durable metrics store.
 No headers, paths with user input, upload bytes, identity or image content are saved.
 """
+
 from __future__ import annotations
 
 from collections import Counter
