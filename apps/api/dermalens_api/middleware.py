@@ -34,8 +34,26 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
         started = time.perf_counter()
         request_id = request_identifier(request.headers.get("x-request-id"))
         request.state.request_id = request_id
+        resource_limits = {
+            ("POST", "/api/v1/images/check"): ("image", 12),
+            ("GET", "/api/v1/docs/search"): ("docs", 40),
+        }
+        budget = resource_limits.get((request.method, request.url.path))
+        denied = False
+        if budget is not None:
+            bucket, maximum = budget
+            peer = request.client.host if request.client is not None else "<unknown>"
+            denied = not request.app.state.request_limiter.allow(peer, bucket, limit=maximum)
+        response: Response
         try:
-            response = await call_next(request)
+            if denied:
+                response = JSONResponse(
+                    status_code=429,
+                    content=safe_error_payload(ErrorCode.RATE_LIMITED, request_id),
+                    headers={"Retry-After": "60"},
+                )
+            else:
+                response = await call_next(request)
         except Exception:
             # No exception string, bearer, upload bytes, body, or request URL in output/logs.
             response = JSONResponse(

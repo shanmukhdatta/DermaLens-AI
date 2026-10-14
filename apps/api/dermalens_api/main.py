@@ -24,6 +24,7 @@ from apps.api.dermalens_api.routers import (
 from packages.common.errors import DomainError, ErrorCode, safe_error_payload
 from packages.security.identity import RejectingIdentityVerifier
 from packages.security.oidc import OidcJwtVerifier
+from packages.security.rate_limit import FixedWindowLimiter
 from packages.telemetry.runtime import RuntimeTelemetry
 from services.cv.runtime import UnavailableModelRuntime
 from services.persistence.runtime import build_database
@@ -46,6 +47,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         debug=False,
     )
     app.state.settings = config
+    app.state.request_limiter = FixedWindowLimiter()
     app.state.model_runtime = UnavailableModelRuntime()
     app.state.readiness_gates = ReadinessGates(model_runtime=app.state.model_runtime)
     app.state.identity_verifier = RejectingIdentityVerifier()
