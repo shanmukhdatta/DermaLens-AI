@@ -44,6 +44,7 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
             bucket, maximum = budget
             peer = request.client.host if request.client is not None else "<unknown>"
             denied = not request.app.state.request_limiter.allow(peer, bucket, limit=maximum)
+        response: Response
         try:
             if denied:
                 response = JSONResponse(
