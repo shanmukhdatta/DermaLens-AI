@@ -23,7 +23,9 @@ def index() -> DocumentationIndex:
 
 
 @router.get("/search")
-def search_documentation(q: Annotated[str, Query(min_length=4, max_length=180)]) -> dict[str, object]:
+def search_documentation(
+    q: Annotated[str, Query(min_length=4, max_length=180)],
+) -> dict[str, object]:
     question = q.strip()
     if len(question) < 4:
         return {"status": "no_match", "matches": [], "notice": "Ask about project documentation."}
