@@ -35,7 +35,7 @@ def estimate_eye_alignment(
         raise ValueError("Face region outside image")
     gray = cv2.cvtColor(rgb[y : y + height // 2, x : x + width], cv2.COLOR_RGB2GRAY)
     if eye_detector is None:
-        path = cv2.data.haarcascades + "haarcascade_eye.xml"
+        path = getattr(cv2, "data").haarcascades + "haarcascade_eye.xml"
         eye_detector = cv2.CascadeClassifier(path)
         if eye_detector.empty():
             raise RuntimeError("Eye landmark artifact unavailable")
