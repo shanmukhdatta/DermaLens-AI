@@ -3,7 +3,7 @@
 > **Phase 0 implementation note (2026-10-13):** The agreed 14-phase execution roadmap (Phase 0–13) lives in [docs/PHASE_TRACKER.md](docs/PHASE_TRACKER.md); it supersedes the older conceptual phase list in Section 50 for execution order. For implementable contracts and decisions see [docs/01_SYSTEM_ARCHITECTURE.md](docs/01_SYSTEM_ARCHITECTURE.md), [docs/08_API_AND_DATA_FLOW.md](docs/08_API_AND_DATA_FLOW.md), [docs/03_MODEL_AND_RESEARCH.md](docs/03_MODEL_AND_RESEARCH.md) and [docs/adr/README.md](docs/adr/README.md). Phase 0 is architecture/docs only: **no clinical diagnostic validation, production classifier or deployed app** is claimed.
 
 
-## Development workspace — Phase 2 (backend skeleton)
+## Development workspace — merged engineering implementation (model not connected)
 
 The current branch contains a runnable **engineering skeleton only**, not working facial-skin inference. Backend health returns `200 {"status":"ok"}`; readiness deliberately returns `503 {"status":"not_ready"}`. The versioned model status route is protected by a fail-closed identity verifier, not real login. The frontend states that image analysis is disabled. No image upload, login, feedback, persistence or chatbot functionality is operational.
 
@@ -14,6 +14,8 @@ For Windows/Antigravity and CI commands see [Phase 1 implementation instructions
 > **Scope:** Computer vision inference, backend services, model serving, explainability, uncertainty handling, user feedback, controlled continual learning, documentation-grounded RAG assistant, observability, privacy, MLOps, and deployment.
 
 ---
+
+**Implementation audit (2026-10-14):** See [README feature-by-feature audit](docs/README_FEATURE_AUDIT.md). Phase 3–13 implementation PRs have merged, but the complete Version 1 Definition of Done in section 51 has **not** been met: real checkpoint verification, analysis serving, model-domain evaluation, calibration, alignment/ROI, user sign-in and production security still need work. The current website offers image suitability checks, documentation exploration and engineering information. **No real skin diagnosis is enabled.**
 
 ## 1. Executive Summary
 

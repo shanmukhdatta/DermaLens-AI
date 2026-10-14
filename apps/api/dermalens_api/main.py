@@ -13,7 +13,14 @@ from starlette.exceptions import HTTPException
 from apps.api.dermalens_api.config import Settings, get_settings
 from apps.api.dermalens_api.middleware import RequestContextMiddleware
 from apps.api.dermalens_api.readiness import ReadinessGates
-from apps.api.dermalens_api.routers import account, feedback, images, models, operations
+from apps.api.dermalens_api.routers import (
+    account,
+    docs_search,
+    feedback,
+    images,
+    models,
+    operations,
+)
 from packages.common.errors import DomainError, ErrorCode, safe_error_payload
 from packages.security.identity import RejectingIdentityVerifier
 from packages.security.oidc import OidcJwtVerifier
@@ -96,6 +103,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(models.router, prefix="/api/v1")
     app.include_router(account.router, prefix="/api/v1")
     app.include_router(images.router, prefix="/api/v1")
+    app.include_router(docs_search.router, prefix="/api/v1")
     app.include_router(feedback.router, prefix="/api/v1")
     if config.enable_rag_assistant:
         from apps.api.dermalens_api.routers import copilot
