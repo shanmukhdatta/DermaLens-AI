@@ -1,4 +1,5 @@
 """Alembic migrations against the explicitly configured database only."""
+
 from __future__ import annotations
 
 import os

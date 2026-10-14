@@ -15,8 +15,8 @@ from apps.api.dermalens_api.routers import account, models, operations
 from packages.common.errors import DomainError, ErrorCode, safe_error_payload
 from packages.security.identity import RejectingIdentityVerifier
 from packages.security.oidc import OidcJwtVerifier
-from services.persistence.runtime import build_database
 from services.cv.runtime import UnavailableModelRuntime
+from services.persistence.runtime import build_database
 
 
 def _request_id(request: Request) -> str:

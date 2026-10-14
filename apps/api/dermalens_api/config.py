@@ -71,7 +71,9 @@ class Settings(BaseSettings):
         if self.database_url is not None:
             if not self.database_url.startswith(("postgresql+psycopg://", "sqlite+pysqlite://")):
                 raise ValueError("database_url must use PostgreSQL or test SQLite")
-            if self.env in {"staging", "production"} and not self.database_url.startswith("postgresql+psycopg://"):
+            if self.env in {"staging", "production"} and not self.database_url.startswith(
+                "postgresql+psycopg://"
+            ):
                 raise ValueError("staging/production persistence requires PostgreSQL")
         url = urlsplit(self.public_web_origin)
         if self.env in {"staging", "production"} and url.scheme != "https":

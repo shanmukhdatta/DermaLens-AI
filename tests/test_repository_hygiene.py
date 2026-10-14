@@ -1,4 +1,5 @@
 """Regression tests for version-controlled sensitive paths."""
+
 from __future__ import annotations
 
 from scripts.check_repository_hygiene import forbidden_tracked_path

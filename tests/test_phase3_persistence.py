@@ -1,7 +1,8 @@
 """Phase 3 account, consent, ownership, crypto and migration regression tests."""
+
 from __future__ import annotations
 
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -57,16 +58,37 @@ def test_requires_real_identity_and_configured_database(tmp_path: Path) -> None:
 def test_history_consent_is_owned_and_idempotent(tmp_path: Path) -> None:
     client, app = make_client(tmp_path)
     with client:
-        assert client.get("/api/v1/account", headers=auth("alice")).json() == {"history_enabled": False}
+        assert client.get("/api/v1/account", headers=auth("alice")).json() == {
+            "history_enabled": False
+        }
         for _ in range(2):
-            response = client.put("/api/v1/account/history-consent", headers=auth("alice"), json={"enabled": True})
+            response = client.put(
+                "/api/v1/account/history-consent", headers=auth("alice"), json={"enabled": True}
+            )
             assert response.status_code == 200
             assert response.json() == {"history_enabled": True}
-        assert client.get("/api/v1/account", headers=auth("bob")).json() == {"history_enabled": False}
+        assert client.get("/api/v1/account", headers=auth("bob")).json() == {
+            "history_enabled": False
+        }
         assert client.get("/api/v1/account/analyses", headers=auth("bob")).json() == {"items": []}
-        assert client.get("/api/v1/account/export", headers=auth("alice")).json() == {"history_enabled": True, "analyses": []}
-        assert client.put("/api/v1/account/history-consent", headers=auth("alice"), json={"enabled": "yes"}).status_code == 422
-        assert client.put("/api/v1/account/history-consent", headers=auth("alice"), json={"enabled": True, "owner_id": "bob"}).status_code == 422
+        assert client.get("/api/v1/account/export", headers=auth("alice")).json() == {
+            "history_enabled": True,
+            "analyses": [],
+        }
+        assert (
+            client.put(
+                "/api/v1/account/history-consent", headers=auth("alice"), json={"enabled": "yes"}
+            ).status_code
+            == 422
+        )
+        assert (
+            client.put(
+                "/api/v1/account/history-consent",
+                headers=auth("alice"),
+                json={"enabled": True, "owner_id": "bob"},
+            ).status_code
+            == 422
+        )
     with app.state.db_session_factory() as session:
         assert len(list(session.scalars(select(Account)))) == 1
 
@@ -80,9 +102,13 @@ def test_revocation_purges_history_and_account_deletes(tmp_path: Path) -> None:
             accounts = {account.subject: account for account in session.scalars(select(Account))}
             session.add(AnalysisRecord(account_id=accounts["alice"].id, status="ready"))
             session.add(AnalysisRecord(account_id=accounts["bob"].id, status="ready"))
-        assert len(client.get("/api/v1/account/analyses", headers=auth("alice")).json()["items"]) == 1
+        assert (
+            len(client.get("/api/v1/account/analyses", headers=auth("alice")).json()["items"]) == 1
+        )
         assert len(client.get("/api/v1/account/analyses", headers=auth("bob")).json()["items"]) == 1
-        assert client.put("/api/v1/account/history-consent", headers=auth("alice"), json={"enabled": False}).json() == {"history_enabled": False}
+        assert client.put(
+            "/api/v1/account/history-consent", headers=auth("alice"), json={"enabled": False}
+        ).json() == {"history_enabled": False}
         assert client.get("/api/v1/account/analyses", headers=auth("alice")).json() == {"items": []}
         assert len(client.get("/api/v1/account/analyses", headers=auth("bob")).json()["items"]) == 1
         assert client.delete("/api/v1/account", headers=auth("bob")).status_code == 204
@@ -96,9 +122,12 @@ def test_migration_round_trip(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
     monkeypatch.setenv("DERMALENS_DATABASE_URL", url)
     config = Config("alembic.ini")
     command.upgrade(config, "head")
-    from sqlalchemy import inspect, create_engine
+    from sqlalchemy import create_engine, inspect
+
     engine = create_engine(url)
-    assert {"accounts", "consents", "analyses", "feedback"}.issubset(set(inspect(engine).get_table_names()))
+    assert {"accounts", "consents", "analyses", "feedback"}.issubset(
+        set(inspect(engine).get_table_names())
+    )
     engine.dispose()
     command.downgrade(config, "base")
     engine = create_engine(url)
@@ -109,20 +138,39 @@ def test_migration_round_trip(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
 def test_oidc_enforces_signature_and_claims() -> None:
     issuer = "https://id.example.com/"
     private_key = rsa.generate_private_key(public_exponent=65537, key_size=2048)
+
     class StaticJwks:
         def get_signing_key_from_jwt(self, token: str) -> SimpleNamespace:
             del token
             return SimpleNamespace(key=private_key.public_key())
+
     verifier = OidcJwtVerifier(issuer, "dermalens-api", issuer + "keys", client=StaticJwks())  # type: ignore[arg-type]
-    now = datetime.now(timezone.utc)
-    claims = {"sub": "alice", "iss": issuer, "aud": "dermalens-api",
-              "iat": now, "exp": now + timedelta(minutes=5)}
+    now = datetime.now(UTC)
+    claims = {
+        "sub": "alice",
+        "iss": issuer,
+        "aud": "dermalens-api",
+        "iat": now,
+        "exp": now + timedelta(minutes=5),
+    }
     token = jwt.encode(claims, private_key, algorithm="RS256", headers={"kid": "fixture"})
     assert verifier.verify_bearer(token) == Principal(subject="alice", issuer=issuer)
     for invalid in (
-        jwt.encode({**claims, "aud": "attacker"}, private_key, algorithm="RS256", headers={"kid": "fixture"}),
-        jwt.encode({**claims, "exp": now - timedelta(minutes=5)}, private_key, algorithm="RS256", headers={"kid": "fixture"}),
-        jwt.encode({**claims, "sub": ""}, private_key, algorithm="RS256", headers={"kid": "fixture"}),
+        jwt.encode(
+            {**claims, "aud": "attacker"},
+            private_key,
+            algorithm="RS256",
+            headers={"kid": "fixture"},
+        ),
+        jwt.encode(
+            {**claims, "exp": now - timedelta(minutes=5)},
+            private_key,
+            algorithm="RS256",
+            headers={"kid": "fixture"},
+        ),
+        jwt.encode(
+            {**claims, "sub": ""}, private_key, algorithm="RS256", headers={"kid": "fixture"}
+        ),
         jwt.encode(claims, "not-a-key", algorithm="HS256", headers={"kid": "fixture"}),
     ):
         with pytest.raises(DomainError) as exc:
