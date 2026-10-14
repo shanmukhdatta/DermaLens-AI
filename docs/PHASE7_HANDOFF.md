@@ -1,0 +1,3 @@
+# Phase 7 — Documentation-grounded RAG assistant
+
+After Phase 6 review: index allowlisted Markdown documents with section-level provenance, retriever, versioned embedding/index manifest, server-side Grok adapter behind secret-injected configuration, source citations and strict refusal of medical diagnosis or treatment. Do not index private model checkpoints or personal uploads. Require timeout/rate limiting, privacy and injection-resistant prompt boundaries. The assistant must fail closed when provider or index is missing and cannot modify CV predictions. Include deterministic offline tests and provider-mock tests.
