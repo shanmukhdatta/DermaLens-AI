@@ -31,7 +31,9 @@ def read_table(path: Path) -> list[dict[str, str]]:
         if reader.fieldnames is None or not REQUIRED.issubset(set(reader.fieldnames)):
             raise ValueError("Prediction table missing required column(s)")
         if {"image_path", "filename", "raw_image", "email", "name"} & set(reader.fieldnames):
-            raise ValueError("Prediction metadata must not include direct identifiers or image paths")
+            raise ValueError(
+                "Prediction metadata must not include direct identifiers or image paths"
+            )
         return [dict(row) for row in reader]
 
 
@@ -111,7 +113,9 @@ def _stats(rows: list[dict[str, str]], labels: tuple[str, ...]) -> dict[str, Any
     for i in range(10):
         selected = bins == i
         if selected.any():
-            ece += float(selected.mean() * abs(confidence[selected].mean() - correct[selected].mean()))
+            ece += float(
+                selected.mean() * abs(confidence[selected].mean() - correct[selected].mean())
+            )
     one_hot = np.eye(len(labels))[y_true]
     brier = float(np.mean(np.sum((prob - one_hot) ** 2, axis=1)))
     nll = float(-np.mean(np.log(np.clip(prob[np.arange(total), y_true], 1e-12, 1))))
