@@ -3,6 +3,7 @@
 Limits are per-process. Deploy behind an ingress with distributed rate limits;
 never rely on this module alone to protect a multi-instance public service.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -29,9 +30,7 @@ class FixedWindowLimiter:
         self._counts: dict[tuple[str, str], tuple[int, float]] = {}
         self._lock = Lock()
 
-    def allow(
-        self, ip_address: str, bucket: str, *, limit: int, now: float | None = None
-    ) -> bool:
+    def allow(self, ip_address: str, bucket: str, *, limit: int, now: float | None = None) -> bool:
         """A full cardinality budget denies new users, never evicts active records."""
         if limit < 1 or bucket not in {"image", "docs"}:
             raise ValueError("Unrecognized resource budget")
