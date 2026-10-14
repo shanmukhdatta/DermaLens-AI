@@ -18,8 +18,8 @@ from services.cv.artifacts import file_sha256, preprocess_compatible, verify_art
 from services.learning.evaluation import PROB_COLUMNS, REQUIRED, audit_rows
 
 if TYPE_CHECKING:
-    from services.cv.ports import ModelRuntime
     from services.cv.artifacts import VerifiedArtifacts
+    from services.cv.ports import ModelRuntime
 
 INDEX_COLUMNS = {
     "example_id", "subject_id", "content_sha256", "split", "source",
