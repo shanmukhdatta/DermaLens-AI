@@ -11,7 +11,7 @@ from starlette.exceptions import HTTPException
 from apps.api.dermalens_api.config import Settings, get_settings
 from apps.api.dermalens_api.middleware import RequestContextMiddleware
 from apps.api.dermalens_api.readiness import ReadinessGates
-from apps.api.dermalens_api.routers import account, models, operations
+from apps.api.dermalens_api.routers import account, images, models, operations
 from packages.common.errors import DomainError, ErrorCode, safe_error_payload
 from packages.security.identity import RejectingIdentityVerifier
 from packages.security.oidc import OidcJwtVerifier
@@ -81,6 +81,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(operations.router, prefix="/api/v1")
     app.include_router(models.router, prefix="/api/v1")
     app.include_router(account.router, prefix="/api/v1")
+    app.include_router(images.router, prefix="/api/v1")
 
     # CORS only allows a validated origin; bearer header is NOT authentication.
     app.add_middleware(

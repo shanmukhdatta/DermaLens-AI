@@ -17,6 +17,9 @@ class ErrorCode(StrEnum):
     METHOD_NOT_ALLOWED = "METHOD_NOT_ALLOWED"
     RAG_UNAVAILABLE = "RAG_UNAVAILABLE"
     INFERENCE_FAILED = "INFERENCE_FAILED"
+    INVALID_IMAGE = "INVALID_IMAGE"
+    IMAGE_TOO_LARGE = "IMAGE_TOO_LARGE"
+    IMAGE_CHECK_UNAVAILABLE = "IMAGE_CHECK_UNAVAILABLE"
     INTERNAL_ERROR = "INTERNAL_ERROR"
 
 
@@ -28,6 +31,9 @@ PUBLIC_MESSAGES: dict[ErrorCode, str] = {
     ErrorCode.METHOD_NOT_ALLOWED: "Method not allowed.",
     ErrorCode.RAG_UNAVAILABLE: "Documentation assistant is unavailable.",
     ErrorCode.INFERENCE_FAILED: "Inference is unavailable.",
+    ErrorCode.INVALID_IMAGE: "The image could not be accepted.",
+    ErrorCode.IMAGE_TOO_LARGE: "The uploaded image is too large.",
+    ErrorCode.IMAGE_CHECK_UNAVAILABLE: "Image suitability checks are not available.",
     ErrorCode.INTERNAL_ERROR: "An internal error occurred.",
 }
 

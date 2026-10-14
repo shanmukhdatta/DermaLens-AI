@@ -21,6 +21,8 @@ jobs:
         run: uv sync --python 3.11 --frozen --all-groups
       - name: Install persistence extension
         run: uv pip install --python .venv/bin/python -r requirements-persistence.txt
+      - name: Install image processing extension
+        run: uv pip install --python .venv/bin/python -r requirements-cv.txt
       - name: Lint Python
         run: uv run --frozen --no-sync ruff check .
       - name: Check formatting
