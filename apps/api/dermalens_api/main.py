@@ -13,7 +13,14 @@ from starlette.exceptions import HTTPException
 from apps.api.dermalens_api.config import Settings, get_settings
 from apps.api.dermalens_api.middleware import RequestContextMiddleware
 from apps.api.dermalens_api.readiness import ReadinessGates
-from apps.api.dermalens_api.routers import account, docs_search, feedback, images, models, operations
+from apps.api.dermalens_api.routers import (
+    account,
+    docs_search,
+    feedback,
+    images,
+    models,
+    operations,
+)
 from packages.common.errors import DomainError, ErrorCode, safe_error_payload
 from packages.security.identity import RejectingIdentityVerifier
 from packages.security.oidc import OidcJwtVerifier
