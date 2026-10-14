@@ -1,4 +1,5 @@
 """Optional Grad-CAM research visualization with explicit model-layer requirements."""
+
 from __future__ import annotations
 
 from importlib import import_module

@@ -2,6 +2,7 @@
 
 No artifact generated here is approved for medical or consumer-facing inference.
 """
+
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
@@ -78,9 +79,8 @@ def fit_exploratory_policy(
         raise ValueError("Unsupported calibration parameters")
     calibration = [row for row in rows if row["split"] == "calibration"]
     unique_subjects = {row["subject_id"] for row in calibration}
-    if (
-        len(unique_subjects) < minimum_calibration_groups
-        or any(row["source"] != "real" for row in calibration)
+    if len(unique_subjects) < minimum_calibration_groups or any(
+        row["source"] != "real" for row in calibration
     ):
         raise ValueError("Insufficient independent real-world calibration groups")
     probabilities = np.asarray(
@@ -92,9 +92,13 @@ def fit_exploratory_policy(
     losses = []
     for candidate in temperatures:
         scaled = temperature_scaled(probabilities, float(candidate))
-        losses.append(float(-np.mean(np.log(
-            np.clip(scaled[np.arange(len(calibration)), true_indices], 1e-12, 1)
-        ))))
+        losses.append(
+            float(
+                -np.mean(
+                    np.log(np.clip(scaled[np.arange(len(calibration)), true_indices], 1e-12, 1))
+                )
+            )
+        )
     best_temperature = float(temperatures[int(np.argmin(losses))])
     scaled = temperature_scaled(probabilities, best_temperature)
     confident = scaled.max(axis=1)
@@ -144,9 +148,7 @@ def abstaining_decision(
     ):
         return base
     try:
-        scaled = temperature_scaled(
-            np.asarray([probabilities], dtype=float), policy.temperature
-        )[0]
+        scaled = temperature_scaled(np.asarray([probabilities], dtype=float), policy.temperature)[0]
     except (ValueError, TypeError):
         return base
     index = int(np.argmax(scaled))
