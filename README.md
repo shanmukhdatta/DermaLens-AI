@@ -15,7 +15,7 @@ For Windows/Antigravity and CI commands see [Phase 1 implementation instructions
 
 ---
 
-**Implementation audit (2026-10-14):** See [README feature-by-feature audit](docs/README_FEATURE_AUDIT.md). Phase 3–13 implementation PRs have merged, but the complete Version 1 Definition of Done in section 51 has **not** been met: real checkpoint verification, analysis serving, model-domain evaluation, calibration, alignment/ROI, user sign-in and production security still need work. The current website offers image suitability checks, documentation exploration and engineering information. **No real skin diagnosis is enabled.**
+**Implementation audit (2026-10-14):** See [README feature-by-feature audit](docs/README_FEATURE_AUDIT.md) and [final engineering verification handoff](docs/FINAL_ENGINEERING_HANDOFF.md). Phase 3–13 implementation PRs have merged, but the complete Version 1 Definition of Done in section 51 has **not** been met: real checkpoint verification, analysis serving, model-domain evaluation, calibration, alignment/ROI, user sign-in and production security still need work. The current website offers image suitability checks, documentation exploration and engineering information. **No real skin diagnosis is enabled.**
 
 ## 1. Executive Summary
 
