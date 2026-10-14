@@ -1,4 +1,5 @@
 """Owner-scoped, consent-dependent feedback is untrusted until reviewed."""
+
 from __future__ import annotations
 
 from datetime import UTC, datetime
@@ -26,10 +27,7 @@ def require_owned_completed_analysis(
             AnalysisRecord.account_id == account.id,
             AnalysisRecord.status == "completed",
             AnalysisRecord.model_version.is_not(None),
-            (
-                AnalysisRecord.expires_at.is_(None)
-                | (AnalysisRecord.expires_at > datetime.now(UTC))
-            ),
+            (AnalysisRecord.expires_at.is_(None) | (AnalysisRecord.expires_at > datetime.now(UTC))),
         )
     )
     if record is None:
@@ -41,7 +39,9 @@ def submit_feedback(
     session: Session, actor: Principal, analysis_id: str, choice: str
 ) -> FeedbackRecord:
     if choice not in CHOICES:
-        raise DomainError(ErrorCode.INVALID_REQUEST, PUBLIC_MESSAGES[ErrorCode.INVALID_REQUEST], 422)
+        raise DomainError(
+            ErrorCode.INVALID_REQUEST, PUBLIC_MESSAGES[ErrorCode.INVALID_REQUEST], 422
+        )
     with session.begin():
         account_id, _ = require_owned_completed_analysis(session, actor, analysis_id)
         existing = session.scalar(
@@ -65,9 +65,7 @@ def submit_feedback(
         return record
 
 
-def get_feedback(
-    session: Session, actor: Principal, analysis_id: str
-) -> FeedbackRecord:
+def get_feedback(session: Session, actor: Principal, analysis_id: str) -> FeedbackRecord:
     account_id, _ = require_owned_completed_analysis(session, actor, analysis_id)
     record = session.scalar(
         select(FeedbackRecord).where(

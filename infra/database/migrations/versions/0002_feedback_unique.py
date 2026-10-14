@@ -3,6 +3,7 @@
 Revision ID: 0002_feedback
 Revises: 0001_initial
 """
+
 from __future__ import annotations
 
 from alembic import op
