@@ -3,6 +3,7 @@
 The deployed Keras input MUST remain the original full frame until held-out
 model comparisons establish that a transformation is appropriate.
 """
+
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -21,8 +22,10 @@ class FaceGeometry:
 
 
 def estimate_eye_alignment(
-    rgb: np.ndarray, box: tuple[int, int, int, int],
-    *, eye_detector: object | None = None,
+    rgb: np.ndarray,
+    box: tuple[int, int, int, int],
+    *,
+    eye_detector: object | None = None,
 ) -> FaceGeometry:
     """Estimate head roll only; no inferred disease, color changes or silent crop."""
     if rgb.ndim != 3 or rgb.shape[2] != 3 or rgb.dtype != np.uint8:
