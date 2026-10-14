@@ -1,0 +1,3 @@
+# Phase 11 — Calibration, abstention, OOD and explainability
+
+After Phase 10 machinery is reviewed: build offline calibration with separate labeled calibration samples; compare raw scores, calibrated confidence and held-out selective risk, and version threshold policies independently. Default to abstention if no independently validated policy is loaded. OOD and Grad-CAM must be evaluated on supported architectures with real artifacts; neither is evidence of diagnosis. Preserve optional backend capability flags and fail closed. No public inference release without clinical review and appropriate approvals.
