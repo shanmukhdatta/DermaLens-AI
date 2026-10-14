@@ -1,0 +1,3 @@
+# Phase 10 — Real-world domain shift evaluation
+
+Obtain separately licensed real photos and verified labels, including adequate representation across skin appearances and camera conditions. Predeclare split/duplicate audit and a no-leakage held-out test, compare research-vs-production predictions for exact input parity, compute macro/per-class classification metrics, calibration, uncertainty, subgroup errors and abstention risk; hold out a separate calibration split. Publish measured numbers and intervals only. No synthetic validation alone authorizes public medical use. Skin-cancer screening performance requires clinician-supported research and external review.
