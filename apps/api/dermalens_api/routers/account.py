@@ -6,7 +6,7 @@ from collections.abc import Iterator
 from typing import Annotated
 
 from fastapi import APIRouter, Depends, Request, Response
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, StrictBool
 from sqlalchemy.orm import Session
 
 from apps.api.dermalens_api.dependencies import require_verified_actor
@@ -25,7 +25,7 @@ router = APIRouter(prefix="/account", tags=["Account"])
 
 class ConsentChange(BaseModel):
     model_config = ConfigDict(extra="forbid")
-    enabled: bool
+    enabled: StrictBool
 
 
 def database_session(request: Request) -> Iterator[Session]:
