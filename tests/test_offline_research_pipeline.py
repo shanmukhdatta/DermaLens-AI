@@ -71,7 +71,9 @@ def test_rejects_no_face_multiple_faces_and_corrupt_images() -> None:
 def test_face_geometry_is_research_only_and_clips_roi() -> None:
     rgb = np.zeros((300, 300, 3), dtype=np.uint8)
     class Eyes:
-        def detectMultiScale(self, gray: np.ndarray, **kwargs: object) -> list[tuple[int, int, int, int]]:
+        def detectMultiScale(
+            self, gray: np.ndarray, **kwargs: object
+        ) -> list[tuple[int, int, int, int]]:
             del gray, kwargs
             return [(15, 10, 30, 25), (95, 12, 29, 26)]
 
