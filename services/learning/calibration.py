@@ -49,7 +49,7 @@ def temperature_scaled(values: np.ndarray, temperature: float) -> np.ndarray:
     logits = np.log(np.clip(values, 1e-12, 1)) / temperature
     logits = logits - logits.max(axis=1, keepdims=True)
     exponent = np.exp(logits)
-    return exponent / exponent.sum(axis=1, keepdims=True)
+    return np.asarray(exponent / exponent.sum(axis=1, keepdims=True), dtype=np.float64)
 
 
 def _wilson_upper(errors: int, accepted: int, z: float = 1.96) -> float:
