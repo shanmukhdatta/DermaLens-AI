@@ -1,29 +1,44 @@
-# DermaLens AI — Final Gap Closure Checklist (2026-10-22)
+# DermaLens AI — Integrated Gap Closure Checklist
 
-**Audit standard:** A "coded" component is not automatically integrated into a deployed user journey, clinically validated, or regulatory-approved. Current work is in PR #28 and must pass CI before merge.
+**Updated 2026-10-22.** This inventory distinguishes source implementation, CI verification,
+independent external validation, and permission to deploy. The README-derived 144-row
+`docs/IMPLEMENTATION_CHECKLIST.md` is a historical requirements inventory; its older aggregate
+statuses have **not** been reclassified as 100% complete.
 
-| ID | Required workflow | Newly implemented code | Remaining real verification / blocker | State |
-|---|---|---|---|---|
-| A | Real compatible checkpoint + model labels | `VerifiedKerasModel`, manifest/checksum validation already present; new configured local-load integration in FastAPI | A real approved six-class checkpoint, label map, provenance, parity fixtures, runtime/device test and independent calibration | **External model needed** |
-| B | Independent evaluation and leakage controls | `leakage_audit.py`, CLI, synthetic-fixture tests; prior evaluation/calibration/aggregate visualization | Rights-cleared subject-labeled real facial photos, dedup human review, clinical labels, subgroup statistics | **Source implemented, clinical proof pending** |
-| C | Protected image → inference → result workflow | Nonproduction POST/GET/DELETE API, OIDC guard, bounded images, verified local Keras adapter, encrypted SQLAlchemy rows, result TTL | Live external issuer, compatible weights, full browser integration, model validation | **Research backend and BFF research UI written; live integration not verified** |
-| D | Secure registration/login, history UI | Existing issuer-JWKS JWT verification, account/consent/export/erasure and history listing; protected analysis result retrieval now added | OIDC BFF login, account and consent history UI have merged via PR #29; real IdP credentials and browser end-to-end testing remain pending; the research-only upload, owner result and deletion UI now exists in PR #32 via the OIDC BFF | **Incomplete** |
-| E | Privacy/security production assurances | Fernet-authenticated encrypted metadata, no raw-image persistence, rate limits, no storage by default, TTL sweep and ownership tests | Security review, legal applicability review, incident plan, approved secure cloud storage if added, penetration testing, key rotation drills | **Partial** |
-| F | Full documentation-grounded vector RAG | Existing lexical docs index and opt-in Grok adapter | Semantic embedding, persistent vector index, real provider validation | **Partial** |
-| G | Model safety and explainability | Offline exploratory calibration/Grad-CAM modules | Real OOD, clinically defensible thresholds, explanation stability and approval | **External evidence needed** |
-| H | Production observability and deployment | Compose, CI, in-process bounded telemetry, disposable smoke | Durable metrics, tracing, backups, TLS ingress, deployment rollback and security review | **Partial** |
+| Gap | Implemented source and integration | Still required for genuine completion |
+|---|---|---|
+| A — Trained model and label order | VerifiedKerasModel, SHA256 and model manifest; PR #35 adds candidate-only manifest creation and original DiseasePredictor parity CLIs | Actual trained and licensed 6-class `.keras` checkpoint, matching exact `label_map.json`, real training environment/source SHA, private golden image outputs, real parity execution |
+| B — Independent clinical validation | Private model-backed evaluation, label-map integrity, subject leakage checks, dHash and pHash near-duplicate audit, confusion matrix, sensitivity/specificity, calibration research helpers (PR #31 and #34) | Rights-cleared, independently labeled clinical photos; verified subject independence; robust subgroup and site/device evaluation; domain expert review; measured calibration/OOD/unknown-class behavior |
+| C — Protected analysis and results | Explicit nonproduction feature flag, image constraints, authenticated POST/GET/DELETE analyses, owner-scoped encrypted metadata, TTL and result-row identity checks (PR #32 and #33) | End-to-end execution with real validated model/clinical safeguards; approved result semantics and explainability; production medical release remains disabled |
+| D — Authentication and history | Existing backend OIDC/JWKS verification; Next.js BFF PKCE with encrypted session; account consent, history, export, account deletion, private results and moderated feedback UX (PR #29, #32 and #33) | Real configured OIDC provider, safe role/application settings, browser/session/expiration/cross-origin E2E, security review |
+| E — Privacy and security | No raw uploaded-image persistence, bounded decoding, owner access checks, authenticated encryption, explicit consent, offline expiry pruner, safe logging and CI tests | Independent threat model and penetration assessment; real-host secrets/TLS/backup/incident/erasure/key-rotation testing; region-appropriate privacy/legal review |
+| F — Documentation retrieval | Lexical citations and optional protected Grok documentation client | Semantic embedding/indexing and provider validation if README scope requires them |
+| G — Uncertainty and explainability | Offline exploratory calibration and Grad-CAM modules | Real independent OOD, calibration, expert explanation review; validated release policy, with abstention for unknown cases |
+| H — Operations | Next.js/FastAPI, SQLAlchemy/Alembic, Docker Compose, CI checks and disposable staging smoke | Real target deployment with durable telemetry, production TLS, rate-limit coordination, backups, recovery and rollback exercises |
 
-## What was really run
+## Actual engineering evidence
 
-CI on the PR exercises Ruff, mypy, Python unit/integration tests, Next.js lint/typecheck/build and disposable Compose staging smoke. These checks do not show the application working with a live clinical checkpoint or real OIDC accounts. Record final exact commit, run URLs and statuses in PR review before merging.
+- PR #29: Next.js OIDC BFF and owner history; merged after CI.
+- PR #31: private model-backed evaluation pipeline; merged after CI.
+- PR #32: nonproduction protected experimental analysis and encrypted results; merged after CI.
+- PR #33: feedback UI/API integration and ciphertext row-binding checks; merged after CI.
+- PR #34: independent evaluation metrics and near-duplicate research checks; merged after CI.
+- PR #35: candidate model manifest and original research inference parity tools; merged after CI.
+- Latest PR #35 verification ran Ruff, mypy, Python tests (**132 passed, 68 warnings**),
+  frontend lint/build/typecheck/Vitest, model contracts and Docker smoke. These prove
+  source engineering checks, not a live medical product or independent security certification.
 
-## Clinical boundaries
+## External acceptance gates — do not bypass
 
-Never expose an automatically interpreted diagnosis or skin-cancer rule-out result without independent medically supervised evaluation. Research-only scores are uncalibrated and presented as such. Do not turn the existing `ResearchCalibration` exploratory candidate into a "clinical" threshold by renaming it. Real clinical validation cannot be invented from test fixtures.
+1. Obtain the actual authorized checkpoint, original label map and training provenance from the research/Kaggle artifacts. No model weight files were located in the checked GitHub repository.
+2. In a private environment execute `docs/MODEL_ARTIFACT_PARITY_RUNBOOK.md`; confirm serialization and original predictor output parity on multiple permitted images.
+3. Evaluate subject-disjoint, legally usable real clinical samples, document errors, confidence intervals, subgroup, site/device and OOD reliability, and review with qualified experts. Do not use synthetic fixtures as clinical evidence.
+4. Configure an actual OIDC identity provider and test registered redirect, PKCE, issuer, audience, session expiry, CSRF, account ownership, consent, deletion and feedback from real browsers.
+5. Perform privacy, security and operational tests with the intended deployment architecture; document and remediate findings. Retention CLI cannot substitute for image/object-storage deletion if that future feature is enabled.
+6. Obtain any relevant clinical/regulatory approvals **before** enabling public diagnostic use. A passing unit test, scientific paper or CI build cannot grant these.
 
-## Supplemental evaluation implementation — PR #34
+**Hard safeguard:** production configuration rejects the experimental research-analysis mode; no diagnosis or skin-cancer rule-out is authorized. Do not remove this gate to inflate completion percentages.
 
-- Added complete 6×6 actual-vs-predicted confusion matrix and per-class TP, TN, FP, FN, sensitivity and specificity. Undefined denominators appear as null, never guessed zero.
-- Extended the offline image split audit with independent DCT-based pHash across all 8 orientations, in addition to existing SHA-256 and gradient-based dHash. Outputs are pseudonymous review candidates only. Pair report is bounded and rejects overwhelming duplicate batches rather than claiming successful validation.
-- Acceptance tests in `tests/test_evaluation_confusion.py` and `tests/test_perceptual_duplicate.py`; CI status is attached to the PR and must pass before any merge.
-- Real model weights, licensed independent clinical test data, validated OOD/calibration thresholds, live OIDC provider and release assurance remain external blockers; no clinical effectiveness has been measured.
+See `docs/FINAL_ENGINEERING_HANDOFF.md`, `docs/FINAL_FEATURE_AUDIT.md`,
+`docs/MODEL_ARTIFACT_PARITY_RUNBOOK.md` and
+`docs/RESEARCH_FEEDBACK_INTEGRATION.md`.
