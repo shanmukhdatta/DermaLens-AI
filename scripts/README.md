@@ -8,6 +8,7 @@ Offline evaluation, artifact verification, CLI review and operational smoke. Sta
 
 - `check_repository_hygiene.py` — Python module / executable logic
 - `evaluate_predictions.py` — Python module / executable logic
+- `build_private_prediction_table.py` — private manifest-to-real-checkpoint offline batch evaluator; see `docs/PRIVATE_MODEL_BENCHMARK.md`
 - `export_verified_predictions.py` — Python module / executable logic
 - `fit_calibration_policy.py` — Python module / executable logic
 - `operational_smoke.py` — Python module / executable logic

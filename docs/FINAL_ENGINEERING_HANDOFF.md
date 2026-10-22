@@ -34,3 +34,8 @@
 **Model connection readiness:** after engineering QA, securely provide the checkpoint/label map/manifest and approved parity images privately. These artifacts are intentionally ignored by Git. The next PR must integrate verified loading and model-version tracking behind fail-closed gates and demonstrate real independent evaluation before any diagnostic route is exposed.
 
 See docs/README_FEATURE_AUDIT.md and GitHub Issue #20. This handoff never claims README section 51 is fully complete.
+
+## Additional integration guides (October 2026)
+
+- `docs/OIDC_BROWSER_INTEGRATION.md`: optional verified browser identity BFF. Populate web and API issuer/client settings, run real browser login tests, confirm metadata ownership and consent; no verified identity provider is bundled.
+- `docs/PRIVATE_MODEL_BENCHMARK.md`: offline private image CSV -> verified Keras runtime -> pseudonymized probability table -> subject-leakage-reviewed research metrics. Requires private real checkpoint, exact label map, dataset rights, real subject IDs and independent expert review. No public diagnosis endpoint is enabled.
