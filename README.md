@@ -1,5 +1,14 @@
 # DermaLens AI — Facial Skin Disease AI Platform
 
+## Protected research analysis integration — PR #30 (2026-10-22)
+
+**This application is not a clinically validated diagnostic device.** When independently configured with a genuine OIDC identity provider, database, and explicit `DERMALENS_ENABLE_ANALYSIS_WORKFLOW=true`, DermaLens accepts a protected in-memory image request, applies basic image-quality checks, and stores only consented, owner-scoped *non-diagnostic* metadata for at most 30 days. It does **not** store photographs or claim clinical probabilities. Unless a trusted training-run .keras checkpoint, exact label mapping, and independently approved clinical policy are available, the application **abstains**.
+
+The real workflow code resides in [analyses router](apps/api/dermalens_api/routers/analyses.py), [OIDC-authenticated Next.js history](apps/web/src/app/history/page.tsx), [server-side token proxy](apps/web/src/app/api/private/%5B...path%5D/route.ts), and [persistence](services/persistence/models.py). For exactly what remains unimplemented, see [gap-closure checklist](docs/FINAL_GAP_CLOSURE_CHECKLIST.md) and [technical research decisions](docs/TECHNICAL_RESEARCH_DECISIONS.md). No real trained checkpoint or independent clinical patient validation has been bundled or fabricated.
+
+---
+
+
 > **Phase 0 implementation note (2026-10-13):** The agreed 14-phase execution roadmap (Phase 0–13) lives in [docs/PHASE_TRACKER.md](docs/PHASE_TRACKER.md); it supersedes the older conceptual phase list in Section 50 for execution order. For implementable contracts and decisions see [docs/01_SYSTEM_ARCHITECTURE.md](docs/01_SYSTEM_ARCHITECTURE.md), [docs/08_API_AND_DATA_FLOW.md](docs/08_API_AND_DATA_FLOW.md), [docs/03_MODEL_AND_RESEARCH.md](docs/03_MODEL_AND_RESEARCH.md) and [docs/adr/README.md](docs/adr/README.md). Phase 0 is architecture/docs only: **no clinical diagnostic validation, production classifier or deployed app** is claimed.
 
 
