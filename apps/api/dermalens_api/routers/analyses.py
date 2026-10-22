@@ -60,18 +60,18 @@ async def create_analysis(
     length = request.headers.get("content-length", "")
     if length.isascii() and length.isdecimal() and int(length) > MAX_IMAGE_BYTES:
         raise DomainError(
-                ErrorCode.IMAGE_TOO_LARGE,
-                PUBLIC_MESSAGES[ErrorCode.IMAGE_TOO_LARGE],
-                413,
-            )
-    buffer = bytearray()
-    async for chunk in request.stream():
-        if len(buffer) + len(chunk) > MAX_IMAGE_BYTES:
-            raise DomainError(
             ErrorCode.IMAGE_TOO_LARGE,
             PUBLIC_MESSAGES[ErrorCode.IMAGE_TOO_LARGE],
             413,
         )
+    buffer = bytearray()
+    async for chunk in request.stream():
+        if len(buffer) + len(chunk) > MAX_IMAGE_BYTES:
+            raise DomainError(
+                ErrorCode.IMAGE_TOO_LARGE,
+                PUBLIC_MESSAGES[ErrorCode.IMAGE_TOO_LARGE],
+                413,
+            )
         buffer.extend(chunk)
     return create_research_analysis(
         session,

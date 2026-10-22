@@ -143,15 +143,9 @@ def get_owned_result(
     account = find_account(session, actor)
     if account is None or not history_consent(session, account):
         raise DomainError(
-                ErrorCode.NOT_FOUND,
-                PUBLIC_MESSAGES[ErrorCode.NOT_FOUND],
-                404,
-            )
-        record = session.scalar(
-            select(AnalysisRecord).where(
-                AnalysisRecord.id == identifier,
-                AnalysisRecord.account_id == account.id,
-            )
+            ErrorCode.NOT_FOUND,
+            PUBLIC_MESSAGES[ErrorCode.NOT_FOUND],
+            404,
         )
     record = session.scalar(
         select(AnalysisRecord).where(
@@ -163,10 +157,10 @@ def get_owned_result(
     )
     if record is None or record.result_ciphertext is None:
         raise DomainError(
-                ErrorCode.NOT_FOUND,
-                PUBLIC_MESSAGES[ErrorCode.NOT_FOUND],
-                404,
-            )
+            ErrorCode.NOT_FOUND,
+            PUBLIC_MESSAGES[ErrorCode.NOT_FOUND],
+            404,
+        )
     try:
         return decrypt_result(record.result_ciphertext, key)
     except ValueError as exc:
@@ -180,10 +174,10 @@ def delete_owned_result(session: Session, actor: Principal, identifier: str) -> 
         account = find_account(session, actor)
         if account is None or not history_consent(session, account):
             raise DomainError(
-            ErrorCode.NOT_FOUND,
-            PUBLIC_MESSAGES[ErrorCode.NOT_FOUND],
-            404,
-        )
+                ErrorCode.NOT_FOUND,
+                PUBLIC_MESSAGES[ErrorCode.NOT_FOUND],
+                404,
+            )
         record = session.scalar(
             select(AnalysisRecord).where(
                 AnalysisRecord.id == identifier,
@@ -192,8 +186,8 @@ def delete_owned_result(session: Session, actor: Principal, identifier: str) -> 
         )
         if record is None:
             raise DomainError(
-            ErrorCode.NOT_FOUND,
-            PUBLIC_MESSAGES[ErrorCode.NOT_FOUND],
-            404,
-        )
+                ErrorCode.NOT_FOUND,
+                PUBLIC_MESSAGES[ErrorCode.NOT_FOUND],
+                404,
+            )
         session.delete(record)
