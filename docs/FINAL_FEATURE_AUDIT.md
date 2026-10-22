@@ -30,6 +30,6 @@ The updated palette is a visual change and does not alter medical capabilities o
 
 The research-only API, encrypted research result metadata, independent split-leakage audit, and associated tests are additional source-level functionality. They do **not** claim clinical readiness. The old summary of nonclinical frontend functionality remains unchanged. Require passing CI on final SHA, OIDC provider integration, private checkpoint parity, representative licensed real-image assessment, security review, and safe browser experience before any product release.
 
-## Supplemental testable evaluation coverage (PR #33)
+## Supplemental testable evaluation coverage (PR #34)
 
 The research evaluation gains a complete confusion matrix, class-wise sensitivity/specificity and explicit undefined-denominator handling, plus a second independent perceptual image hash (DCT pHash) for cross-split potential duplicate review. No private images, artificial accuracy claims or model weights have been added. Existing real-world model/clinical/data/privacy limitations still apply. This section does not revise earlier per-row implementation totals without independent acceptance evidence.

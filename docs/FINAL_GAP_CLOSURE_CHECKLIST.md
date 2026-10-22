@@ -21,7 +21,7 @@ CI on the PR exercises Ruff, mypy, Python unit/integration tests, Next.js lint/t
 
 Never expose an automatically interpreted diagnosis or skin-cancer rule-out result without independent medically supervised evaluation. Research-only scores are uncalibrated and presented as such. Do not turn the existing `ResearchCalibration` exploratory candidate into a "clinical" threshold by renaming it. Real clinical validation cannot be invented from test fixtures.
 
-## Supplemental evaluation implementation — PR #33
+## Supplemental evaluation implementation — PR #34
 
 - Added complete 6×6 actual-vs-predicted confusion matrix and per-class TP, TN, FP, FN, sensitivity and specificity. Undefined denominators appear as null, never guessed zero.
 - Extended the offline image split audit with independent DCT-based pHash across all 8 orientations, in addition to existing SHA-256 and gradient-based dHash. Outputs are pseudonymous review candidates only. Pair report is bounded and rejects overwhelming duplicate batches rather than claiming successful validation.
