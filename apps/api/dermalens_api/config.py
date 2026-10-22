@@ -28,6 +28,10 @@ class Settings(BaseSettings):
     enable_image_storage: bool = False
     enable_research_image_opt_in: bool = False
     enable_image_quality_checks: bool = False
+    enable_analysis_workflow: bool = False
+    model_manifest_path: str | None = None
+    model_checkpoint_path: str | None = None
+    model_label_map_path: str | None = None
     enable_rag_assistant: bool = False
     grok_api_key: SecretStr | None = None
     grok_model: str = "grok-4.7"
@@ -73,9 +77,15 @@ class Settings(BaseSettings):
             self.grok_api_key is None or not self.grok_api_key.get_secret_value()
         ):
             raise ValueError("RAG requires a server-side Grok API key")
+        artifacts = (self.model_manifest_path, self.model_checkpoint_path,
+                     self.model_label_map_path)
+        if any(item is not None for item in artifacts) and not all(artifacts):
+            raise ValueError("model manifest, checkpoint and labels must be specified together")
         credentials = (self.oidc_issuer, self.oidc_audience, self.oidc_jwks_url)
         if any(value is not None for value in credentials) and not all(credentials):
             raise ValueError("OIDC issuer, audience and JWKS URL must be set together")
+        if self.enable_analysis_workflow and (not self.database_url or not all(credentials)):
+            raise ValueError("analysis workflow requires persistent database and signed OIDC")
         if self.database_url is not None:
             if not self.database_url.startswith(("postgresql+psycopg://", "sqlite+pysqlite://")):
                 raise ValueError("database_url must use PostgreSQL or test SQLite")

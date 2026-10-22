@@ -70,6 +70,10 @@ def list_history(
                 "model_version": record.model_version,
                 "pipeline_version": record.pipeline_version,
                 "created_at": record.created_at.isoformat(),
+                "reason": (
+                    __import__("json").loads(record.result_json).get("reason")
+                    if record.result_json else None
+                ),
             }
             for record in records
         ]
