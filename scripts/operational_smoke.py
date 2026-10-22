@@ -67,15 +67,16 @@ def run(api_origin: str, web_origin: str) -> None:
         _security_headers(headers)
         if code != 401 or b"NOT_AUTHORIZED" not in body:
             raise AssertionError("Protected API must reject anonymous access")
-    for target, method in (
-        ("/api/v1/copilot/query", "POST"),
-        ("/api/v1/analyses", "GET"),
-        ("/api/v1/analyses", "POST"),
+    # Analysis routes now exist, but must remain owner-protected and fail closed.
+    for target, method, expected, marker in (
+        ("/api/v1/copilot/query", "POST", 404, b"NOT_FOUND"),
+        ("/api/v1/analyses", "GET", 405, b"METHOD_NOT_ALLOWED"),
+        ("/api/v1/analyses", "POST", 401, b"NOT_AUTHORIZED"),
     ):
         code, body, headers = _request(api_origin, target, method=method)
         _security_headers(headers)
-        if code != 404 or b"NOT_FOUND" not in body:
-            raise AssertionError("Unconfigured or unvalidated research feature is exposed")
+        if code != expected or marker not in body:
+            raise AssertionError("Unconfigured or unvalidated research route is not guarded")
     code, body, headers = _request(
         api_origin, "/api/v1/docs/search?q=model%20preprocessing"
     )
