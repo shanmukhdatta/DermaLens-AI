@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import styles from "./history.module.css";
+import { FEEDBACK_CHOICES, FeedbackChoice, ResearchFeedback, validFeedbackResponse } from "@/lib/research-feedback";
 
 type Analysis = { id: string; status: string; model_version: string | null; pipeline_version: string | null; created_at: string };
 type SessionState = "loading" | "signed-out" | "signed-in" | "unavailable";
@@ -26,6 +27,8 @@ export default function HistoryPage() {
   const [photo, setPhoto] = useState<File | null>(null);
   const [researchConsent, setResearchConsent] = useState(false);
   const [result, setResult] = useState<ExperimentalResult | null>(null);
+  const [feedback, setFeedback] = useState<ResearchFeedback | null>(null);
+  const [feedbackChoice, setFeedbackChoice] = useState<FeedbackChoice>("unsure");
   const refresh = useCallback(async () => {
     const [account, analyses] = await Promise.all([fetch("/api/account", { cache: "no-store" }), fetch("/api/account/analyses", { cache: "no-store" })]);
     if (!account.ok || !analyses.ok) throw new Error("Account database or verified identity is unavailable.");
@@ -65,7 +68,7 @@ export default function HistoryPage() {
   }
   async function submitExperimentalImage() {
     if (!consent || !photo || !researchConsent || busy) return;
-    setBusy(true); setError(""); setResult(null);
+    setBusy(true); setError(""); setResult(null); setFeedback(null);
     try {
       if (!["image/jpeg", "image/png", "image/webp"].includes(photo.type) ||
         photo.size === 0 || photo.size > 8 * 1024 * 1024) {
@@ -92,8 +95,40 @@ export default function HistoryPage() {
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Research analysis unavailable."); }
     finally { setBusy(false); }
   }
+  async function loadFeedback(id: string) {
+    const response = await fetch("/api/research/" + encodeURIComponent(id) + "/feedback", { cache: "no-store" });
+    if (response.status === 404) { setFeedback(null); return; }
+    if (!response.ok) throw new Error("Research feedback could not be loaded.");
+    const value: unknown = await response.json();
+    if (!validFeedbackResponse(value)) throw new Error("Invalid feedback response.");
+    setFeedback(value); setFeedbackChoice(value.choice);
+  }
+  async function submitFeedback() {
+    if (!result || busy || feedback) return;
+    setBusy(true); setError("");
+    try {
+      const response = await fetch("/api/research/" + encodeURIComponent(result.analysis_id) + "/feedback", {
+        method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ choice: feedbackChoice }),
+      });
+      if (!response.ok) throw new Error(response.status === 409 ? "Feedback already exists." : "Feedback could not be saved.");
+      const value: unknown = await response.json();
+      if (!validFeedbackResponse(value)) throw new Error("Invalid feedback response.");
+      setFeedback(value);
+    } catch (cause) { setError(cause instanceof Error ? cause.message : "Feedback failed."); }
+    finally { setBusy(false); }
+  }
+  async function removeFeedback() {
+    if (!result || busy || !feedback) return;
+    setBusy(true); setError("");
+    try {
+      const response = await fetch("/api/research/" + encodeURIComponent(result.analysis_id) + "/feedback", { method: "DELETE" });
+      if (!response.ok) throw new Error("Feedback could not be removed.");
+      setFeedback(null);
+    } catch (cause) { setError(cause instanceof Error ? cause.message : "Feedback deletion failed."); }
+    finally { setBusy(false); }
+  }
   async function viewExperimentalResult(id: string) {
-    setBusy(true); setError(""); setResult(null);
+    setBusy(true); setError(""); setResult(null); setFeedback(null);
     try {
       const response = await fetch("/api/research/" + encodeURIComponent(id), { cache: "no-store" });
       if (!response.ok) throw new Error("This private research record is unavailable.");
@@ -102,6 +137,7 @@ export default function HistoryPage() {
         body.medical_diagnosis !== false || !("analysis_id" in body) ||
         body.analysis_id !== id) throw new Error("Invalid research result.");
       setResult(body as ExperimentalResult);
+      await loadFeedback(id);
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Unable to retrieve result."); }
     finally { setBusy(false); }
   }
@@ -111,7 +147,7 @@ export default function HistoryPage() {
     try {
       const response = await fetch("/api/research/" + encodeURIComponent(id), { method: "DELETE" });
       if (!response.ok) throw new Error("Record could not be deleted.");
-      setResult(null); await refresh();
+      setResult(null); setFeedback(null); await refresh();
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Deletion failed."); }
     finally { setBusy(false); }
   }
@@ -133,7 +169,7 @@ export default function HistoryPage() {
     try {
       const response = await fetch("/api/auth/logout", { method: "POST" });
       if (!response.ok) throw new Error("Could not sign out.");
-      setItems([]); setConsent(false); setState("signed-out");
+      setItems([]); setConsent(false); setResult(null); setFeedback(null); setState("signed-out");
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Sign-out failed."); }
     finally { setBusy(false); }
   }
@@ -183,10 +219,27 @@ export default function HistoryPage() {
       {result && <section className={styles.panel} aria-live="polite">
         <h2>Experimental research result</h2>
         <p>Research category: <strong>{result.research_category}</strong></p>
-        <p>Raw, uncalibrated model score: <strong>{result.raw_model_score.toFixed(3)}</strong></p>
+        <p>Uncalibrated experimental score (not a disease probability): <strong>{result.raw_model_score.toFixed(3)}</strong></p>
         <p>Model version: {result.model.version}</p>
         <p className="notice notice-warn">{result.notice}</p>
         <p className="microcopy">A model category or score cannot diagnose or rule out a skin condition.</p>
+        <div className={styles.feedback}>
+          <h3>Optional research feedback</h3>
+          <p>Feedback is submitted for manual review. It is not a verified medical label and cannot automatically train a model.</p>
+          {feedback ? <>
+            <p role="status">Submitted: {FEEDBACK_CHOICES.find(item => item.value === feedback.choice)?.label}
+              {" · "}Review status: {feedback.review_status}</p>
+            <button type="button" className="button button-outline" disabled={busy} onClick={removeFeedback}>Remove feedback</button>
+          </> : <>
+            <label htmlFor="research-feedback-choice">How would you describe this research output?</label>
+            <select id="research-feedback-choice" className={styles.feedbackSelect}
+              disabled={busy} value={feedbackChoice}
+              onChange={event => setFeedbackChoice(event.target.value as FeedbackChoice)}>
+              {FEEDBACK_CHOICES.map(item => <option key={item.value} value={item.value}>{item.label}</option>)}
+            </select>
+            <button type="button" className="button button-outline" disabled={busy} onClick={submitFeedback}>Submit feedback</button>
+          </>}
+        </div>
       </section>}
       <section className={styles.panel}><h2>Analysis history</h2>
       {items.length === 0 ? <p>No saved analyses are available. This is expected before verified medical analysis is released.</p> :

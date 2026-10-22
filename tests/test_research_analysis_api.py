@@ -110,6 +110,23 @@ def test_gated_research_upload_and_private_encrypted_history(
             assert saved is not None and saved.result_ciphertext is not None
             assert b"Acne" not in saved.result_ciphertext
             assert decrypt_result(saved.result_ciphertext, key)["analysis_id"] == identifier
+        # Swapping ciphertext between existing records must never reveal another result.
+        other = client.post("/api/v1/analyses", content=photo(), headers=headers("alice"))
+        assert other.status_code == 201
+        other_id = other.json()["analysis_id"]
+        with app.state.db_session_factory.begin() as session:
+            original = session.scalar(select(AnalysisRecord).where(AnalysisRecord.id == identifier))
+            other_record = session.scalar(select(AnalysisRecord).where(AnalysisRecord.id == other_id))
+            assert original is not None and other_record is not None
+            previous_ciphertext = original.result_ciphertext
+            original.result_ciphertext = other_record.result_ciphertext
+        assert client.get(
+            f"/api/v1/analyses/{identifier}", headers=headers("alice")
+        ).status_code == 503
+        with app.state.db_session_factory.begin() as session:
+            original = session.scalar(select(AnalysisRecord).where(AnalysisRecord.id == identifier))
+            assert original is not None
+            original.result_ciphertext = previous_ciphertext
         assert client.delete(
             f"/api/v1/analyses/{identifier}", headers=headers("bob")
         ).status_code == 404
