@@ -7,7 +7,8 @@ Offline evaluation, artifact verification, CLI review and operational smoke. Sta
 ## Direct file index
 
 - `check_repository_hygiene.py` — Python module / executable logic
-- `evaluate_predictions.py` — Python module / executable logic
+- `audit_dataset.py` — offline cross-split subject/sha/dHash/pHash audit on authorized photos; reports pair tokens without paths
+- `evaluate_predictions.py` — reports true/predicted six-class confusion matrix, sensitivity, specificity, F1, Brier and ECE from *authorized* held-out metadata
 - `build_private_prediction_table.py` — private manifest-to-real-checkpoint offline batch evaluator; see `docs/PRIVATE_MODEL_BENCHMARK.md`
 - `export_verified_predictions.py` — Python module / executable logic
 - `fit_calibration_policy.py` — Python module / executable logic
@@ -17,9 +18,9 @@ Offline evaluation, artifact verification, CLI review and operational smoke. Sta
 - `review_population_drift.py` — Python module / executable logic
 - `validate_phase0.py` — Python module / executable logic
 - `verify_model_package.py` — Python module / executable logic
-- `package_trained_model.py` — generate a SHA256 candidate-only manifest from privately supplied real artifacts
-- `export_original_predictor_reference.py` — run the original research DiseasePredictor to export exact reference probabilities
-- `check_model_parity.py` — compare deployed adapter probabilities against a private original-predictor reference
+- `package_trained_model.py` — build a SHA256 candidate-only manifest from real private artifacts
+- `export_original_predictor_reference.py` — record the original DiseasePredictor reference on private images
+- `check_model_parity.py` — compare deployed Keras adapter results with private original-predictor references
 
 ## Architecture and internal workflow
 

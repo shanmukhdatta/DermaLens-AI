@@ -63,3 +63,10 @@ python -m scripts.validate_phase0
 ```
 
 These are **recommended commands**, not a claim they were executed during this documentation change. Record commit SHA, test output and independent integration evidence before changing audit state.
+
+## Current research-evaluation additions
+
+- [Confusion-matrix, sensitivity, specificity, and denominator semantics](EVALUATION_CONFUSION_METRICS.md)
+- [Dual perceptual-hash independent image split review](PERCEPTUAL_DUPLICATE_AUDIT.md)
+- [Gap-closure acceptance by code path](FINAL_GAP_CLOSURE_CHECKLIST.md)
+- [Technical research and architecture decisions](TECHNICAL_RESEARCH_DECISIONS.md)

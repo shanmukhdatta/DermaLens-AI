@@ -105,21 +105,37 @@ def _stats(rows: list[dict[str, str]], labels: tuple[str, ...]) -> dict[str, Any
     prediction = np.argmax(prob, axis=1)
     correct = prediction == y_true
     total = len(rows)
+    # Full closed-set six-class confusion matrix: true labels are rows,
+    # predicted indices are columns. This reports observed errors rather
+    # than relying on precision/recall alone.
+    matrix = np.zeros((len(labels), len(labels)), dtype=np.int64)
+    np.add.at(matrix, (y_true, prediction), 1)
     class_metrics = {}
     per_class_f1 = []
     for cls_idx, name in enumerate(labels):
         tp = int(np.sum((prediction == cls_idx) & (y_true == cls_idx)))
         fp = int(np.sum((prediction == cls_idx) & (y_true != cls_idx)))
         fn = int(np.sum((prediction != cls_idx) & (y_true == cls_idx)))
+        tn = total - tp - fp - fn
         support = int(np.sum(y_true == cls_idx))
         precision = tp / (tp + fp) if tp + fp else 0.0
         recall = tp / support if support else 0.0
         f1 = 2 * tp / (2 * tp + fp + fn) if 2 * tp + fp + fn else 0.0
+        # Unavailable denominators must be explicit; "0" would imply a
+        # measured failure rather than a class missing from the test set.
+        sensitivity = round(recall, 5) if support else None
+        specificity = round(tn / (tn + fp), 5) if tn + fp else None
         per_class_f1.append(f1)
         class_metrics[name] = {
             "support": support,
             "precision": round(precision, 5),
             "recall": round(recall, 5),
+            "sensitivity": sensitivity,
+            "specificity": specificity,
+            "true_positive": tp,
+            "true_negative": tn,
+            "false_positive": fp,
+            "false_negative": fn,
             "f1": round(f1, 5),
         }
 
@@ -149,6 +165,12 @@ def _stats(rows: list[dict[str, str]], labels: tuple[str, ...]) -> dict[str, Any
         "n": total,
         "accuracy": round(float(correct.mean()), 5),
         "macro_f1": round(float(np.mean(per_class_f1)), 5),
+        "confusion_matrix": {
+            "labels": list(labels),
+            "rows_are": "actual",
+            "columns_are": "predicted",
+            "counts": matrix.tolist(),
+        },
         "brier_multiclass": round(brier, 5),
         "negative_log_likelihood": round(nll, 5),
         "ece_10_bins_exploratory": round(ece, 5),

@@ -13,10 +13,13 @@ from io import BytesIO
 from pathlib import Path
 from typing import Literal
 
+import cv2
+import numpy as np
 from PIL import Image, ImageOps
 
 MAX_RECORDS = 250_000
 MAX_IMAGE_BYTES = 20 * 1024 * 1024
+MAX_REVIEW_PAIRS = 100_000
 SPLITS = frozenset({"train", "calibration", "validation", "test"})
 SOURCES = frozenset({"real", "synthetic"})
 
@@ -47,6 +50,7 @@ class DatasetAudit:
     possible_near_cross_split_pairs: int
     review_pair_tokens: tuple[str, ...]
     warnings: tuple[str, ...]
+    possible_phash_cross_split_pairs: int = 0
 
     @property
     def independent_test_cleared(self) -> bool:
@@ -58,6 +62,7 @@ class DatasetAudit:
             and self.cross_split_subject_groups == 0
             and self.exact_cross_split_pairs == 0
             and self.possible_near_cross_split_pairs == 0
+            and self.possible_phash_cross_split_pairs == 0
             and self.real_records == self.records
         )
 
@@ -85,6 +90,66 @@ def _canonical_dhash(raw: bytes) -> int:
                         value = (value << 1) | int(pixels[y * 9 + x] > pixels[y * 9 + x + 1])
                 hashes.append(value)
     return min(hashes)
+
+
+def _phash_single(image: Image.Image) -> int:
+    """64-bit low-frequency perceptual hash, excluding DC for its threshold.
+
+    Median DCT coefficients are robust to moderate global illumination changes.
+    Similarity indicates a candidate duplicate; it does NOT establish identity.
+    """
+    gray = np.asarray(
+        image.convert("L").resize((32, 32), Image.Resampling.BILINEAR),
+        dtype=np.float32,
+    )
+    coefficients = cv2.dct(gray)[:8, :8].ravel()
+    threshold = float(np.median(coefficients[1:]))
+    result = 0
+    for value in coefficients:
+        result = (result << 1) | int(float(value) > threshold)
+    return result
+
+
+def _canonical_phash(raw: bytes) -> int:
+    """Orientation-robust pHash, independent of gradient-based dHash."""
+    with Image.open(BytesIO(raw)) as image:
+        image.load()
+        base = ImageOps.exif_transpose(image).convert("RGB")
+        variants = []
+        for mirror in (False, True):
+            oriented = ImageOps.mirror(base) if mirror else base
+            for degrees in (0, 90, 180, 270):
+                variants.append(_phash_single(oriented.rotate(degrees, expand=True)))
+    return min(variants)
+
+
+def _near_pairs(
+    hashes: list[int],
+    rows: list[DatasetRecord],
+    digests: list[str],
+    threshold: int,
+) -> set[tuple[int, int]]:
+    """Exact <=7-bit candidate generation with independent 8-byte buckets."""
+    buckets: dict[tuple[int, int], list[int]] = defaultdict(list)
+    pairs: set[tuple[int, int]] = set()
+    for index, value in enumerate(hashes):
+        candidates: set[int] = set()
+        for segment in range(8):
+            chunk = (value >> (segment * 8)) & 255
+            candidates.update(buckets[(segment, chunk)])
+            buckets[(segment, chunk)].append(index)
+        for previous in candidates:
+            if rows[previous].split == rows[index].split:
+                continue
+            if digests[previous] == digests[index]:
+                continue
+            if (value ^ hashes[previous]).bit_count() <= threshold:
+                pairs.add((previous, index))
+                if len(pairs) > MAX_REVIEW_PAIRS:
+                    raise ValueError(
+                        "Too many near-duplicate review pairs; split audit into smaller batches"
+                    )
+    return pairs
 
 
 def _safe_file(root: Path, relative: str) -> Path:
@@ -121,6 +186,7 @@ def audit_dataset(
     subjects: dict[str, set[str]] = defaultdict(set)
     digest_groups: dict[str, list[int]] = defaultdict(list)
     hashes: list[int] = []
+    phashes: list[int] = []
     digests: list[str] = []
     absent = 0
     real_count = 0
@@ -143,6 +209,7 @@ def audit_dataset(
         digest_groups[digest].append(idx)
         try:
             hashes.append(_canonical_dhash(image_bytes))
+            phashes.append(_canonical_phash(image_bytes))
         except (OSError, ValueError, Image.DecompressionBombError) as exc:
             raise ValueError("Invalid image in dataset manifest") from exc
     cross_subjects = sum(len(group_splits) > 1 for group_splits in subjects.values())
@@ -152,26 +219,20 @@ def audit_dataset(
             for right in ids[i + 1 :]:
                 if rows[left].split != rows[right].split:
                     exact_pairs.add((left, right))
-    # <=7 bit Hamming differences imply at least one of eight 8-bit blocks
-    # matches; this is exact candidate generation, not a prefix-only heuristic.
-    buckets: dict[tuple[int, int], list[int]] = defaultdict(list)
-    potential: set[tuple[int, int]] = set()
-    for idx, dh in enumerate(hashes):
-        candidates: set[int] = set()
-        for segment in range(8):
-            chunk = (dh >> (segment * 8)) & 255
-            candidates.update(buckets[(segment, chunk)])
-            buckets[(segment, chunk)].append(idx)
-        for prev in candidates:
-            if rows[prev].split == rows[idx].split or digests[prev] == digests[idx]:
-                continue
-            if (dh ^ hashes[prev]).bit_count() <= hamming_threshold:
-                potential.add((prev, idx))
+                    if len(exact_pairs) > MAX_REVIEW_PAIRS:
+                        raise ValueError(
+                            "Too many exact duplicate pairs; split audit into smaller batches"
+                        )
+    potential = _near_pairs(hashes, rows, digests, hamming_threshold)
+    perceptual = _near_pairs(phashes, rows, digests, hamming_threshold)
+    combined = potential | perceptual
+    if len(combined) > MAX_REVIEW_PAIRS:
+        raise ValueError("Too many duplicate review pairs for bounded reporting")
     tokens = tuple(
         sorted(
             {
                 _pair_token(digests[a] + ":" + str(a), digests[b] + ":" + str(b))
-                for a, b in exact_pairs | potential
+                for a, b in exact_pairs | combined
             }
         )
     )
@@ -184,6 +245,8 @@ def audit_dataset(
         warnings.append("EXACT_IMAGE_DUPLICATES_CROSS_SPLIT")
     if potential:
         warnings.append("VISUAL_SIMILARITY_REQUIRES_MANUAL_REVIEW")
+    if perceptual:
+        warnings.append("PHASH_VISUAL_SIMILARITY_REQUIRES_MANUAL_REVIEW")
     if real_count != len(rows):
         warnings.append("SYNTHETIC_DATA_NOT_INDEPENDENT_CLINICAL_VALIDATION")
     if not splits.get("test") or not splits.get("calibration"):
@@ -195,7 +258,8 @@ def audit_dataset(
         missing_subject_groups=absent,
         cross_split_subject_groups=cross_subjects,
         exact_cross_split_pairs=len(exact_pairs),
-        possible_near_cross_split_pairs=len(potential),
+        possible_near_cross_split_pairs=len(combined),
+        possible_phash_cross_split_pairs=len(perceptual),
         review_pair_tokens=tokens,
         warnings=tuple(warnings),
     )
