@@ -9,6 +9,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 
 from sqlalchemy import delete, select
+from sqlalchemy.engine import CursorResult
 from sqlalchemy.orm import Session
 
 from services.persistence.models import AnalysisRecord
@@ -54,4 +55,6 @@ def prune_expired_analyses(
                 AnalysisRecord.expires_at <= boundary,
             )
         )
+        if not isinstance(deleted, CursorResult):
+            raise RuntimeError("Expected cursor result for deletion")
         return max(0, deleted.rowcount)
