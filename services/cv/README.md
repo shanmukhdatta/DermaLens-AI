@@ -15,6 +15,7 @@ Bounded image parsing, experimental face geometry, model manifest and offline in
 - `ports.py` — Python module / executable logic
 - `quality.py` — Python module / executable logic
 - `runtime.py` — Python module / executable logic
+- `parity.py` — pure numeric/label/checksum comparator against the research predictor
 
 ## Architecture and internal workflow
 

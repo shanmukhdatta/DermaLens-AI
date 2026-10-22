@@ -18,6 +18,9 @@ Offline evaluation, artifact verification, CLI review and operational smoke. Sta
 - `review_population_drift.py` — Python module / executable logic
 - `validate_phase0.py` — Python module / executable logic
 - `verify_model_package.py` — Python module / executable logic
+- `package_trained_model.py` — build a SHA256 candidate-only manifest from real private artifacts
+- `export_original_predictor_reference.py` — record the original DiseasePredictor reference on private images
+- `check_model_parity.py` — compare deployed Keras adapter results with private original-predictor references
 
 ## Architecture and internal workflow
 
