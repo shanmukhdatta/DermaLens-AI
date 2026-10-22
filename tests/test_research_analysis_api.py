@@ -86,7 +86,7 @@ def test_gated_research_upload_and_private_encrypted_history(
             == 403
         )
         assert client.put(
-            "/api/v1/account/history-consent", json={"enabled": True}, headers=headers("alice")
+            "/api/v1/account/history-consent", json={"enabled": True}, headers={"Authorization": "Bearer alice"}
         ).status_code == 200
         response = client.post("/api/v1/analyses", content=photo(), headers=headers("alice"))
         assert response.status_code == 201, response.text
