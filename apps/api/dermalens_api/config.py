@@ -29,6 +29,13 @@ class Settings(BaseSettings):
     enable_research_image_opt_in: bool = False
     enable_image_quality_checks: bool = False
     enable_rag_assistant: bool = False
+    # Gated, non-clinical research-only analysis workflow.
+    enable_research_analyses: bool = False
+    result_encryption_key: SecretStr | None = None
+    model_manifest_path: str | None = None
+    model_checkpoint_path: str | None = None
+    model_label_map_path: str | None = None
+    research_history_days: int = Field(default=30, ge=1, le=90)
     grok_api_key: SecretStr | None = None
     grok_model: str = "grok-4.7"
     database_url: str | None = None
@@ -73,6 +80,20 @@ class Settings(BaseSettings):
             self.grok_api_key is None or not self.grok_api_key.get_secret_value()
         ):
             raise ValueError("RAG requires a server-side Grok API key")
+        if self.enable_research_analyses:
+            if self.env == "production":
+                raise ValueError("unvalidated research analysis must not run in production")
+            if not self.database_url or not self.result_encryption_key:
+                raise ValueError("research analysis requires persistence and result encryption")
+            if self.env != "test" and not all(
+                (self.model_manifest_path, self.model_checkpoint_path, self.model_label_map_path)
+            ):
+                raise ValueError("a real verified research model package is required")
+            from cryptography.fernet import Fernet
+            try:
+                Fernet(self.result_encryption_key.get_secret_value().encode("ascii"))
+            except (ValueError, TypeError, UnicodeError) as exc:
+                raise ValueError("invalid research result encryption key") from exc
         credentials = (self.oidc_issuer, self.oidc_audience, self.oidc_jwks_url)
         if any(value is not None for value in credentials) and not all(credentials):
             raise ValueError("OIDC issuer, audience and JWKS URL must be set together")
