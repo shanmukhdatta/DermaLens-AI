@@ -8,6 +8,7 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Request, Response
 from sqlalchemy.orm import Session
 
+from apps.api.dermalens_api.config import Settings
 from apps.api.dermalens_api.dependencies import require_verified_actor
 from apps.api.dermalens_api.routers.account import database_session
 from packages.common.errors import PUBLIC_MESSAGES, DomainError, ErrorCode
@@ -23,7 +24,7 @@ router = APIRouter(prefix="/analyses", tags=["Protected experimental research"])
 
 
 def _research_key(request: Request) -> str:
-    config = request.app.state.settings
+    config: Settings = request.app.state.settings
     if (
         not config.enable_research_analyses
         or config.result_encryption_key is None
