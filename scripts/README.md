@@ -7,7 +7,8 @@ Offline evaluation, artifact verification, CLI review and operational smoke. Sta
 ## Direct file index
 
 - `check_repository_hygiene.py` — Python module / executable logic
-- `evaluate_predictions.py` — Python module / executable logic
+- `audit_dataset.py` — offline cross-split subject/sha/dHash/pHash audit on authorized photos; reports pair tokens without paths
+- `evaluate_predictions.py` — reports true/predicted six-class confusion matrix, sensitivity, specificity, F1, Brier and ECE from *authorized* held-out metadata
 - `build_private_prediction_table.py` — private manifest-to-real-checkpoint offline batch evaluator; see `docs/PRIVATE_MODEL_BENCHMARK.md`
 - `export_verified_predictions.py` — Python module / executable logic
 - `fit_calibration_policy.py` — Python module / executable logic

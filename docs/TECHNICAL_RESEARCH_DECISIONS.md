@@ -25,3 +25,9 @@ For deployment in India, assess the [MeitY DPDP Rules 2025](https://www.meity.go
 
 ## 7. Explicitly rejected shortcuts
 No random/synthetic inference substituted for a real model; no medical validation claimed from CI; no automated online retraining from raw feedback; no external API key in browser; no automatic cloud deployment or clinical-facing classification.
+
+## Complementary near-duplicate evidence and explicit class-specific metrics
+
+Existing dHash alone can miss image edits. The additional 64-bit DCT pHash is independently computed with an eight-orientation canonical minimum and cross-split Hamming threshold ≤7; either channel flags a review pair, never auto-merges patients. Eight 8-bit candidate buckets avoid unbounded all-pairs comparison for ordinary cases. The analysis refuses more than 100,000 review pairs rather than silently truncating evidence. See [perceptual audit guide](PERCEPTUAL_DUPLICATE_AUDIT.md).
+
+Existing metrics lacked explicit sensitivity/specificity and the full observed confusion matrix. The held-out evaluation report now includes confusion matrix label order, integer TP/TN/FP/FN, per-class sensitivity and specificity with null whenever denominators are unavailable. This does not imply clinical sensitivity or specificity without a genuine representative population. See [evaluation guide](EVALUATION_CONFUSION_METRICS.md).

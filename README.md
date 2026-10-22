@@ -2608,3 +2608,11 @@ The frontend uses a minimal warm orange-and-white appearance. **This does not ch
 ## Opt-in protected research analysis
 
 The optional **nonclinical** POST/GET/DELETE research analysis workflow uses verified Keras research artifacts, owner-scoped OIDC authorization, consent, bounded photo decoding and Fernet-encrypted metadata (without raw photo retention). Production serving is disabled by configuration. The real checkpoint, independent real-world clinical validation, approved calibration and regulatory/privacy sign-off are not provided. See [research integration](docs/RESEARCH_ANALYSIS_IMPLEMENTATION.md), [dataset audit](docs/DATASET_INTEGRITY_PIPELINE.md), and [gap checklist](docs/FINAL_GAP_CLOSURE_CHECKLIST.md).
+
+
+## Research audit enhancement — confusion matrix and cross-split pHash (2026-10-22)
+
+- [Confusion matrix and class-level sensitivity/specificity](docs/EVALUATION_CONFUSION_METRICS.md)
+- [Two-channel dHash+pHash duplicate review](docs/PERCEPTUAL_DUPLICATE_AUDIT.md)
+
+Both features operate on permitted offline research data. Passing their fixture tests is **not** proof of skin-disease diagnostic accuracy.
