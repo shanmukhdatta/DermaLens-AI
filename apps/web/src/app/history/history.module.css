@@ -15,3 +15,8 @@
 .panel .toggle { margin: 15px 0; white-space: normal; }
 .records button { font: inherit; border: 1px solid #e9e0d9; padding: 7px 11px; border-radius: 8px; background: #fff; color: #9f452f; cursor: pointer; }
 .records button:disabled { opacity: .5; cursor: not-allowed; }
+
+.feedback { border-top: 1px solid #e9e0d9; margin-top: 24px; padding-top: 20px; }
+.feedback h3 { font-size: 17px; margin: 0 0 8px; }
+.feedbackSelect { display: block; padding: 12px; border: 1px solid #d8c2b6; border-radius: 10px; max-width: 100%; margin: 12px 0; background: #fff; color: #242424; }
+.feedbackSelect:focus-visible { outline: 3px solid #d97757; outline-offset: 3px; }

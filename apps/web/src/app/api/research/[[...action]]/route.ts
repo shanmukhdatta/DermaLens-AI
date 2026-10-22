@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getAuthConfig, readSession, sameOrigin } from "@/lib/auth-server";
+import { parseFeedbackInput } from "@/lib/research-feedback";
 
 type Context = { params: Promise<{ action?: string[] }> };
 const MAX_UPLOAD = 8 * 1024 * 1024;
@@ -12,8 +13,11 @@ async function forward(request: NextRequest, context: Context, method: "POST" | 
   catch { return NextResponse.json({ error: "Research account service unavailable." }, { status: 503 }); }
 
   const parts = (await context.params).action || [];
-  const id = parts.length === 1 && ID.test(parts[0]) ? parts[0] : null;
-  if ((method === "POST" && parts.length !== 0) || (method !== "POST" && id === null)) {
+  const isUpload = method === "POST" && parts.length === 0;
+  const isRecord = parts.length === 1 && ID.test(parts[0]);
+  const isFeedback = parts.length === 2 && ID.test(parts[0]) && parts[1] === "feedback";
+  const id = isRecord || isFeedback ? parts[0] : null;
+  if (!(isUpload || isFeedback || (method !== "POST" && isRecord))) {
     return NextResponse.json({ error: "Not found." }, { status: 404 });
   }
   if (method !== "GET" && !sameOrigin(request, config)) {
@@ -24,7 +28,7 @@ async function forward(request: NextRequest, context: Context, method: "POST" | 
   let payload: Uint8Array<ArrayBuffer> | undefined;
   let contentType: string | undefined;
 
-  if (method === "POST") {
+  if (isUpload) {
     contentType = request.headers.get("content-type")?.split(";")[0].trim().toLowerCase();
     if (!contentType || !["image/jpeg", "image/png", "image/webp"].includes(contentType)) {
       return NextResponse.json({ error: "Expected a supported image." }, { status: 415 });
@@ -53,9 +57,31 @@ async function forward(request: NextRequest, context: Context, method: "POST" | 
     for (const part of chunks) { payload.set(part, position); position += part.byteLength; }
   }
 
+  if (isFeedback && method === "POST") {
+    if (request.headers.get("content-type")?.split(";")[0].trim() !== "application/json") {
+      return NextResponse.json({ error: "Expected JSON feedback." }, { status: 415 });
+    }
+    const length = Number(request.headers.get("content-length") || "0");
+    if (!Number.isFinite(length) || length > 256) {
+      return NextResponse.json({ error: "Feedback request too large." }, { status: 413 });
+    }
+    let input: unknown;
+    try {
+      const raw = await request.text();
+      if (raw.length > 256) return NextResponse.json({ error: "Feedback request too large." }, { status: 413 });
+      input = JSON.parse(raw) as unknown;
+    } catch {
+      return NextResponse.json({ error: "Invalid JSON feedback." }, { status: 422 });
+    }
+    const choice = parseFeedbackInput(input);
+    if (!choice) return NextResponse.json({ error: "Invalid feedback choice." }, { status: 422 });
+    payload = new TextEncoder().encode(JSON.stringify({ choice }));
+    contentType = "application/json";
+  }
+
   try {
     const upstream = await fetch(
-      config.apiBase + "/api/v1/analyses" + (id ? "/" + id : ""),
+      config.apiBase + "/api/v1/analyses" + (id ? "/" + id : "") + (isFeedback ? "/feedback" : ""),
       {
         method,
         headers: {
@@ -64,7 +90,7 @@ async function forward(request: NextRequest, context: Context, method: "POST" | 
         },
         ...(payload ? { body: payload } : {}),
         cache: "no-store",
-        signal: AbortSignal.timeout(90_000),
+        signal: AbortSignal.timeout(isUpload ? 90_000 : 8_000),
       },
     );
     return new NextResponse(upstream.status === 204 ? null : await upstream.text(), {

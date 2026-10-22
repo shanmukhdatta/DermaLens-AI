@@ -162,8 +162,20 @@ def get_owned_result(
             404,
         )
     try:
-        return decrypt_result(record.result_ciphertext, key)
-    except ValueError as exc:
+        value = decrypt_result(record.result_ciphertext, key)
+        # Encryption authenticates bytes but not which database row they belong to.
+        # Refuse ciphertext transplanted from another analysis or model version.
+        if (
+            value.get("analysis_id") != record.id
+            or value.get("status") != "completed"
+            or value.get("medical_diagnosis") is not False
+            or value.get("decision") != "RESEARCH_ONLY_UNCALIBRATED"
+            or not isinstance(value.get("model"), dict)
+            or value["model"].get("version") != record.model_version
+        ):
+            raise ValueError("Encrypted research result is incompatible with its owning record")
+        return value
+    except (ValueError, TypeError) as exc:
         raise DomainError(
             ErrorCode.INTERNAL_ERROR, PUBLIC_MESSAGES[ErrorCode.INTERNAL_ERROR], 503
         ) from exc
