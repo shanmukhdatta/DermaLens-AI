@@ -14,7 +14,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
     <html lang="en">
       <body>
         <SiteHeader />
-        {children}
+        <div id="main-content" tabIndex={-1}>{children}</div>
         <SiteFooter />
       </body>
     </html>
