@@ -121,6 +121,7 @@ async def create_analysis(
             503,
         ) from None
 
+    result: dict[str, Any]
     if not quality.accepted:
         result = {
             "status": "rejected",
