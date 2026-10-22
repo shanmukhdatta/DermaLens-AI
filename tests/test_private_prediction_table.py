@@ -55,7 +55,10 @@ def fixtures(
         dict(
             zip(
                 FIELDS,
-                ("a.png", "original-a", "person-one", "train", "fixture", "acne", "unknown", "unknown"),
+                (
+                    "a.png", "original-a", "person-one", "train",
+                    "fixture", "acne", "unknown", "unknown",
+                ),
                 strict=True,
             )
         ),
