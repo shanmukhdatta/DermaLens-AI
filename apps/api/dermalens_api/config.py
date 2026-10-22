@@ -77,8 +77,11 @@ class Settings(BaseSettings):
             self.grok_api_key is None or not self.grok_api_key.get_secret_value()
         ):
             raise ValueError("RAG requires a server-side Grok API key")
-        artifacts = (self.model_manifest_path, self.model_checkpoint_path,
-                     self.model_label_map_path)
+        artifacts = (
+            self.model_manifest_path,
+            self.model_checkpoint_path,
+            self.model_label_map_path,
+        )
         if any(item is not None for item in artifacts) and not all(artifacts):
             raise ValueError("model manifest, checkpoint and labels must be specified together")
         credentials = (self.oidc_issuer, self.oidc_audience, self.oidc_jwks_url)

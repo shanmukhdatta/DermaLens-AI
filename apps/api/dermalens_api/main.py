@@ -56,7 +56,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         from services.cv.keras_runtime import VerifiedKerasModel
 
         app.state.model_runtime = VerifiedKerasModel(
-            Path(config.model_manifest_path), Path(config.model_checkpoint_path),
+            Path(config.model_manifest_path),
+            Path(config.model_checkpoint_path),
             Path(config.model_label_map_path),
         )
     app.state.readiness_gates = ReadinessGates(model_runtime=app.state.model_runtime)

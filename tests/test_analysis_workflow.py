@@ -1,4 +1,5 @@
 """Protected owner-scoped image analysis path, persisted abstention and erasure."""
+
 from __future__ import annotations
 
 import io
@@ -54,34 +55,52 @@ def _image() -> bytes:
 
 def _accepted(_: bytes) -> QualityReport:
     return QualityReport(
-        accepted=True, reasons=(), warnings=(), width=256, height=256,
-        face_count=1, blur_signal=120.0, brightness_signal=90.0,
+        accepted=True,
+        reasons=(),
+        warnings=(),
+        width=256,
+        height=256,
+        face_count=1,
+        blur_signal=120.0,
+        brightness_signal=90.0,
     )
 
 
-def test_requires_database_oidc_and_explicit_consent(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_requires_database_oidc_and_explicit_consent(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     with pytest.raises(ValueError, match="persistent database and signed OIDC"):
         Settings(env="test", enable_analysis_workflow=True)
     client, _ = _client(tmp_path)
     monkeypatch.setattr("apps.api.dermalens_api.routers.analyses.inspect_image", _accepted)
     with client:
         assert client.post("/api/v1/analyses", content=_image()).status_code == 401
-        assert client.post("/api/v1/analyses", headers=_auth("alice"),
-                           content=_image()).status_code == 409
-        assert client.put("/api/v1/account/history-consent",
-                          json={"enabled": True}, headers=_auth("alice")).status_code == 200
+        assert (
+            client.post("/api/v1/analyses", headers=_auth("alice"), content=_image()).status_code
+            == 409
+        )
+        assert (
+            client.put(
+                "/api/v1/account/history-consent", json={"enabled": True}, headers=_auth("alice")
+            ).status_code
+            == 200
+        )
 
 
-def test_owner_scoped_persistent_abstention_and_erasure(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+def test_owner_scoped_persistent_abstention_and_erasure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
     client, app = _client(tmp_path)
     monkeypatch.setattr("apps.api.dermalens_api.routers.analyses.inspect_image", _accepted)
     with client:
         for actor in ("alice", "bob"):
-            assert client.put("/api/v1/account/history-consent",
-                              headers=_auth(actor),
-                              json={"enabled": True}).status_code == 200
-        result = client.post("/api/v1/analyses", headers=_auth("alice"),
-                             content=_image())
+            assert (
+                client.put(
+                    "/api/v1/account/history-consent", headers=_auth(actor), json={"enabled": True}
+                ).status_code
+                == 200
+            )
+        result = client.post("/api/v1/analyses", headers=_auth("alice"), content=_image())
         assert result.status_code == 201, result.text
         saved = result.json()
         assert saved["medical_diagnosis"] is False
@@ -111,14 +130,25 @@ def test_disabled_and_body_validation(tmp_path: Path, monkeypatch: pytest.Monkey
     client, _ = _client(tmp_path, enabled=True)
     monkeypatch.setattr("apps.api.dermalens_api.routers.analyses.inspect_image", _accepted)
     with client:
-        client.put("/api/v1/account/history-consent",
-                   headers=_auth("alice"), json={"enabled": True})
-        assert client.post("/api/v1/analyses",
-                           headers={"Authorization": "Bearer alice", "Content-Type": "text/plain"},
-                           content=b"garbage").status_code == 415
-        assert client.post("/api/v1/analyses",
-                           headers={**_auth("alice"), "Content-Length": str(9000000)},
-                           content=_image()).status_code == 413
+        client.put(
+            "/api/v1/account/history-consent", headers=_auth("alice"), json={"enabled": True}
+        )
+        assert (
+            client.post(
+                "/api/v1/analyses",
+                headers={"Authorization": "Bearer alice", "Content-Type": "text/plain"},
+                content=b"garbage",
+            ).status_code
+            == 415
+        )
+        assert (
+            client.post(
+                "/api/v1/analyses",
+                headers={**_auth("alice"), "Content-Length": str(9000000)},
+                content=_image(),
+            ).status_code
+            == 413
+        )
 
 
 def test_alembic_result_metadata_migration(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
