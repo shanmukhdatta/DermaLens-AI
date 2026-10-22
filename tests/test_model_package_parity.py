@@ -75,4 +75,8 @@ def test_parity_checks_versions_images_class_index_and_values() -> None:
     with pytest.raises(ValueError, match="label indices"):
         verify_prediction_parity({**ref, "ordered_labels": list(LABELS[::-1])}, pred, **values)
     with pytest.raises(ValueError, match="parity"):
-        verify_prediction_parity({**ref, "probabilities": [0.4, 0.07, 0.11, 0.1, 0.09, 0.23]}, pred, **values)
+        verify_prediction_parity(
+            {**ref, "probabilities": [0.4, 0.07, 0.11, 0.1, 0.09, 0.23]},
+            pred,
+            **values,
+        )
