@@ -54,3 +54,9 @@ python -m pytest -q tests/test_phase3_persistence.py
 ```
 
 The above tests use a fixture model in test code only. Passing them cannot establish real model fitness, production authentication, clinical safety, anti-abuse scalability, regulatory approval or full browser usability. External checkpoint and independent validation are still necessary.
+
+## Browser integration with the existing OIDC BFF
+
+The Next.js `/history` screen offers an opt-in, nonclinical research upload and owner result/deletion view. It calls same-origin `/api/research` and `/api/research/{uuid}` routes. The BFF reads its HttpOnly OIDC session cookie, checks origin for state-changing requests, enforces image MIME/size bounds and forwards the bearer token **only server-to-server** to protected FastAPI endpoints. No token is exposed in browser JavaScript or placed in local storage.
+
+If the model is not configured, the backend continues to fail closed. CI verifies compilation and fixture-model API integration; there has been **no manual browser test with live IdP or trained weights**.

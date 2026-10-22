@@ -20,3 +20,12 @@ Source of truth: `packages/contracts/openapi.v1.json` and route modules in `apps
 | POST `/api/v1/copilot/query` | Optional protected documentation-only provider (when enabled) |
 
 **Not present:** any publicly available diagnostic-classification API. The protected research endpoints cannot be used for clinical conclusions and remain off by default. See `docs/RESEARCH_ANALYSIS_IMPLEMENTATION.md`; the root OpenAPI contract still requires updating to cover opt-in research routes and must not be treated as a complete clinical API.
+
+## Browser-facing protected BFF paths (Next.js)
+
+- `POST /api/research` — one-image, origin-checked session proxy to the experimental backend (8MB maximum).
+- `GET /api/research/{uuid}` — authenticated owner-only encrypted result fetch via BFF.
+- `DELETE /api/research/{uuid}` — origin-checked result erasure.
+- `GET /api/auth/session`, `GET /api/auth/login` and `POST /api/auth/logout` — pre-existing OIDC BFF from PR #29.
+
+These are not public medical diagnosis interfaces; the research backend refuses activation in the production environment and defaults to disabled.
