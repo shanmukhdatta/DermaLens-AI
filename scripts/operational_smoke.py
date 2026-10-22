@@ -67,6 +67,9 @@ def run(api_origin: str, web_origin: str) -> None:
         _security_headers(headers)
         if code != 401 or b"NOT_AUTHORIZED" not in body:
             raise AssertionError("Protected API must reject anonymous access")
+    # Production/default posture: research endpoints are NOT registered unless
+    # the explicit feature flag and appropriate dependencies are configured.
+    # Tests using an enabled fixture separately verify OIDC and ownership.
     for target, method in (
         ("/api/v1/copilot/query", "POST"),
         ("/api/v1/analyses", "GET"),
@@ -75,7 +78,7 @@ def run(api_origin: str, web_origin: str) -> None:
         code, body, headers = _request(api_origin, target, method=method)
         _security_headers(headers)
         if code != 404 or b"NOT_FOUND" not in body:
-            raise AssertionError("Unconfigured or unvalidated research feature is exposed")
+            raise AssertionError("Disabled research features must not be exposed")
     code, body, headers = _request(
         api_origin, "/api/v1/docs/search?q=model%20preprocessing"
     )

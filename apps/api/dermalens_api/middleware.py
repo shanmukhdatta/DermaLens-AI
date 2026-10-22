@@ -36,6 +36,7 @@ class RequestContextMiddleware(BaseHTTPMiddleware):
         request.state.request_id = request_id
         resource_limits = {
             ("POST", "/api/v1/images/check"): ("image", 12),
+            ("POST", "/api/v1/analyses"): ("research_analyses", 6),
             ("GET", "/api/v1/docs/search"): ("docs", 40),
         }
         budget = resource_limits.get((request.method, request.url.path))

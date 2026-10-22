@@ -15,6 +15,7 @@ from apps.api.dermalens_api.middleware import RequestContextMiddleware
 from apps.api.dermalens_api.readiness import ReadinessGates
 from apps.api.dermalens_api.routers import (
     account,
+    analyses,
     docs_search,
     feedback,
     images,
@@ -49,6 +50,21 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.state.settings = config
     app.state.request_limiter = FixedWindowLimiter()
     app.state.model_runtime = UnavailableModelRuntime()
+    if (
+        config.enable_research_analyses
+        and config.env != "test"
+        and config.model_manifest_path
+        and config.model_checkpoint_path
+        and config.model_label_map_path
+    ):
+        # Only verified local Keras artifacts, never downloaded at service startup.
+        from services.cv.keras_runtime import VerifiedKerasModel
+
+        app.state.model_runtime = VerifiedKerasModel(
+            Path(config.model_manifest_path),
+            Path(config.model_checkpoint_path),
+            Path(config.model_label_map_path),
+        )
     app.state.readiness_gates = ReadinessGates(model_runtime=app.state.model_runtime)
     app.state.identity_verifier = RejectingIdentityVerifier()
     app.state.db_session_factory = None
@@ -104,6 +120,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(operations.router, prefix="/api/v1")
     app.include_router(models.router, prefix="/api/v1")
     app.include_router(account.router, prefix="/api/v1")
+    if config.enable_research_analyses:
+        app.include_router(analyses.router, prefix="/api/v1")
     app.include_router(images.router, prefix="/api/v1")
     app.include_router(docs_search.router, prefix="/api/v1")
     app.include_router(feedback.router, prefix="/api/v1")
