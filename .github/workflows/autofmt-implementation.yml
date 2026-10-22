@@ -1,0 +1,28 @@
+name: One-time DermaLens implementation Python formatter
+on:
+  push:
+    branches: [implementation/analysis-gap-closure-20261022]
+    paths: [.github/workflows/autofmt-implementation.yml]
+permissions:
+  contents: write
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - uses: astral-sh/setup-uv@v6
+        with:
+          version: "0.9.5"
+      - run: uv sync --python 3.11 --frozen --all-groups
+      - run: .venv/bin/ruff format apps/api/dermalens_api/config.py apps/api/dermalens_api/main.py apps/api/dermalens_api/routers/account.py apps/api/dermalens_api/routers/analyses.py tests/test_analysis_workflow.py
+      - name: Update only formatted Python files on implementation branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add apps/api/dermalens_api/config.py apps/api/dermalens_api/main.py apps/api/dermalens_api/routers/account.py apps/api/dermalens_api/routers/analyses.py tests/test_analysis_workflow.py
+          if ! git diff --cached --quiet; then
+            git commit -m "style: apply Ruff formatting to protected analysis workflow"
+            git push origin HEAD:implementation/analysis-gap-closure-20261022
+          fi
