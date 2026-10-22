@@ -116,7 +116,9 @@ def test_gated_research_upload_and_private_encrypted_history(
         other_id = other.json()["analysis_id"]
         with app.state.db_session_factory.begin() as session:
             original = session.scalar(select(AnalysisRecord).where(AnalysisRecord.id == identifier))
-            other_record = session.scalar(select(AnalysisRecord).where(AnalysisRecord.id == other_id))
+            other_record = session.scalar(
+                select(AnalysisRecord).where(AnalysisRecord.id == other_id)
+            )
             assert original is not None and other_record is not None
             previous_ciphertext = original.result_ciphertext
             original.result_ciphertext = other_record.result_ciphertext
