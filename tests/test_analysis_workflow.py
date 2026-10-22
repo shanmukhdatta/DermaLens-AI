@@ -43,7 +43,11 @@ def _client(tmp_path: Path, *, enabled: bool = True) -> tuple[TestClient, object
 
 
 def _auth(actor: str) -> dict[str, str]:
-    return {"Authorization": f"Bearer {actor}", "Content-Type": "image/jpeg"}
+    return {"Authorization": f"Bearer {actor}"}
+
+
+def _img_headers(actor: str) -> dict[str, str]:
+    return {**_auth(actor), "Content-Type": "image/jpeg"}
 
 
 def _image() -> bytes:
@@ -75,7 +79,7 @@ def test_requires_database_oidc_and_explicit_consent(
     with client:
         assert client.post("/api/v1/analyses", content=_image()).status_code == 401
         assert (
-            client.post("/api/v1/analyses", headers=_auth("alice"), content=_image()).status_code
+            client.post("/api/v1/analyses", headers=_img_headers("alice"), content=_image()).status_code
             == 409
         )
         assert (
@@ -99,7 +103,7 @@ def test_owner_scoped_persistent_abstention_and_erasure(
                 ).status_code
                 == 200
             )
-        result = client.post("/api/v1/analyses", headers=_auth("alice"), content=_image())
+        result = client.post("/api/v1/analyses", headers=_img_headers("alice"), content=_image())
         assert result.status_code == 201, result.text
         saved = result.json()
         assert saved["medical_diagnosis"] is False
@@ -124,7 +128,7 @@ def test_owner_scoped_persistent_abstention_and_erasure(
 def test_disabled_and_body_validation(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     client, _ = _client(tmp_path, enabled=False)
     with client:
-        response = client.post("/api/v1/analyses", headers=_auth("alice"), content=_image())
+        response = client.post("/api/v1/analyses", headers=_img_headers("alice"), content=_image())
         assert response.status_code == 503
     client, _ = _client(tmp_path, enabled=True)
     monkeypatch.setattr("apps.api.dermalens_api.routers.analyses.inspect_image", _accepted)
@@ -143,7 +147,7 @@ def test_disabled_and_body_validation(tmp_path: Path, monkeypatch: pytest.Monkey
         assert (
             client.post(
                 "/api/v1/analyses",
-                headers={**_auth("alice"), "Content-Length": str(9000000)},
+                headers={**_img_headers("alice"), "Content-Length": str(9000000)},
                 content=_image(),
             ).status_code
             == 413

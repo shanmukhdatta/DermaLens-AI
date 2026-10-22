@@ -27,7 +27,7 @@ def test_docs_lookup_does_not_unlock_model_inference() -> None:
     app = create_app(Settings(env="test"))
     with TestClient(app) as client:
         assert client.get("/api/v1/readiness").status_code == 503
-        assert client.post("/api/v1/analyses").status_code == 404
+        assert client.post("/api/v1/analyses").status_code == 401
         assert client.get(
             "/api/v1/docs/search", params={"q": "zzzzqwertyunknownphrase"}
         ).json()["matches"] == []
