@@ -11,7 +11,7 @@ export async function GET(request: NextRequest) {
   const verifier = readTransaction(request, config, state);
   const failure = (status: number) => {
     const response = NextResponse.json({ error: "Could not complete verified sign-in." }, { status });
-    response.cookies.set(cookieName("transaction", config), "", cookieOptions(config, 0));
+    response.cookies.set(cookieName("transaction", config), "", cookieOptions(config, 0, true));
     response.headers.set("Cache-Control", "no-store");
     return response;
   };
@@ -45,7 +45,7 @@ export async function GET(request: NextRequest) {
     const account = await verifiedAccount(config, token.access_token);
     if (!account.ok) return failure(account.status === 401 ? 401 : 503);
     const response = NextResponse.redirect(config.appOrigin + "/history");
-    response.cookies.set(cookieName("transaction", config), "", cookieOptions(config, 0));
+    response.cookies.set(cookieName("transaction", config), "", cookieOptions(config, 0, true));
     const ttl = Math.min(token.expires_in - 30, 3570);
     response.cookies.set(cookieName("session", config),
       sessionCookie(config, { token: token.access_token, expires: Date.now() / 1000 + ttl }), cookieOptions(config, ttl));

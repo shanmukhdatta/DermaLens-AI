@@ -8,7 +8,7 @@ export async function GET() {
     const flow = newAuthorization(config, metadata.authorization_endpoint);
     const response = NextResponse.redirect(flow.target);
     response.cookies.set(cookieName("transaction", config),
-      transactionCookie(config, flow.state, flow.verifier), cookieOptions(config, 600));
+      transactionCookie(config, flow.state, flow.verifier), cookieOptions(config, 600, true));
     response.headers.set("Cache-Control", "no-store");
     return response;
   } catch {

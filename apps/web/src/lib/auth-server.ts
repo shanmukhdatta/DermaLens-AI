@@ -41,8 +41,8 @@ export function cookieName(kind: "session" | "transaction", config: AuthConfig):
   return config.secure ? "__Host-" + name : name;
 }
 
-export function cookieOptions(config: AuthConfig, maxAge: number) {
-  return { httpOnly: true, secure: config.secure, sameSite: "strict" as const, path: "/", maxAge };
+export function cookieOptions(config: AuthConfig, maxAge: number, crossSiteCallback = false) {
+  return { httpOnly: true, secure: config.secure, sameSite: crossSiteCallback ? ("lax" as const) : ("strict" as const), path: "/", maxAge };
 }
 
 export function sameOrigin(request: NextRequest, config: AuthConfig): boolean {
