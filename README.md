@@ -2604,3 +2604,7 @@ The source-code implementation and release blockers are tracked separately from 
 - Folder-level READMEs document module boundaries, code, interfaces, tests and integration points.
 
 The frontend uses a minimal warm orange-and-white appearance. **This does not change model readiness:** no validated skin disease inference is exposed without a verified model and independent medical safety review.
+
+## Opt-in protected research analysis
+
+The optional **nonclinical** POST/GET/DELETE research analysis workflow uses verified Keras research artifacts, owner-scoped OIDC authorization, consent, bounded photo decoding and Fernet-encrypted metadata (without raw photo retention). Production serving is disabled by configuration. The real checkpoint, independent real-world clinical validation, approved calibration and regulatory/privacy sign-off are not provided. See [research integration](docs/RESEARCH_ANALYSIS_IMPLEMENTATION.md), [dataset audit](docs/DATASET_INTEGRITY_PIPELINE.md), and [gap checklist](docs/FINAL_GAP_CLOSURE_CHECKLIST.md).
