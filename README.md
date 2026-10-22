@@ -2590,3 +2590,16 @@ feedback-aware
 deployable
 and honest about uncertainty
 ```
+
+
+## Engineering documentation index — October 2026
+
+The source-code implementation and release blockers are tracked separately from the original conceptual architecture:
+
+- [Requirements traceability](docs/IMPLEMENTATION_CHECKLIST.md) — individual requirement IDs mapped to source and acceptance gates.
+- [Feature audit](docs/FINAL_FEATURE_AUDIT.md) — implemented versus incomplete and externally blocked behavior.
+- [Architecture overview](docs/ARCHITECTURE.md), [database design](docs/DATABASE_DESIGN.md), [actual API surface](docs/API_SPECIFICATION.md), [implementation decisions](docs/IMPLEMENTATION_DECISIONS.md).
+- [Full engineering handoff](docs/FINAL_ENGINEERING_HANDOFF.md) — reproducible local commands and acceptance evidence requirements.
+- Folder-level READMEs document module boundaries, code, interfaces, tests and integration points.
+
+The frontend uses a minimal warm orange-and-white appearance. **This does not change model readiness:** no validated skin disease inference is exposed without a verified model and independent medical safety review.
