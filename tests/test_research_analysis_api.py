@@ -124,7 +124,7 @@ def test_gated_research_upload_and_private_encrypted_history(
 def test_fails_closed_without_research_configuration() -> None:
     client = TestClient(create_app(Settings(env="test")), raise_server_exceptions=False)
     with client:
-        assert client.post("/api/v1/analyses").status_code == 401
+        assert client.post("/api/v1/analyses").status_code == 404
 
 
 def test_authenticated_encryption_rejects_tampering() -> None:

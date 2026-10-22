@@ -120,7 +120,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(operations.router, prefix="/api/v1")
     app.include_router(models.router, prefix="/api/v1")
     app.include_router(account.router, prefix="/api/v1")
-    app.include_router(analyses.router, prefix="/api/v1")
+    if config.enable_research_analyses:
+        app.include_router(analyses.router, prefix="/api/v1")
     app.include_router(images.router, prefix="/api/v1")
     app.include_router(docs_search.router, prefix="/api/v1")
     app.include_router(feedback.router, prefix="/api/v1")

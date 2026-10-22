@@ -30,9 +30,9 @@ def test_readiness_fails_closed_with_no_checkpoint(client: TestClient) -> None:
 
 
 def test_no_unimplemented_sensitive_routes_are_active(client: TestClient) -> None:
-    assert client.get("/api/v1/analyses").status_code == 405
+    assert client.get("/api/v1/analyses").status_code == 404
     assert client.get("/api/v1/copilot/query").status_code == 404
-    assert client.post("/api/v1/analyses").status_code == 401
+    assert client.post("/api/v1/analyses").status_code == 404
     assert client.post("/api/v1/copilot/query", json={"question": "hello"}).status_code == 404
     assert client.get("/api/v1/models/current").status_code == 401
 
