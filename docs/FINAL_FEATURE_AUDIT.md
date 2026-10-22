@@ -1,12 +1,12 @@
 # DermaLens AI — final feature audit (implementation pass 2026-10-22)
 
-This is a **source and integration evidence audit, not a production release certificate**. Based on the README, merged engineering modules, and documented handoff: 141 requirement rows are tracked in `docs/IMPLEMENTATION_CHECKLIST.md`. 12 are identified as coded capabilities requiring rerun of tests, 129 are partial or awaiting external acceptance. **No new run, deployment or medical benchmark is implied by the checklist.**
+This is a **source and integration evidence audit, not a production release certificate**. Based on the README, merged engineering modules, and documented handoff: 142 requirement rows are tracked in `docs/IMPLEMENTATION_CHECKLIST.md`. 13 are identified as coded capabilities requiring rerun of tests, 129 are partial or awaiting external acceptance. **No new run, deployment or medical benchmark is implied by the checklist.**
 
 | Area | Findings | Release state |
 |---|---|---|
 | Frontend | Next.js pages and APIs for quality checks, docs lookup, aggregate research visualization; orange/white accessible design work in this branch | Research UX only; no verified sign-in or medical results |
 | FastAPI | Typed routes, CORS, auth boundaries, request budget, readiness and upload-quality endpoint | Source present; no public `POST /api/v1/analyses` |
-| Persistence | SQLAlchemy models, Alembic revisions, owner-scoped history/feedback | Code present; real DB/OIDC deployment not independently confirmed |
+| Persistence | SQLAlchemy models, Alembic revisions, owner-scoped history/feedback, offline TTL pruning CLI with dry-run | Code present; real DB/OIDC deployment not independently confirmed |
 | Computer vision | Image guards, manifest integrity, Keras adapter, offline quality & research helpers | **No actual trusted classifier checkpoint connected** |
 | RAG | Documentation retrieval, citations, optional protected Grok client | Public lexical retrieval; not persistent semantic RAG |
 | Model research | Offline evaluation, calibration and controlled candidate review | No verified held-out patient benchmark or model promotion |

@@ -37,3 +37,7 @@ alembic upgrade head on disposable database
 ```
 
 These are **recommended commands**, not a claim they were executed during this documentation change. Record commit SHA, test output and independent integration evidence before changing audit state.
+
+## Metadata expiration extension
+
+Bounded privacy housekeeping uses `services/persistence/retention.py` with `scripts/prune_expired_history.py`, `0003_analysis_expiry_index.py` and `tests/test_persistence_retention.py`. Default behavior is dry run; `--execute --confirm-delete` is required for deletion. See `docs/RETENTION_OPERATIONS.md`. No automatic scheduler or image erasure system is implied.

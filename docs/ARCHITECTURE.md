@@ -28,3 +28,7 @@ No arrow from the public upload endpoint to the offline CV runtime is intentiona
 - `scripts`: offline auditing and operational CLI entrypoints.
 
 Use `docs/FINAL_ENGINEERING_HANDOFF.md` for reproducible checks and explicit blockers.
+
+## Expiry maintenance boundary
+
+`scripts/prune_expired_history.py` is an offline operator entrypoint into `services/persistence/retention.py`. It is not registered with FastAPI or an automatic scheduler. A per-batch transaction removes expired metadata and its cascaded feedback while respecting non-expiring entries. Review `docs/RETENTION_OPERATIONS.md` before enabling any recurring production task.

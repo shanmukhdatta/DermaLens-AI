@@ -1,6 +1,6 @@
 # DermaLens AI — Implementation checklist and traceability
 
-**Scope:** Existing root README §§1–57 and `docs/README_FEATURE_AUDIT.md`, reviewed 2026-10-22. This is an explicit engineering inventory of 141 implementation and acceptance requirements. It does **not** assert that all requirements are complete.
+**Scope:** Existing root README §§1–57 and `docs/README_FEATURE_AUDIT.md`, reviewed 2026-10-22. This is an explicit engineering inventory of 142 implementation and acceptance requirements. It does **not** assert that all requirements are complete.
 
 **Source hierarchy:** README + ADRs → applicable phase documents → current code → acceptance evidence. Older README conceptual phase numbering differs from docs/PHASE_TRACKER.md; the latter governs engineering sequencing.
 
@@ -150,9 +150,11 @@
 | REQ-140 | README §§45–46, 50–57 | Run full local and CI integration acceptance | P | `scripts/evaluate_predictions.py; scripts/export_verified_predictions.py; docs/README_FEATURE_AUDIT.md` | `tests/test_phase10_verified_export.py; docs/FINAL_ENGINEERING_HANDOFF.md` |
 | REQ-141 | README §§45–46, 50–57 | Complete independent production safety review | P | `scripts/evaluate_predictions.py; scripts/export_verified_predictions.py; docs/README_FEATURE_AUDIT.md` | `tests/test_phase10_verified_export.py; docs/FINAL_ENGINEERING_HANDOFF.md` |
 
+| REQ-142 | README §§19–21 | Bounded, dry-run-first expired analysis metadata purge and feedback cascade | I | `services/persistence/retention.py; scripts/prune_expired_history.py; infra/database/migrations/versions/0003_analysis_expiry_index.py` | `tests/test_persistence_retention.py; docs/RETENTION_OPERATIONS.md` |
+
 ## Checklist summary
 
-- 141 traceable lines; I=12, P=129. **No I entry is automatically promoted to "verified" solely by writing this matrix.**
+- 142 traceable lines; I=13, P=129. **No I entry is automatically promoted to "verified" solely by writing this matrix.**
 - Most urgent release gaps: checkpoint + exact label map, real-world benchmarking, validated abstention, secure analyses API, authenticated UI, medical privacy review.
 - Real data, external credentials, security approval and deployment execution require independent evidence.
 

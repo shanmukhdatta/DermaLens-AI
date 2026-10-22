@@ -2599,6 +2599,7 @@ The source-code implementation and release blockers are tracked separately from 
 - [Requirements traceability](docs/IMPLEMENTATION_CHECKLIST.md) — individual requirement IDs mapped to source and acceptance gates.
 - [Feature audit](docs/FINAL_FEATURE_AUDIT.md) — implemented versus incomplete and externally blocked behavior.
 - [Architecture overview](docs/ARCHITECTURE.md), [database design](docs/DATABASE_DESIGN.md), [actual API surface](docs/API_SPECIFICATION.md), [implementation decisions](docs/IMPLEMENTATION_DECISIONS.md).
+- [Retention operations runbook](docs/RETENTION_OPERATIONS.md) — dry-run-first expiry cleanup for analysis metadata; not a scheduled production deletion system.
 - [Full engineering handoff](docs/FINAL_ENGINEERING_HANDOFF.md) — reproducible local commands and acceptance evidence requirements.
 - Folder-level READMEs document module boundaries, code, interfaces, tests and integration points.
 
