@@ -81,7 +81,10 @@ def test_gated_research_upload_and_private_encrypted_history(
     with TestClient(app, raise_server_exceptions=False) as client:
         assert client.post("/api/v1/analyses", content=photo()).status_code == 401
         # Consent is an opt-in prerequisite for any persisted model output.
-        assert client.post("/api/v1/analyses", content=photo(), headers=headers("alice")).status_code == 403
+        assert (
+            client.post("/api/v1/analyses", content=photo(), headers=headers("alice")).status_code
+            == 403
+        )
         assert client.put(
             "/api/v1/account/history-consent", json={"enabled": True}, headers=headers("alice")
         ).status_code == 200

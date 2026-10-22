@@ -60,18 +60,34 @@ def create_research_analysis(
 ) -> dict[str, Any]:
     """Process photo in memory, persist ONLY owner-scoped encrypted small results."""
     if not runtime.ready:
-        raise DomainError(ErrorCode.MODEL_NOT_READY, PUBLIC_MESSAGES[ErrorCode.MODEL_NOT_READY], 503)
+        raise DomainError(
+            ErrorCode.MODEL_NOT_READY,
+            PUBLIC_MESSAGES[ErrorCode.MODEL_NOT_READY],
+            503,
+        )
     with session.begin():
         account = find_account(session, actor)
         if account is None or not history_consent(session, account):
-            raise DomainError(ErrorCode.NOT_AUTHORIZED, PUBLIC_MESSAGES[ErrorCode.NOT_AUTHORIZED], 403)
+            raise DomainError(
+            ErrorCode.NOT_AUTHORIZED,
+            PUBLIC_MESSAGES[ErrorCode.NOT_AUTHORIZED],
+            403,
+        )
         account_id = account.id
     try:
         quality = inspect_image(image_bytes, detector=detector)
     except InvalidImage as exc:
-        raise DomainError(ErrorCode.INVALID_IMAGE, PUBLIC_MESSAGES[ErrorCode.INVALID_IMAGE], 422) from exc
+        raise DomainError(
+            ErrorCode.INVALID_IMAGE,
+            PUBLIC_MESSAGES[ErrorCode.INVALID_IMAGE],
+            422,
+        ) from exc
     if not quality.accepted:
-        raise DomainError(ErrorCode.INVALID_IMAGE, PUBLIC_MESSAGES[ErrorCode.INVALID_IMAGE], 422)
+        raise DomainError(
+            ErrorCode.INVALID_IMAGE,
+            PUBLIC_MESSAGES[ErrorCode.INVALID_IMAGE],
+            422,
+        )
     try:
         with Image.open(BytesIO(image_bytes)) as image:
             batch = preprocess_compatible(image)
@@ -89,7 +105,11 @@ def create_research_analysis(
     with session.begin():
         account = find_account(session, actor)
         if account is None or account.id != account_id or not history_consent(session, account):
-            raise DomainError(ErrorCode.NOT_AUTHORIZED, PUBLIC_MESSAGES[ErrorCode.NOT_AUTHORIZED], 403)
+            raise DomainError(
+            ErrorCode.NOT_AUTHORIZED,
+            PUBLIC_MESSAGES[ErrorCode.NOT_AUTHORIZED],
+            403,
+        )
         record = AnalysisRecord(
             account_id=account_id, status="completed",
             model_version=prediction["model"]["version"],
@@ -109,7 +129,11 @@ def get_owned_result(
 ) -> dict[str, Any]:
     account = find_account(session, actor)
     if account is None or not history_consent(session, account):
-        raise DomainError(ErrorCode.NOT_FOUND, PUBLIC_MESSAGES[ErrorCode.NOT_FOUND], 404)
+        raise DomainError(
+            ErrorCode.NOT_FOUND,
+            PUBLIC_MESSAGES[ErrorCode.NOT_FOUND],
+            404,
+        )
     record = session.scalar(
         select(AnalysisRecord).where(
             AnalysisRecord.id == identifier, AnalysisRecord.account_id == account.id,
@@ -118,7 +142,11 @@ def get_owned_result(
         )
     )
     if record is None or record.result_ciphertext is None:
-        raise DomainError(ErrorCode.NOT_FOUND, PUBLIC_MESSAGES[ErrorCode.NOT_FOUND], 404)
+        raise DomainError(
+            ErrorCode.NOT_FOUND,
+            PUBLIC_MESSAGES[ErrorCode.NOT_FOUND],
+            404,
+        )
     try:
         return decrypt_result(record.result_ciphertext, key)
     except ValueError as exc:
@@ -131,10 +159,18 @@ def delete_owned_result(session: Session, actor: Principal, identifier: str) -> 
     with session.begin():
         account = find_account(session, actor)
         if account is None or not history_consent(session, account):
-            raise DomainError(ErrorCode.NOT_FOUND, PUBLIC_MESSAGES[ErrorCode.NOT_FOUND], 404)
+            raise DomainError(
+            ErrorCode.NOT_FOUND,
+            PUBLIC_MESSAGES[ErrorCode.NOT_FOUND],
+            404,
+        )
         record = session.scalar(select(AnalysisRecord).where(
             AnalysisRecord.id == identifier, AnalysisRecord.account_id == account.id,
         ))
         if record is None:
-            raise DomainError(ErrorCode.NOT_FOUND, PUBLIC_MESSAGES[ErrorCode.NOT_FOUND], 404)
+            raise DomainError(
+            ErrorCode.NOT_FOUND,
+            PUBLIC_MESSAGES[ErrorCode.NOT_FOUND],
+            404,
+        )
         session.delete(record)
