@@ -8,15 +8,22 @@ from typing import Any
 
 import numpy as np
 import pytest
-from PIL import Image
 from numpy.typing import NDArray
+from PIL import Image
 
 from scripts.build_private_prediction_table import collect_predictions, write_results
 from services.cv.ports import RawPrediction
 
 LABELS = ("acne", "fungal infection", "hyperpigmentation", "normal skin", "skin cancer", "vitiligo")
 FIELDS = (
-    "image_path", "example_id", "subject_id", "split", "source", "label", "skin_tone_group", "device_group"
+    "image_path",
+    "example_id",
+    "subject_id",
+    "split",
+    "source",
+    "label",
+    "skin_tone_group",
+    "device_group",
 )
 
 
@@ -36,17 +43,26 @@ class FixtureRuntime:
         )
 
 
-def fixtures(tmp_path: Path, *, leak_subject: bool = False, bad_path: bool = False) -> tuple[Path, Path]:
+def fixtures(
+    tmp_path: Path, *, leak_subject: bool = False, bad_path: bool = False
+) -> tuple[Path, Path]:
     root = tmp_path / "private-inputs"
     root.mkdir()
     Image.new("RGB", (256, 256), color=(50, 100, 180)).save(root / "a.png")
     Image.new("RGB", (256, 256), color=(170, 100, 30)).save(root / "b.png")
     manifest = tmp_path / "private-manifest.csv"
     examples = [
-        dict(zip(FIELDS, ("a.png", "original-a", "person-one", "train", "fixture", "acne", "unknown", "unknown"), strict=True)),
+        dict(
+            zip(
+                FIELDS,
+                ("a.png", "original-a", "person-one", "train", "fixture", "acne", "unknown", "unknown"),
+                strict=True,
+            )
+        ),
         dict(zip(FIELDS, (
             "../private-inputs/b.png" if bad_path else "b.png", "original-b",
-            "person-one" if leak_subject else "person-two", "test", "fixture", "acne", "unknown", "unknown"
+            "person-one" if leak_subject else "person-two",
+            "test", "fixture", "acne", "unknown", "unknown"
         ), strict=True)),
     ]
     with manifest.open("w", newline="", encoding="utf-8") as stream:

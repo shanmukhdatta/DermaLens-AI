@@ -78,7 +78,9 @@ def _manifest_records(path: Path) -> list[dict[str, str]]:
     return rows
 
 
-def _bounded_image(image_root: Path, relative_name: str) -> tuple[bytes, np.ndarray[Any, np.dtype[np.float32]]]:
+def _bounded_image(
+    image_root: Path, relative_name: str
+) -> tuple[bytes, np.ndarray[Any, np.dtype[np.float32]]]:
     relative = Path(relative_name)
     if not relative_name or relative.is_absolute() or ".." in relative.parts:
         raise ValueError("Image manifest paths must be relative to the private image root")
@@ -144,7 +146,12 @@ def collect_predictions(
             "skin_tone_group": record["skin_tone_group"],
             "device_group": record["device_group"],
         }
-        result.update({name: format(float(value), ".17g") for name, value in zip(PROB_COLUMNS, values, strict=True)})
+        result.update(
+            {
+                name: format(float(value), ".17g")
+                for name, value in zip(PROB_COLUMNS, values, strict=True)
+            }
+        )
         rows.append(result)
     # Subject-level and identical-file leakage checks must succeed BEFORE writing files.
     audit_rows(rows, ordered_labels)
@@ -192,18 +199,29 @@ def write_results(
     writer.writeheader()
     writer.writerows(rows)
     _write_private(predictions_out, buffer.getvalue(), overwrite=overwrite)
-    _write_private(evaluation_out, json.dumps(report, indent=2, sort_keys=True) + "\n", overwrite=overwrite)
+    _write_private(
+        evaluation_out,
+        json.dumps(report, indent=2, sort_keys=True) + "\n",
+        overwrite=overwrite,
+    )
     return report
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--manifest", type=Path, required=True, help="Signed model package manifest")
+    parser.add_argument(
+        "--manifest", type=Path, required=True, help="Signed model package manifest"
+    )
     parser.add_argument("--checkpoint", type=Path, required=True)
     parser.add_argument("--label-map", type=Path, required=True)
-    parser.add_argument("--input-csv", type=Path, required=True, help="Private metadata + relative image paths")
+    parser.add_argument(
+        "--input-csv", type=Path, required=True, help="Private metadata + relative image paths"
+    )
     parser.add_argument("--image-root", type=Path, required=True)
-    parser.add_argument("--pseudonym-key-file", type=Path, required=True, help="Private key, at least 32 random bytes")
+    parser.add_argument(
+        "--pseudonym-key-file", type=Path, required=True,
+        help="Private key, at least 32 random bytes",
+    )
     parser.add_argument("--predictions-out", type=Path, required=True)
     parser.add_argument("--evaluation-out", type=Path, required=True)
     parser.add_argument("--overwrite", action="store_true")
