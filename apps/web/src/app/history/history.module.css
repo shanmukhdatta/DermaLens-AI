@@ -10,3 +10,8 @@
 .records li { display: flex; flex-wrap: wrap; gap: 16px; align-items: baseline; padding: 13px 0; border-bottom: 1px solid #e9e0d9; }
 .records li span { color: #68635f; font-size: 13px; }
 @media(max-width:600px) { .panel { padding: 18px; } .row { align-items: flex-start; flex-direction: column; } }
+
+.panel input[type="file"] { display: block; width: 100%; padding: 12px; margin: 12px 0; background: #fff9f4; border: 1px solid #e9e0d9; border-radius: 12px; }
+.panel .toggle { margin: 15px 0; white-space: normal; }
+.records button { font: inherit; border: 1px solid #e9e0d9; padding: 7px 11px; border-radius: 8px; background: #fff; color: #9f452f; cursor: pointer; }
+.records button:disabled { opacity: .5; cursor: not-allowed; }
