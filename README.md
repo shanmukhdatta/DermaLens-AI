@@ -2604,3 +2604,7 @@ The source-code implementation and release blockers are tracked separately from 
 - Folder-level READMEs document module boundaries, code, interfaces, tests and integration points.
 
 The frontend uses a minimal warm orange-and-white appearance. **This does not change model readiness:** no validated skin disease inference is exposed without a verified model and independent medical safety review.
+
+## PR #28 — Additional experimental research modules
+
+This codebase now contains opt-in **nonclinical**, OIDC-protected experimental analysis endpoints, encrypted owner-scoped result metadata with expiry, and local dataset split-leakage auditing. These endpoints are disabled by default and explicitly forbidden in production. No trained checkpoint is shipped, and a model score is never a diagnosis. See [Research Analysis](docs/RESEARCH_ANALYSIS_IMPLEMENTATION.md), [Dataset Integrity](docs/DATASET_INTEGRITY_PIPELINE.md), [Technical Decisions](docs/TECHNICAL_RESEARCH_DECISIONS.md) and [Remaining Work](docs/FINAL_GAP_CLOSURE_CHECKLIST.md).

@@ -1,6 +1,6 @@
 # DermaLens AI — Implementation checklist and traceability
 
-**Scope:** Existing root README §§1–57 and `docs/README_FEATURE_AUDIT.md`, reviewed 2026-10-22. This is an explicit engineering inventory of 142 implementation and acceptance requirements. It does **not** assert that all requirements are complete.
+**Scope:** Existing root README §§1–57 and `docs/README_FEATURE_AUDIT.md`, reviewed 2026-10-22. This is an explicit engineering inventory of 144 implementation and acceptance requirements. It does **not** assert that all requirements are complete.
 
 **Source hierarchy:** README + ADRs → applicable phase documents → current code → acceptance evidence. Older README conceptual phase numbering differs from docs/PHASE_TRACKER.md; the latter governs engineering sequencing.
 
@@ -152,10 +152,13 @@
 
 | REQ-142 | README §§19–21 | Bounded, dry-run-first expired analysis metadata purge and feedback cascade | I | `services/persistence/retention.py; scripts/prune_expired_history.py; infra/database/migrations/versions/0003_analysis_expiry_index.py` | `tests/test_persistence_retention.py; docs/RETENTION_OPERATIONS.md` |
 
+| REQ-143 | README §§8–10, 15–21 | OIDC/consent-gated experimental image analysis with six-class model contract, ciphertext result and owner-only retrieval/deletion; disabled in production | I | `apps/api/dermalens_api/routers/analyses.py; services/learning/research_analysis.py; services/persistence/crypto.py; infra/database/migrations/versions/0004_encrypted_research_results.py` | `tests/test_research_analysis_api.py; docs/RESEARCH_ANALYSIS_IMPLEMENTATION.md` |
+| REQ-144 | README §§10, 13, 45 | Detect real-versus-synthetic split contamination, exact cross-split duplicates and reviewable near-duplicate candidates without inventing subject identity | I | `services/learning/leakage_audit.py; scripts/audit_dataset.py` | `tests/test_dataset_leakage.py; docs/DATASET_INTEGRITY_PIPELINE.md` |
+
 ## Checklist summary
 
-- 142 traceable lines; I=13, P=129. **No I entry is automatically promoted to "verified" solely by writing this matrix.**
-- Most urgent release gaps: checkpoint + exact label map, real-world benchmarking, validated abstention, secure analyses API, authenticated UI, medical privacy review.
+- 144 traceable lines; I=15, P=129. **No I entry is automatically promoted to "verified" solely by writing this matrix.**
+- Most urgent release gaps: actual real verified checkpoint and label map, independent real-world benchmark, validated abstention, verified browser OIDC login and UI, external medical/privacy review.
 - Real data, external credentials, security approval and deployment execution require independent evidence.
 
 ## Update protocol

@@ -52,7 +52,9 @@ class DatasetAudit:
     def independent_test_cleared(self) -> bool:
         """Conservative structural signal only, NOT clinical validation."""
         return (
-            self.missing_subject_groups == 0
+            self.split_counts.get("test", 0) > 0
+            and self.split_counts.get("calibration", 0) > 0
+            and self.missing_subject_groups == 0
             and self.cross_split_subject_groups == 0
             and self.exact_cross_split_pairs == 0
             and self.possible_near_cross_split_pairs == 0

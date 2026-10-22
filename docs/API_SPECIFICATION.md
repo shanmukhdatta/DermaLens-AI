@@ -15,6 +15,8 @@ Source of truth: `packages/contracts/openapi.v1.json` and route modules in `apps
 | GET `/api/v1/account/export` | Authenticated account metadata export |
 | DELETE `/api/v1/account` | Delete actor account, associated data |
 | POST/GET/DELETE `/api/v1/analyses/{analysis_id}/feedback` | Owner-checked research feedback on a verified completed analysis |
+| POST `/api/v1/analyses` | **OIDC-protected research-only** raw image submission, consent + real-checkpoint gated, disabled in production; output explicitly nonclinical |
+| GET/DELETE `/api/v1/analyses/{analysis_id}` | Owner-only encrypted experimental result retrieval / deletion, blocked unless research mode is configured |
 | POST `/api/v1/copilot/query` | Optional protected documentation-only provider (when enabled) |
 
-**Not present:** public POST `/api/v1/analyses` and GET analysis result. Their presence in an earlier *proposed* API list is not a claim of implementation. Enable only after independent model, data, calibration, privacy and safety acceptance, otherwise keep fail-closed.
+**Not present:** any publicly available diagnostic-classification API. The protected research endpoints cannot be used for clinical conclusions and remain off by default. See `docs/RESEARCH_ANALYSIS_IMPLEMENTATION.md`; the root OpenAPI contract still requires updating to cover opt-in research routes and must not be treated as a complete clinical API.

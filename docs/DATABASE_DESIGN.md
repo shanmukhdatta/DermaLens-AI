@@ -22,3 +22,7 @@ Transactions and actor-scoped reads live in `services/persistence/repository.py`
 ## Offline expiration cleanup
 
 Revision `0003_expiry` indexes `analyses.expires_at`. An operator may call `python -m scripts.prune_expired_history` (dry-run default), or add `--execute --confirm-delete` after review to remove one bounded batch of expired analysis metadata with dependent feedback. No recurring retention scheduler or encrypted image-store deletion is implemented. See `docs/RETENTION_OPERATIONS.md`.
+
+## Encrypted experimental results (migration 0004)
+
+`analyses.result_ciphertext` stores a small Fernet-authenticated encrypted JSON payload for *research-only* outputs, never photographs. `DERMALENS_RESULT_ENCRYPTION_KEY` is required for opt-in research mode; manage it externally with backup and rotation procedures. Ownership and consent checks occur before decrypting. The deletion CLI and account erasure apply to encrypted result rows as well. A migration and encryption code are **not** independent proof of complete encryption at rest or DPDP compliance.
