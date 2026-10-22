@@ -9,6 +9,7 @@ const navigation = [
   { href: "/privacy", label: "Privacy" },
   { href: "/assistant", label: "Assistant" },
   { href: "/research", label: "Research" },
+  { href: "/history", label: "My history" },
 ] as const;
 
 export function SiteHeader() {
