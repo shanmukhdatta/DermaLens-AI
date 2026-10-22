@@ -4,6 +4,7 @@ Inputs are local permitted files referenced by a pseudonymous manifest.
 Reports deliberately omit raw filenames and image pixels. Perceptual-hash
 matches are *review candidates*, not proven duplicates or clinical outcomes.
 """
+
 from __future__ import annotations
 
 import csv
@@ -33,8 +34,9 @@ class ImageSignature:
 
 
 def _phash(image: Image.Image) -> int:
-    tiny = np.asarray(image.convert("L").resize((32, 32), Image.Resampling.BILINEAR),
-                      dtype=np.float32)
+    tiny = np.asarray(
+        image.convert("L").resize((32, 32), Image.Resampling.BILINEAR), dtype=np.float32
+    )
     coeff = cv2.dct(tiny)[:8, :8]
     selected = coeff.flatten()
     median = float(np.median(selected[1:]))  # skip DC illumination
@@ -69,8 +71,9 @@ def _bounded_image(root: Path, relative: str) -> Path:
     return path
 
 
-def scan_splits(manifest_csv: Path, image_root: Path, *,
-                distance_threshold: int = 5) -> dict[str, Any]:
+def scan_splits(
+    manifest_csv: Path, image_root: Path, *, distance_threshold: int = 5
+) -> dict[str, Any]:
     """Flag visually close *cross-split* images; refuse exact/subject leakage.
 
     No patient IDs = no patient-level independence claim. Operator must review
@@ -94,7 +97,12 @@ def scan_splits(manifest_csv: Path, image_root: Path, *,
     for row in rows:
         identifier = row["example_id"]
         split, source = row["split"], row["source"]
-        if not identifier or identifier in found_ids or split not in SPLITS or source not in SOURCES:
+        if (
+            not identifier
+            or identifier in found_ids
+            or split not in SPLITS
+            or source not in SOURCES
+        ):
             raise ValueError("duplicate example_id or invalid data split/source")
         if not row["label"]:
             raise ValueError("label cannot be empty")
@@ -115,25 +123,31 @@ def scan_splits(manifest_csv: Path, image_root: Path, *,
             if min(img.size) < 32 or max(img.size) > 4096:
                 raise ValueError("invalid image dimensions")
             signature = _all_orientations(img)
-        signatures.append(ImageSignature(
-            example_id=identifier, split=split, subject_id=subject,
-            sha256_hex=digest, signatures=signature,
-        ))
+        signatures.append(
+            ImageSignature(
+                example_id=identifier,
+                split=split,
+                subject_id=subject,
+                sha256_hex=digest,
+                signatures=signature,
+            )
+        )
     near: list[dict[str, Any]] = []
     for index, left in enumerate(signatures):
-        for right in signatures[index + 1:]:
+        for right in signatures[index + 1 :]:
             if left.split == right.split:
                 continue
-            distance = min((a ^ b).bit_count()
-                           for a in left.signatures for b in right.signatures)
+            distance = min((a ^ b).bit_count() for a in left.signatures for b in right.signatures)
             if distance <= distance_threshold:
-                near.append({
-                    "example_a": left.example_id,
-                    "example_b": right.example_id,
-                    "distance": distance,
-                    "splits": sorted((left.split, right.split)),
-                    "disposition": "REQUIRES_MANUAL_IMAGE_REVIEW",
-                })
+                near.append(
+                    {
+                        "example_a": left.example_id,
+                        "example_b": right.example_id,
+                        "distance": distance,
+                        "splits": sorted((left.split, right.split)),
+                        "disposition": "REQUIRES_MANUAL_IMAGE_REVIEW",
+                    }
+                )
     return {
         "status": "REVIEW_REQUIRED" if near else "HASH_SCREEN_PASSED_NOT_CLINICALLY_VALIDATED",
         "total_images": len(signatures),
@@ -143,5 +157,5 @@ def scan_splits(manifest_csv: Path, image_root: Path, *,
         "cross_split_near_candidates": near[:1000],
         "truncated_candidates": len(near) > 1000,
         "warning": "pHash can miss edited duplicates and yield false positives; "
-                   "verify near pairs manually and separately audit patient provenance.",
+        "verify near pairs manually and separately audit patient provenance.",
     }

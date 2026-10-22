@@ -79,7 +79,9 @@ def test_requires_database_oidc_and_explicit_consent(
     with client:
         assert client.post("/api/v1/analyses", content=_image()).status_code == 401
         assert (
-            client.post("/api/v1/analyses", headers=_img_headers("alice"), content=_image()).status_code
+            client.post(
+                "/api/v1/analyses", headers=_img_headers("alice"), content=_image()
+            ).status_code
             == 409
         )
         assert (
