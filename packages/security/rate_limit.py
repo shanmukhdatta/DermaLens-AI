@@ -32,7 +32,7 @@ class FixedWindowLimiter:
 
     def allow(self, ip_address: str, bucket: str, *, limit: int, now: float | None = None) -> bool:
         """A full cardinality budget denies new users, never evicts active records."""
-        if limit < 1 or bucket not in {"image", "docs"}:
+        if limit < 1 or bucket not in {"image", "docs", "research_analyses"}:
             raise ValueError("Unrecognized resource budget")
         instant = time.monotonic() if now is None else now
         # Hash the socket peer with an instance-local random key. Never use
