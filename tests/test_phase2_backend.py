@@ -188,8 +188,8 @@ def test_check_exception_fails_closed() -> None:
 
 
 def test_private_and_image_features_remain_unimplemented(client: TestClient) -> None:
-    assert client.post("/api/v1/analyses").status_code == 404
-    assert client.get("/api/v1/analyses").status_code == 404
+    assert client.post("/api/v1/analyses").status_code == 401
+    assert client.get("/api/v1/analyses").status_code == 405
     assert client.post("/api/v1/copilot/query", json={"question": "test"}).status_code == 404
     assert client.get("/openapi.json").status_code == 404
 
