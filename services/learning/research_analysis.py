@@ -1,4 +1,5 @@
 """Real-model research analysis orchestrator, no clinical diagnosis claims."""
+
 from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
@@ -35,12 +36,14 @@ def _validate_prediction(model_output: object) -> dict[str, Any]:
     labels = model_output.ordered_labels
     valid_labels = {" ".join(x.lower().replace("_", " ").split()) for x in labels}
     if (
-        len(labels) != 6 or len(set(labels)) != 6
+        len(labels) != 6
+        or len(set(labels)) != 6
         or valid_labels != EXPECTED_CATEGORIES
         or len(probabilities) != 6
         or not all(np.isfinite(n) and 0 <= n <= 1 for n in probabilities)
         or not np.isclose(sum(probabilities), 1.0, atol=1e-3)
-        or not model_output.model_id or not model_output.model_version
+        or not model_output.model_id
+        or not model_output.model_version
     ):
         raise ValueError("Invalid research model probability contract")
     selected = int(np.argmax(probabilities))
@@ -55,8 +58,14 @@ def _validate_prediction(model_output: object) -> dict[str, Any]:
 
 
 def create_research_analysis(
-    session: Session, actor: Principal, image_bytes: bytes,
-    runtime: ModelRuntime, *, key: str, history_days: int, detector: object | None = None
+    session: Session,
+    actor: Principal,
+    image_bytes: bytes,
+    runtime: ModelRuntime,
+    *,
+    key: str,
+    history_days: int,
+    detector: object | None = None,
 ) -> dict[str, Any]:
     """Process photo in memory, persist ONLY owner-scoped encrypted small results."""
     if not runtime.ready:
@@ -69,10 +78,10 @@ def create_research_analysis(
         account = find_account(session, actor)
         if account is None or not history_consent(session, account):
             raise DomainError(
-            ErrorCode.NOT_AUTHORIZED,
-            PUBLIC_MESSAGES[ErrorCode.NOT_AUTHORIZED],
-            403,
-        )
+                ErrorCode.NOT_AUTHORIZED,
+                PUBLIC_MESSAGES[ErrorCode.NOT_AUTHORIZED],
+                403,
+            )
         account_id = account.id
     try:
         quality = inspect_image(image_bytes, detector=detector)
@@ -99,22 +108,26 @@ def create_research_analysis(
 
     now = datetime.now(UTC)
     result = {
-        "status": "completed", "quality": quality.public_payload(),
-        "pipeline_version": "research-full-frame-v1", **prediction,
+        "status": "completed",
+        "quality": quality.public_payload(),
+        "pipeline_version": "research-full-frame-v1",
+        **prediction,
     }
     with session.begin():
         account = find_account(session, actor)
         if account is None or account.id != account_id or not history_consent(session, account):
             raise DomainError(
-            ErrorCode.NOT_AUTHORIZED,
-            PUBLIC_MESSAGES[ErrorCode.NOT_AUTHORIZED],
-            403,
-        )
+                ErrorCode.NOT_AUTHORIZED,
+                PUBLIC_MESSAGES[ErrorCode.NOT_AUTHORIZED],
+                403,
+            )
         record = AnalysisRecord(
-            account_id=account_id, status="completed",
+            account_id=account_id,
+            status="completed",
             model_version=prediction["model"]["version"],
             pipeline_version="research-full-frame-v1",
-            created_at=now, expires_at=now + timedelta(days=history_days),
+            created_at=now,
+            expires_at=now + timedelta(days=history_days),
         )
         session.add(record)
         session.flush()
@@ -130,23 +143,30 @@ def get_owned_result(
     account = find_account(session, actor)
     if account is None or not history_consent(session, account):
         raise DomainError(
-            ErrorCode.NOT_FOUND,
-            PUBLIC_MESSAGES[ErrorCode.NOT_FOUND],
-            404,
+                ErrorCode.NOT_FOUND,
+                PUBLIC_MESSAGES[ErrorCode.NOT_FOUND],
+                404,
+            )
+        record = session.scalar(
+            select(AnalysisRecord).where(
+                AnalysisRecord.id == identifier,
+                AnalysisRecord.account_id == account.id,
+            )
         )
     record = session.scalar(
         select(AnalysisRecord).where(
-            AnalysisRecord.id == identifier, AnalysisRecord.account_id == account.id,
+            AnalysisRecord.id == identifier,
+            AnalysisRecord.account_id == account.id,
             AnalysisRecord.expires_at > datetime.now(UTC),
             AnalysisRecord.status == "completed",
         )
     )
     if record is None or record.result_ciphertext is None:
         raise DomainError(
-            ErrorCode.NOT_FOUND,
-            PUBLIC_MESSAGES[ErrorCode.NOT_FOUND],
-            404,
-        )
+                ErrorCode.NOT_FOUND,
+                PUBLIC_MESSAGES[ErrorCode.NOT_FOUND],
+                404,
+            )
     try:
         return decrypt_result(record.result_ciphertext, key)
     except ValueError as exc:
@@ -164,9 +184,12 @@ def delete_owned_result(session: Session, actor: Principal, identifier: str) -> 
             PUBLIC_MESSAGES[ErrorCode.NOT_FOUND],
             404,
         )
-        record = session.scalar(select(AnalysisRecord).where(
-            AnalysisRecord.id == identifier, AnalysisRecord.account_id == account.id,
-        ))
+        record = session.scalar(
+            select(AnalysisRecord).where(
+                AnalysisRecord.id == identifier,
+                AnalysisRecord.account_id == account.id,
+            )
+        )
         if record is None:
             raise DomainError(
             ErrorCode.NOT_FOUND,

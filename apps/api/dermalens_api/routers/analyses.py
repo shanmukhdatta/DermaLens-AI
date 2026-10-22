@@ -1,4 +1,5 @@
 """Authenticated nonclinical research-only image analysis and owner results."""
+
 from __future__ import annotations
 
 from typing import Annotated
@@ -24,7 +25,8 @@ router = APIRouter(prefix="/analyses", tags=["Protected experimental research"])
 def _research_key(request: Request) -> str:
     config = request.app.state.settings
     if (
-        not config.enable_research_analyses or config.result_encryption_key is None
+        not config.enable_research_analyses
+        or config.result_encryption_key is None
         or config.env == "production"
     ):
         raise DomainError(
@@ -58,10 +60,10 @@ async def create_analysis(
     length = request.headers.get("content-length", "")
     if length.isascii() and length.isdecimal() and int(length) > MAX_IMAGE_BYTES:
         raise DomainError(
-            ErrorCode.IMAGE_TOO_LARGE,
-            PUBLIC_MESSAGES[ErrorCode.IMAGE_TOO_LARGE],
-            413,
-        )
+                ErrorCode.IMAGE_TOO_LARGE,
+                PUBLIC_MESSAGES[ErrorCode.IMAGE_TOO_LARGE],
+                413,
+            )
     buffer = bytearray()
     async for chunk in request.stream():
         if len(buffer) + len(chunk) > MAX_IMAGE_BYTES:
@@ -72,14 +74,19 @@ async def create_analysis(
         )
         buffer.extend(chunk)
     return create_research_analysis(
-        session, actor, bytes(buffer), request.app.state.model_runtime,
-        key=key, history_days=request.app.state.settings.research_history_days,
+        session,
+        actor,
+        bytes(buffer),
+        request.app.state.model_runtime,
+        key=key,
+        history_days=request.app.state.settings.research_history_days,
     )
 
 
 @router.get("/{analysis_id}")
 def get_analysis(
-    analysis_id: UUID, request: Request,
+    analysis_id: UUID,
+    request: Request,
     actor: Annotated[Principal, Depends(require_verified_actor)],
     session: Annotated[Session, Depends(database_session)],
 ) -> dict[str, object]:
@@ -89,7 +96,8 @@ def get_analysis(
 
 @router.delete("/{analysis_id}", status_code=204)
 def delete_analysis(
-    analysis_id: UUID, request: Request,
+    analysis_id: UUID,
+    request: Request,
     actor: Annotated[Principal, Depends(require_verified_actor)],
     session: Annotated[Session, Depends(database_session)],
 ) -> Response:

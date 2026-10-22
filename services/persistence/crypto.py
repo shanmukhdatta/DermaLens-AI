@@ -3,6 +3,7 @@
 Keys are external deployment secrets. Never send key material to the browser
 or log ciphertext, decrypted predictions or user identifiers.
 """
+
 from __future__ import annotations
 
 import json

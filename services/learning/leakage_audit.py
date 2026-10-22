@@ -3,6 +3,7 @@
 Reports potential visual duplicates for human review. Image similarity is never
 used to invent patient identities or clinician ground-truth labels.
 """
+
 from __future__ import annotations
 
 import hashlib
@@ -164,10 +165,14 @@ def audit_dataset(
                 continue
             if (dh ^ hashes[prev]).bit_count() <= hamming_threshold:
                 potential.add((prev, idx))
-    tokens = tuple(sorted({
-        _pair_token(digests[a] + ":" + str(a), digests[b] + ":" + str(b))
-        for a, b in exact_pairs | potential
-    }))
+    tokens = tuple(
+        sorted(
+            {
+                _pair_token(digests[a] + ":" + str(a), digests[b] + ":" + str(b))
+                for a, b in exact_pairs | potential
+            }
+        )
+    )
     warnings: list[str] = []
     if absent:
         warnings.append("UNKNOWN_SUBJECT_IDENTITY_NOT_PATIENT_INDEPENDENT")
@@ -182,8 +187,10 @@ def audit_dataset(
     if not splits.get("test") or not splits.get("calibration"):
         warnings.append("MISSING_INDEPENDENT_TEST_OR_CALIBRATION_SPLIT")
     return DatasetAudit(
-        records=len(rows), split_counts=dict(sorted(splits.items())),
-        real_records=real_count, missing_subject_groups=absent,
+        records=len(rows),
+        split_counts=dict(sorted(splits.items())),
+        real_records=real_count,
+        missing_subject_groups=absent,
         cross_split_subject_groups=cross_subjects,
         exact_cross_split_pairs=len(exact_pairs),
         possible_near_cross_split_pairs=len(potential),

@@ -90,6 +90,7 @@ class Settings(BaseSettings):
             ):
                 raise ValueError("a real verified research model package is required")
             from cryptography.fernet import Fernet
+
             try:
                 Fernet(self.result_encryption_key.get_secret_value().encode("ascii"))
             except (ValueError, TypeError, UnicodeError) as exc:
