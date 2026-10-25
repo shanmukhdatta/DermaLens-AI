@@ -24,3 +24,11 @@ def test_sensitive_paths_are_blocked() -> None:
         "research/id_rsa",
     ):
         assert forbidden_tracked_path(path) is True
+
+
+def test_original_source_modules_are_not_mistaken_for_private_datasets() -> None:
+    assert forbidden_tracked_path("research/legacy/src/data/dataset.py") is False
+    assert forbidden_tracked_path("research/legacy/src/data/__init__.py") is False
+    assert forbidden_tracked_path("research/legacy/src/data/patient.jpg") is True
+    assert forbidden_tracked_path("research/legacy/src/data/secret.env") is True
+    assert forbidden_tracked_path("research/legacy/data/patient.py") is True
