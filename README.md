@@ -1,107 +1,145 @@
 # DermaLens AI
+### A full-stack engineering platform for facial skin-condition research
 
-**A modular, privacy-conscious facial skin research platform — from image checks to reproducible model engineering.**
+**Next.js · FastAPI · OpenCV · TensorFlow/Keras · PostgreSQL · Docker · CI/CD**
 
-[![Backend and frontend CI](https://github.com/shanmukhdatta/DermaLens-AI/actions/workflows/phase1.yml/badge.svg)](https://github.com/shanmukhdatta/DermaLens-AI/actions/workflows/phase1.yml)
-[![Architecture validation](https://github.com/shanmukhdatta/DermaLens-AI/actions/workflows/phase0.yml/badge.svg)](https://github.com/shanmukhdatta/DermaLens-AI/actions/workflows/phase0.yml)
+[![Frontend & backend checks](https://github.com/shanmukhdatta/DermaLens-AI/actions/workflows/phase1.yml/badge.svg)](https://github.com/shanmukhdatta/DermaLens-AI/actions/workflows/phase1.yml)
+[![Architecture checks](https://github.com/shanmukhdatta/DermaLens-AI/actions/workflows/phase0.yml/badge.svg)](https://github.com/shanmukhdatta/DermaLens-AI/actions/workflows/phase0.yml)
 
-> **Resume development at any time:** [GEMINI.md](GEMINI.md) is the persistent Antigravity/Gemini handoff: completed features, pending tasks, blockers, test commands, and next session checklist.
+**[Explore the code](https://github.com/shanmukhdatta/DermaLens-AI)** · **[Research source](https://github.com/shanmukhdatta/Facial_Skin_Diesease)** · **[System architecture](docs/01_SYSTEM_ARCHITECTURE.md)** · **[Development tracker](GEMINI.md)**
 
-> **Project status — October 2026:** The public-facing application, image suitability checks, FastAPI backend, accounts/feedback source, evaluation utilities and deployment infrastructure are implemented at differing levels of verification. **No trained skin-classification checkpoint is connected in the public deployment, and this is not a clinically validated diagnostic tool.** If the image-check API is not hosted, the frontend explains that the service is unavailable instead of simulating results.
+> **Current release: engineering showcase, not a medical diagnostic service.** The Next.js application, API foundation, image-quality processing, research utilities, tests and deployment configurations are implemented. **A real trained six-class checkpoint is not connected to the public app.** No diagnostic predictions, clinical accuracy claims or skin-cancer screening results are provided.
+>
+> **Live demo:** To be added after Vercel deployment and real-browser verification.
 
-## Why this project exists
+## The idea
 
-A research classifier is not a usable AI product by itself. DermaLens AI explores the engineering around a facial skin image classifier: safe input validation, consistent preprocessing, artifact provenance, explainability, uncertainty, privacy-aware services, optional user feedback, reproducible evaluation and deployment.
+Building an image classifier is only part of building a usable AI system. **DermaLens AI** explores everything around the model: safe image uploads, detecting whether a face is present, reproducible preprocessing, model versioning, explainability research, uncertainty handling, secure accounts, documentation retrieval and deployment.
 
-The interface is designed to help visitors understand the research and inspect real engineering features **without mistaking an unfinished AI model for a diagnosis**.
+The goal is to turn a standalone facial skin research workflow into a **modular, testable full-stack application** with clear boundaries between what works today and what must be independently validated.
 
-**Try the running app:** _Public deployment URL to be added after deployment._
+### What problem are we solving?
 
-**Research source:** [Facial_Skin_Diesease](https://github.com/shanmukhdatta/Facial_Skin_Diesease). A licensed, isolated source snapshot is also available in [research/](research/README.md).
+A facial image model cannot be treated as reliable simply because it outputs a class and a probability. Images may be blurry, contain multiple people, be from unfamiliar devices, or differ from training data. DermaLens is designed to **check inputs, track model provenance, measure uncertainty, and fail safely** rather than silently produce confident-looking medical answers.
 
-## What visitors can explore
+## What you can explore
 
-| Feature | What exists in this repository | Public/release status |
+| Capability | What we built | Availability |
 | --- | --- | --- |
-| White-and-green Next.js experience | Homepage, pipeline explanation, six-class research overview, privacy and documentation pages | Implemented; browser acceptance pending |
-| Image suitability check | JPEG/PNG/WebP decoding, basic brightness and sharpness signals, exactly-one-face gate | Available only with a configured running API; **not disease detection** |
-| Model adapter | Private checkpoint/label-map contract, SHA256 manifest, original predictor parity scripts | Implemented; **real weights and parity evidence pending** |
-| Facial preprocessing | OpenCV Haar baseline, experimental eye alignment and proposed ROI crops | ROI transformations are not enabled for real model serving until evaluated |
-| Six-class skin research | Acne, Fungal Infection, Hyperpigmentation, Normal Skin, Skin Cancer, Vitiligo | Supported research label space; live classification disabled |
-| Calibration, OOD and Grad-CAM | Offline evaluation and explainability modules | Requires trained checkpoint, held-out metrics and expert review |
-| Accounts, history and feedback | OIDC architecture, privacy-scoped database APIs, encrypted nonclinical result metadata and feedback controls | Live provider/account browser verification pending |
-| Documentation assistant | Cited lexical lookup; protected Grok adapter for curated documents | Lexical search when API online; semantic vector RAG not complete |
-| Research dashboard | Browser-local aggregate JSON metrics viewer | Implemented; user-provided non-identifying report only |
-| MLOps | Docker, GitHub Actions, manifests, metrics, drift and offline review gates | Engineering foundation; live staging/monitoring/release evidence pending |
-| Reinforcement learning | Intentionally omitted | Future optional research only |
+| **Web experience** | Responsive white-and-green Next.js interface with project introduction, architecture, research, privacy, image-check and documentation pages | Implemented; public browser deployment not yet verified |
+| **Image quality gateway** | JPEG/PNG/WebP file checks, bounded decoding, blur/brightness signals and a one-face OpenCV detection gate | Works when FastAPI backend is configured; **no disease prediction** |
+| **Research categories** | Six-label project scope with clear model limitations | Informational only |
+| **Research reports** | Browser-local viewer for non-identifying aggregate evaluation JSON | Implemented; no clinical metric is bundled or invented |
+| **Model engineering** | Keras adapter, SHA256 model manifest, label-map validation and original predictor parity scripts | Source implemented; **trained model and real parity evidence pending** |
+| **Explainability & reliability** | Offline Grad-CAM, calibration, drift and evaluation utilities | Requires real checkpoints and independent assessment |
+| **Accounts & feedback** | OIDC authentication interfaces, consent, owner-scoped history, encrypted research metadata, moderated feedback | Source implemented; live identity-provider and browser E2E pending |
+| **Documentation assistant** | Cited, approved-document lexical search; optional protected Grok adapter | Search needs API; semantic vector retrieval is future integration |
+| **Operations & deployment** | GitHub Actions, Docker, database migrations, optional API hosting blueprint and Vercel deployment guide | CI-tested foundations; live-host verification pending |
 
-### Technical stack
+The public demo must **never substitute simulated predictions** when the model or backend is unavailable. The app shows a clear unavailable state instead.
 
-**Frontend:** Next.js 16, React 19, TypeScript, responsive accessible CSS.  
-**Backend:** FastAPI, Python 3.11, modular service interfaces, Pydantic, SQLAlchemy/Alembic.  
-**Computer vision:** OpenCV/Pillow, Keras model adapter, optional research Grad-CAM and calibration.  
-**Data and security:** PostgreSQL, OIDC/JWKS verification, consent, encrypted analysis metadata, no default raw photo retention.  
-**Operations:** Docker Compose, GitHub Actions and external deployment manifests.
+## Research scope: six categories
 
-## Architecture
+| Class | Research focus |
+| --- | --- |
+| Acne | Image classification of acne-like facial findings |
+| Fungal Infection | Facial fungal-condition research category |
+| Hyperpigmentation | Facial pigmentation-related conditions |
+| Normal Skin | Research reference class, **not a medical all-clear** |
+| Skin Cancer | Research label only; **not a cancer detection or screening service** |
+| Vitiligo | Depigmentation-related image classification research |
 
-```text
-Browser / Next.js (Vercel)
-  |-- Home, research, architecture, privacy, docs
-  |-- Quality check (same-origin server proxy)
-  |-- Optional owner account / feedback (needs live OIDC)
-  |
-  v HTTPS (server-to-server; only when API is configured)
-FastAPI (container host)
-  |-- bounded image decoder, blur/brightness, face count
-  |-- model manifest + fail-closed research adapter
-  |-- offline calibration / OOD / XAI research
-  |-- owner-scoped history + moderated feedback
-  |-- cited documentation retrieval
-  |-- request limits, logs, telemetry
-  |
-  +--> PostgreSQL (optional for public demo; required for accounts)
-  +--> Private authorized model files (NOT bundled)
+These are **target classes defined by the research project**, not currently available medical assessments. Subtype recognition, lesion localization and severity grading are not validated application outputs.
+
+The original machine-learning experiments, scripts, notebooks, data-processing modules and generation code are available in a [separate MIT-licensed research source snapshot](research/README.md) under `research/legacy/`. Large datasets, private face photographs and trained weights are deliberately not included.
+
+## How the system is designed
+
+```mermaid
+flowchart TD
+    A[Next.js web experience] --> B{Feature requested}
+    B --> C[Image suitability check]
+    B --> H[Documentation explorer]
+    B --> I[Research report viewer]
+    C --> D[Bounded API upload and OpenCV face gate]
+    D --> E[Nonclinical image quality report]
+    D -.-> F[Private verified six-class Keras model]
+    F -.-> G[Calibration, OOD, Grad-CAM and abstention]
+    H --> J[Approved project documentation]
+    I --> K[Browser-local aggregate JSON]
+    L[(Optional PostgreSQL / OIDC)] -.-> A
 ```
 
-**Production safety boundary:** Live diagnosis, cancer screening/rule-out, severity grading and clinical interpretation are not implemented or authorized. The gated nonclinical research analysis endpoint cannot be enabled in the production environment.
+**Solid arrows:** implemented paths that can operate when required services are configured. **Dashed arrows:** private/integration paths not enabled for public inference.
 
-Detailed decisions are kept in [the architecture](docs/01_SYSTEM_ARCHITECTURE.md), [computer vision contract](docs/02_COMPUTER_VISION_PIPELINE.md), [model research](docs/03_MODEL_AND_RESEARCH.md), [backend](docs/04_BACKEND_ARCHITECTURE.md), [RAG](docs/05_RAG_ASSISTANT.md), [feedback](docs/06_FEEDBACK_AND_CONTINUAL_LEARNING.md), [MLOps](docs/07_MLOPS_AND_DEPLOYMENT.md), [API contracts](docs/08_API_AND_DATA_FLOW.md), and [privacy](docs/09_PRIVACY_AND_SAFETY.md). The earlier full conceptual blueprint is archived in [docs/ORIGINAL_MASTER_PLAN.md](docs/ORIGINAL_MASTER_PLAN.md); it is a plan, **not a claim of completion**.
+The intended research model input contract is **RGB → PIL bilinear resize to 224 × 224 → float32 pixels in [0, 255] → model-internal preprocessing**. The model adapter verifies a private checkpoint and the exact six-class label order. Experimental facial ROI cropping is **not** automatically applied because changing the input distribution may reduce accuracy.
 
-## Where the code lives
+### Why these components?
+
+- **OpenCV + Pillow:** Decode images within limits, estimate visual quality and detect a single face before doing anything model-related.
+- **FastAPI:** Expose versioned endpoints with typed validation, fail-closed behavior and optional ownership/security checks.
+- **TensorFlow/Keras adapter:** Load only authorized, checksum-verified candidate model artifacts and preserve training-time preprocessing.
+- **Grad-CAM, calibration and OOD research:** Investigate influential image regions and when a model should abstain; these require validation before use.
+- **RAG/documentation search:** Explain the system from approved project documents. It does not diagnose a user's skin.
+- **Next.js:** Provide a clear and accessible research showcase with honest availability and error states.
+- **PostgreSQL + OIDC:** Optional authenticated, consent-based research history and feedback. Never needed for viewing the public project pages.
+
+Read the [full architecture](docs/01_SYSTEM_ARCHITECTURE.md), [computer-vision contract](docs/02_COMPUTER_VISION_PIPELINE.md), [API design](docs/08_API_AND_DATA_FLOW.md), [privacy model](docs/09_PRIVACY_AND_SAFETY.md) and [decision records](docs/adr/README.md) for implementation details.
+
+## Technology stack
+
+| Layer | Tools |
+| --- | --- |
+| Frontend | Next.js 16, React 19, TypeScript, accessible responsive CSS |
+| Backend | Python 3.11, FastAPI, Pydantic, typed service interfaces |
+| Computer vision | OpenCV, Pillow; candidate TensorFlow/Keras integration |
+| Data & authentication | SQLAlchemy, Alembic, PostgreSQL, OIDC/JWKS, encrypted nonclinical result metadata |
+| Research & MLOps | Model manifests, SHA256, evaluation, duplicate auditing, Grad-CAM/calibration research, drift-review scripts |
+| Developer experience | pytest, Vitest, Ruff, mypy, TypeScript, GitHub Actions |
+| Deployment | Vercel (web), container host for FastAPI, Docker Compose for local integration |
+
+## Repository structure
 
 ```text
-apps/api/                 FastAPI app, typed routes, middleware, auth gates
-apps/web/                 Next.js site and bounded same-origin public proxy
-services/cv/              Image quality, model adapter, alignment, Grad-CAM
-services/learning/        Evaluation, calibration, feedback, drift, leakage
-services/persistence/     Database, encryption, scoped history/retention
-services/rag/             Approved-document retrieval and provider adapter
-packages/                 Shared contracts, security and telemetry
-models/manifests/         Versioned model manifest schema (not weights)
-research/legacy/          Licensed original research source and notebooks
-scripts/                  Reproducibility, audits, manifests and evaluation
-infra/docker/             Separate API/web Dockerfiles
-docs/                     Contracts, ADRs, runbooks and honest gap tracking
-tests/                    Backend, contracts, privacy and research-unit tests
-render.yaml               Optional container API deployment blueprint
+DermaLens-AI/
+├── apps/
+│   ├── web/                  Next.js frontend and same-origin API proxies
+│   └── api/                  FastAPI application, routes and middleware
+├── services/
+│   ├── cv/                   Image validation, face detection, model runtime, Grad-CAM
+│   ├── learning/             Evaluation, calibration, feedback and drift
+│   ├── persistence/          Database, encryption, ownership and retention
+│   └── rag/                  Approved-document search and optional LLM provider
+├── packages/                 Shared security, telemetry and API contracts
+├── models/manifests/         Model artifact schema (NO weights)
+├── research/legacy/          Original research source and notebooks, isolated from serving
+├── scripts/                  Model parity, evaluation, audits and operational checks
+├── infra/docker/             API and web container files
+├── docs/                     Architecture, ADRs and detailed deployment/runbook guides
+├── tests/                    Backend and system tests
+├── render.yaml               Optional API deployment blueprint
+├── GEMINI.md                 Persistent task tracker / Antigravity handoff
+└── README.md                 You are here
 ```
 
-## Run locally
+## Run it locally
 
-Prerequisites: Python 3.11, Node.js 22+, npm, [uv](https://docs.astral.sh/uv/). Docker Desktop is optional.
+**Requirements:** Python 3.11, [uv](https://docs.astral.sh/uv/), Node.js 22+ and npm. Docker is optional.
 
-**Frontend only** (public pages work; image checks/docs search show unavailable without an API):
+### Frontend-only preview
 
 ```bash
-cd apps/web
+git clone https://github.com/shanmukhdatta/DermaLens-AI.git
+cd DermaLens-AI/apps/web
 npm ci
 npm run dev
 ```
 
-Open http://localhost:3000.
+Open **http://localhost:3000**. Public informational pages work without a backend. Upload and documentation-search requests show an honest unavailable response until the API is configured.
 
-**Backend and frontend** (two terminals at repository root):
+### Enable nonclinical image checks
+
+From a separate terminal in the repository root:
 
 ```bash
 uv sync --python 3.11 --frozen --all-groups
@@ -109,61 +147,72 @@ uv pip install --python .venv/bin/python -r requirements-cv.txt -r requirements-
 DERMALENS_ENABLE_IMAGE_QUALITY_CHECKS=true uv run --frozen --no-sync uvicorn apps.api.dermalens_api.main:app --host 127.0.0.1 --port 8000
 ```
 
-On Windows PowerShell, use `$env:DERMALENS_ENABLE_IMAGE_QUALITY_CHECKS="true"` before the `uv run` command and `.venv\Scripts\python.exe` for pip installation. Run `npm run dev` separately in `apps/web/`; the development proxy defaults to localhost:8000.
+For **Windows PowerShell**, install into `.venv\Scripts\python.exe` and set `$env:DERMALENS_ENABLE_IMAGE_QUALITY_CHECKS="true"` before the `uv run` command.
 
-**Docker local integration:**
+The frontend proxies image checking and document search to the local API by default. **This is an image suitability workflow, not a skin disease prediction.**
+
+### Optional local Docker stack
 
 ```bash
-# Put DERMALENS_POSTGRES_PASSWORD=<strong private value> in an untracked .env
+# Create an untracked .env with DERMALENS_POSTGRES_PASSWORD=<strong-local-password>
+docker compose config -q
 docker compose up --build -d --wait
-docker compose ps
 docker compose down
 ```
 
-Never publish a development Compose stack directly to the internet or commit private facial images/weights.
+Do not expose the local Docker Compose stack as a public medical service or run `docker compose down --volumes` unless intentionally deleting local data.
 
-## Tests and reproducibility
+## Verification
 
 ```bash
 uv run --frozen --no-sync ruff check .
-uv run --frozen --no-sync ruff format --check .
 uv run --frozen --no-sync mypy apps packages services
 uv run --frozen --no-sync python -m pytest -q
 uv run --frozen --no-sync python -m scripts.validate_phase0
+
 cd apps/web
-npm ci && npm run lint && npm run typecheck && npm test && npm run build
+npm ci
+npm run lint
+npm run typecheck
+npm test
+npm run build
 ```
 
-The research snapshot is preserved separately and excluded from the production linter/runtime to avoid conflating original training experiments with application acceptance. Historical CI evidence: see [engineering handoff](docs/FINAL_ENGINEERING_HANDOFF.md). **A passing software test is not a clinical model evaluation.**
+**Recorded automated evidence:** the October 25, 2026 recruiter-showcase update [PR #37](https://github.com/shanmukhdatta/DermaLens-AI/pull/37) passed **133 Python tests and 17 frontend tests**, plus frontend build, static checks and Docker staging smoke. These are engineering checks, **not** claims of real-model accuracy, manual browser acceptance or clinical safety. Consult [GitHub Actions](https://github.com/shanmukhdatta/DermaLens-AI/actions) for current checks.
 
-## Deploy the public research showcase
+## Deployment
 
-The recommended architecture is **Vercel for `apps/web/`** plus an optional separate FastAPI container host. The public website can deploy **without the model, database or backend** and honestly display unavailable features.
+The public recruiter showcase and the Python backend are **separate deployments**:
 
-1. Create a Vercel project linked to this repository. Set **Root Directory = `apps/web`**, framework Next.js, Node.js 22+.
-2. Optionally deploy the API from [render.yaml](render.yaml) using the Dockerfile. Provide a real HTTPS public web origin; keep all medical analysis flags disabled.
-3. Set Vercel **`DERMALENS_WEB_API_BASE_URL=https://<your-api-host>`** if you want real image quality checks and documentation search. This is a server-only variable; no weights or secrets in `NEXT_PUBLIC_*`.
-4. Rebuild Vercel; test the homepage, quality flow, network failures, documents, privacy and mobile layout. Accounts require separately verified OIDC.
-5. Add the real site URL above after testing. Keep protected medical inference disabled.
+| Component | Recommended host | Required configuration |
+| --- | --- | --- |
+| Web frontend | Vercel | Import repo; **Root Directory = `apps/web`**, Next.js, Node.js 22+ |
+| Optional image-check & docs API | Render or equivalent Docker host | `render.yaml`, correct HTTPS web origin and explicitly enabled nonclinical image checks |
+| Web-to-API connection | Server-side Vercel environment | `DERMALENS_WEB_API_BASE_URL=https://<actual-api-host>` |
+| Trained research classifier | Not deployed in public version | Authorized private artifacts, exact label map, verified model parity and independent validation |
 
-See [deployment runbook](docs/RECRUITER_DEPLOYMENT.md) for environment variables, security gates, deployment decisions, smoke tests and rollback.
+A frontend-only deployment is valid: it showcases the architecture and UI while displaying that API-dependent features are unavailable. When the API is hosted, image quality and documentation search can run without enabling a medical model.
 
-## When a trained model becomes available
+See the complete [Vercel + API deployment guide](docs/RECRUITER_DEPLOYMENT.md) for prerequisites, environment variables, security checks and rollback.
 
-**Do not copy arbitrary `.keras` weights into GitHub or Vercel.** Use an authorized, privately stored checkpoint, exact `label_map.json`, training/source commit and SHA256 manifest; follow [the model parity runbook](docs/MODEL_ARTIFACT_PARITY_RUNBOOK.md). Reproduce original predictor outputs first, then validate on independent rights-cleared real photographs with subgroup and OOD review. This is separate from releasing the public engineering showcase.
+## Current progress & next milestones
 
-The shipped production app must keep inference disabled until the safety and deployment gates are actually met.
+**Completed as source/CI milestones:** the modular application, Next.js experience, FastAPI foundations, nonclinical image processing, documented research source, evaluation utilities, GitHub workflows and container configuration.
 
-## Status, limitations and next steps
+**Next for the recruiter demo:** independently test the website in a real desktop/mobile browser, deploy the frontend to Vercel, optionally deploy FastAPI for actual image quality checks, then add a verified live URL and screenshots.
 
-- **Built:** UI/UX, safe image-check backend, modular APIs, research source snapshot, nonclinical analysis adapters, account/privacy foundations, evaluation tools, CI and container deployment files.
-- **Still to validate:** Full real-browser E2E, independent external model evaluation, identity-provider integration, production monitoring/privacy/security, semantic vector RAG and expert assessment of XAI.
-- **Optional future research:** severity grading, improved segmentation, controlled model improvement and reinforcement learning only with validated outcomes.
+**Next for private research integration:** obtain the genuine authorized `.keras` checkpoint, exact `label_map.json`, run [predictor parity verification](docs/MODEL_ARTIFACT_PARITY_RUNBOOK.md), test real independent images, calibrate uncertainty, review Grad-CAM, and complete the protected research workflow. Real identity-provider integration, semantic vector RAG and operational monitoring also remain to be verified.
 
-Track specific blockers in [the gap closure checklist](docs/FINAL_GAP_CLOSURE_CHECKLIST.md) and [the phase tracker](docs/PHASE_TRACKER.md). The research archive preserves original [MIT license attribution](research/legacy/LICENSE). The platform source is MIT-licensed in [LICENSE](LICENSE).
+**Later / optional:** severity grading, segmentation, controlled retraining and reinforcement learning; none is a condition for the initial public engineering showcase.
 
-## Responsible use
+**Want to resume development?** Open **[GEMINI.md](GEMINI.md)**. It tracks completed work, unresolved blockers, next tasks, acceptance evidence, local commands and a session-by-session handoff. The [phase tracker](docs/PHASE_TRACKER.md) and [gap audit](docs/FINAL_GAP_CLOSURE_CHECKLIST.md) contain additional technical detail.
 
-Do not use this prototype to diagnose, exclude, grade or treat disease, especially cancer. A prediction score or Grad-CAM image is not clinical evidence. Uploaded face photos require permission. Real-world human/clinical evaluation and the appropriate privacy and regulatory review are separate release requirements.
+## Responsible use & license
 
-**Engineering goal:** make a research classifier reproducible, understandable and operable — while being explicit about what remains unvalidated.
+DermaLens AI is an **engineering research prototype**, not a medical device or clinical diagnostic service. Do not rely on its quality checks or future research predictions to diagnose, treat, exclude or grade conditions. A Grad-CAM highlight is not a diagnosis. Handle all facial photographs with permission, and keep patient images, private datasets, model weights and credentials outside public GitHub history.
+
+Platform source: [MIT license](LICENSE). Imported original research source retains its [MIT license and attribution](research/legacy/LICENSE).
+
+---
+
+**Engineering focus:** reproducibility, privacy-conscious design, transparent AI limitations and modular full-stack delivery.
