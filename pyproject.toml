@@ -27,7 +27,7 @@ package = false
 line-length = 100
 target-version = "py311"
 include = ["*.py"]
-exclude = [".git", ".venv", ".next", "node_modules"]
+exclude = [".git", ".venv", ".next", "node_modules", "research/legacy"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "UP"]

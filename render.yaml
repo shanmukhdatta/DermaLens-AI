@@ -1,0 +1,26 @@
+# Optional nonclinical FastAPI host. Web UI deploys independently from apps/web on Vercel.
+# Configure DERMALENS_PUBLIC_WEB_ORIGIN as an EXACT HTTPS Vercel origin in Render.
+services:
+  - type: web
+    name: dermalens-research-api
+    runtime: docker
+    dockerfilePath: ./infra/docker/api.Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: PORT
+        value: "8000"
+      - key: DERMALENS_ENV
+        value: production
+      - key: DERMALENS_PUBLIC_WEB_ORIGIN
+        sync: false
+      - key: DERMALENS_ENABLE_IMAGE_QUALITY_CHECKS
+        value: "true"
+      - key: DERMALENS_ENABLE_RESEARCH_ANALYSES
+        value: "false"
+      - key: DERMALENS_ENABLE_IMAGE_STORAGE
+        value: "false"
+      - key: DERMALENS_ENABLE_RESEARCH_IMAGE_OPT_IN
+        value: "false"
+      - key: DERMALENS_ENABLE_RAG_ASSISTANT
+        value: "false"
