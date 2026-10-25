@@ -5,6 +5,8 @@
 [![Backend and frontend CI](https://github.com/shanmukhdatta/DermaLens-AI/actions/workflows/phase1.yml/badge.svg)](https://github.com/shanmukhdatta/DermaLens-AI/actions/workflows/phase1.yml)
 [![Architecture validation](https://github.com/shanmukhdatta/DermaLens-AI/actions/workflows/phase0.yml/badge.svg)](https://github.com/shanmukhdatta/DermaLens-AI/actions/workflows/phase0.yml)
 
+> **Resume development at any time:** [GEMINI.md](GEMINI.md) is the persistent Antigravity/Gemini handoff: completed features, pending tasks, blockers, test commands, and next session checklist.
+
 > **Project status — October 2026:** The public-facing application, image suitability checks, FastAPI backend, accounts/feedback source, evaluation utilities and deployment infrastructure are implemented at differing levels of verification. **No trained skin-classification checkpoint is connected in the public deployment, and this is not a clinically validated diagnostic tool.** If the image-check API is not hosted, the frontend explains that the service is unavailable instead of simulating results.
 
 ## Why this project exists
