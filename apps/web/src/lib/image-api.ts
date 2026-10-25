@@ -46,10 +46,10 @@ export function friendlyReason(reason: string): string {
 export async function checkImageQuality(file: File, signal?: AbortSignal): Promise<QualityReport> {
   const validationError = validateImageFile(file);
   if (validationError) throw new ImageCheckError(validationError);
-  const base = (process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000").replace(/\/$/, "");
+  
   let response: Response;
   try {
-    response = await fetch(base + "/api/v1/images/check", {
+    response = await fetch("/api/public/quality", {
       method: "POST",
       body: file,
       headers: { "Content-Type": file.type },

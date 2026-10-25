@@ -43,7 +43,14 @@ BLOCKED_NAMES = frozenset(
 def forbidden_tracked_path(relative_path: str) -> bool:
     """Recognize sensitive file paths, not safe configuration examples."""
     path = PurePosixPath(relative_path)
-    if any(part in BLOCKED_DIRS for part in path.parts[:-1]):
+    # The MIT-licensed research snapshot contains actual Python source under src/data/.
+    # Permit only direct .py source files there, never photographs or private data.
+    is_original_data_module = (
+        path.parts[:4] == ("research", "legacy", "src", "data")
+        and len(path.parts) == 5
+        and path.suffix == ".py"
+    )
+    if any(part in BLOCKED_DIRS for part in path.parts[:-1]) and not is_original_data_module:
         return True
     name = path.name.lower()
     if name == ".env.example":
