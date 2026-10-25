@@ -16,10 +16,10 @@ export function validateDocsQuestion(question: string): string | null {
 export async function searchProjectDocs(question: string, signal?: AbortSignal): Promise<DocumentationSearch> {
   const error = validateDocsQuestion(question);
   if (error) throw new Error(error);
-  const base = (process.env.NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000").replace(/\/$/, "");
+  
   let response: Response;
   try {
-    response = await fetch(base + "/api/v1/docs/search?q=" + encodeURIComponent(question.trim()), {
+    response = await fetch("/api/public/docs?q=" + encodeURIComponent(question.trim()), {
       method: "GET", cache: "no-store", signal,
     });
   } catch {
