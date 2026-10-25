@@ -2,7 +2,7 @@
 
 > **Purpose:** The permanent "open this first" context file for Google Antigravity / Gemini or another coding agent. Read this file **before editing anything**. It records what is built, what remains, how to test it, and how to resume work across sessions.
 >
-> **Last reconciled:** 2026-10-25, after PR [#37](https://github.com/shanmukhdatta/DermaLens-AI/pull/37), merged to `main` at `0570cda6aeadd4ccc286bbbf99924e0acacea0ed`. Snapshot is not a claim that all tasks are finished. **The status can become stale: always check Git history and CI before using it.**
+> **Last reconciled:** 2026-10-25, after PRs [#37](https://github.com/shanmukhdatta/DermaLens-AI/pull/37) and [#38](https://github.com/shanmukhdatta/DermaLens-AI/pull/38), with the public README being clarified in [PR #39](https://github.com/shanmukhdatta/DermaLens-AI/pull/39). Baseline verified `main` commit before PR #39: `c8282561a2b1144db1a84bb23ee378d210435b51`. Snapshot is not a claim that all tasks are finished. **The status can become stale: always check Git history and CI before using it.**
 >
 > **Project:** https://github.com/shanmukhdatta/DermaLens-AI  
 > **Original research:** https://github.com/shanmukhdatta/Facial_Skin_Diesease  
@@ -215,6 +215,7 @@ At the end of **every material coding/testing/deployment session**:
 
 | Date (IST) | Session / evidence | Real outcome | Next action |
 | --- | --- | --- | --- |
+| 2026-10-25 | [PR #39](https://github.com/shanmukhdatta/DermaLens-AI/pull/39) — recruiter README revision | Public README refocused around the project problem, working-versus-pending features, six research classes, architecture, local tests and deployment. Documentation-only change; check PR CI and merge status before marking as accepted. The model is still disconnected. | R0-04 browser QA; R0-05 Vercel preview |
 | 2026-10-25 | PR [#37](https://github.com/shanmukhdatta/DermaLens-AI/pull/37) → `0570cda6` | Imported original source snapshot; new green/white frontend, nonclinical public proxies, recruiter README and deployment runbook. 133 Python + 17 web tests and Docker staging smoke passed on PR. Live Vercel UI and clinical analysis **not verified**. | R0-04 manual browser QA, then R0-05 Vercel preview |
 
 **Template for future entries:**
